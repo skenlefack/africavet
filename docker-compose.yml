@@ -1,0 +1,128 @@
+# Docker Compose - Local Development
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: africavet-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-africavet_cms}
+      MYSQL_USER: ${DB_USER:-africavet}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-devpassword}
+    # Expose MySQL port externally for local development (3308 to avoid conflict with local MySQL)
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/config/database.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - africavet-network
+
+  # Backend API (Express.js)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: africavet-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      DB_HOST: db
+      DB_USER: ${DB_USER:-africavet}
+      DB_PASSWORD: ${DB_PASSWORD:-devpassword}
+      DB_NAME: ${DB_NAME:-africavet_cms}
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-in-production}
+      FRONTEND_URL: http://localhost:3002
+      ADMIN_URL: http://localhost:3004
+      # SMTP Configuration (Infomaniak)
+      SMTP_HOST: mail.infomaniak.com
+      SMTP_PORT: 587
+      SMTP_SECURE: "false"
+      SMTP_USER: ${SMTP_USER:-contact@africavet.com}
+      SMTP_PASS: ${SMTP_PASS:-your-email-password}
+      SMTP_FROM: contact@africavet.com
+    ports:
+      - "5001:5000"  # Use 5001 externally to avoid conflict with local backend
+    volumes:
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - africavet-network
+
+  # Frontend Public Site (Vite + React)
+  frontend:
+    build:
+      context: ./frontend-site-web
+      dockerfile: Dockerfile
+    container_name: africavet-frontend
+    restart: unless-stopped
+    ports:
+      - "3003:80"  # Main public site on port 3003
+    depends_on:
+      - backend
+    networks:
+      - africavet-network
+
+  # Admin Panel (React) - Legacy
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: /api
+    container_name: africavet-admin
+    restart: unless-stopped
+    ports:
+      - "3004:80"  # Use 3004 externally to avoid conflict with local admin
+    depends_on:
+      - backend
+    networks:
+      - africavet-network
+
+  # Admin Panel Next (React - W3Admin Template)
+  admin-next:
+    build:
+      context: ./admin-next
+      dockerfile: Dockerfile
+    container_name: africavet-admin-next
+    restart: unless-stopped
+    ports:
+      - "3005:80"  # New admin panel on port 3005
+    depends_on:
+      - backend
+    networks:
+      - africavet-network
+
+  # Frontend Next.js (Newsletter + E-Learning)
+  frontend-next:
+    build:
+      context: ./frontend-next
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: /api
+        NEXT_PUBLIC_BACKEND_URL: ""
+        BACKEND_INTERNAL_URL: http://backend:5000
+    container_name: africavet-frontend-next
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    depends_on:
+      - backend
+    networks:
+      - africavet-network
+
+networks:
+  africavet-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

@@ -1,0 +1,351 @@
+// Variables AfricaVet
+$av-blue: #1091FF;
+$av-teal: #00AB6C;
+$av-dark: #17222B;
+
+.pillars-section {
+  background: transparent;
+  padding: 30px 0;
+  position: relative;
+}
+
+.pillars-wrapper {
+  display: flex;
+  gap: 25px;
+  position: relative;
+  z-index: 1;
+  align-items: stretch;
+  background: linear-gradient(135deg, $av-blue 0%, $av-teal 100%);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba($av-blue, 0.25);
+  overflow: hidden;
+
+  // Subtle pattern overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    border-radius: 16px;
+  }
+
+  // Shimmer effect
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.08),
+      transparent
+    );
+    animation: shimmer 5s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  @media (max-width: 1199px) {
+    flex-direction: column;
+    padding: 25px;
+  }
+}
+
+// Left: Pillars Grid
+.pillars-grid {
+  flex: 1;
+}
+
+.pillars-header {
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+
+    span {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+.pillars-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+
+  @media (max-width: 1399px) {
+    gap: 10px;
+  }
+
+  @media (max-width: 991px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+}
+
+.pillar-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 18px 12px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  &:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+
+    .pillar-icon {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.pillar-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  color: $av-blue;
+  font-size: 22px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.pillar-content {
+  h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 4px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  p {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+.pillar-arrow {
+  display: none;
+}
+
+// Right: Auth Section - Compact
+.auth-section {
+  width: 280px;
+  flex-shrink: 0;
+
+  @media (max-width: 1199px) {
+    width: 100%;
+  }
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 15px;
+
+  .auth-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 12px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: $av-blue;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  .btn-primary {
+    background: #fff;
+    color: $av-blue;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+
+// Responsive
+@media (max-width: 767px) {
+  .pillars-section {
+    padding: 20px 0;
+  }
+
+  .pillars-wrapper {
+    padding: 20px;
+  }
+
+  .pillars-header {
+    margin-bottom: 15px;
+    text-align: center;
+
+    h2 {
+      font-size: 20px;
+    }
+
+    p {
+      font-size: 12px;
+    }
+  }
+
+  .pillar-card {
+    padding: 14px 10px;
+  }
+
+  .pillar-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+
+  .pillar-content {
+    h3 {
+      font-size: 11px;
+    }
+
+    p {
+      font-size: 10px;
+      display: none;
+    }
+  }
+
+  .auth-card {
+    padding: 15px;
+  }
+
+  .auth-header {
+    .auth-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+    }
+
+    h3 {
+      font-size: 14px;
+    }
+
+    p {
+      display: none;
+    }
+  }
+
+  .auth-buttons a {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+}

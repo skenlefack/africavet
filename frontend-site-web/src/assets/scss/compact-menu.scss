@@ -1,0 +1,492 @@
+/* ===========================================
+   MENU MODERNE AFRICAVET
+   Dégradé bleu-vert avec effets
+   =========================================== */
+
+// Couleurs AfricaVet
+$av-blue: #1091FF;
+$av-teal: #00AB6C;
+$av-dark: #17222B;
+$av-light-blue: #70BDFF;
+
+/* ============================================
+   TOPBAR - RECHERCHE ET LANGUE
+   ============================================ */
+.topbar {
+  .topbar_separator {
+    width: 1px;
+    height: 20px;
+    background: #ccc;
+    margin: 0 12px;
+  }
+
+  .topbar_search {
+    button {
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 14px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: $av-blue;
+      }
+    }
+  }
+
+  .topbar_lang {
+    margin-left: 5px;
+
+    .lang_dropdown {
+      position: relative;
+
+      .lang_btn {
+        background: none;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        color: #666;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        i {
+          margin-left: 3px;
+          font-size: 10px;
+          transition: transform 0.3s ease;
+        }
+
+        &:hover {
+          border-color: $av-blue;
+          color: $av-blue;
+        }
+      }
+
+      &:hover .lang_btn i {
+        transform: rotate(180deg);
+      }
+
+      .lang_menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        padding: 5px 0;
+        margin-top: 5px;
+        min-width: 100px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        z-index: 100;
+        list-style: none;
+
+        li {
+          a {
+            display: block;
+            padding: 6px 15px;
+            color: $av-dark;
+            font-size: 12px;
+            transition: all 0.2s ease;
+
+            &:hover {
+              background: rgba($av-blue, 0.1);
+              color: $av-blue;
+            }
+          }
+        }
+      }
+
+      &:hover .lang_menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+    }
+  }
+
+  /* Version dark */
+  &.dark {
+    .topbar_search button {
+      color: #aaa;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+
+    .topbar_lang .lang_dropdown .lang_btn {
+      color: #aaa;
+      border-color: #555;
+
+      &:hover {
+        border-color: $av-blue;
+        color: $av-blue;
+      }
+    }
+
+    .topbar_separator {
+      background: #555;
+    }
+  }
+}
+
+.theme-1 {
+  /* ============================================
+     BARRE DE NAVIGATION PRINCIPALE
+     ============================================ */
+  .main-nav {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0;
+
+    .container {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Wrapper avec le dégradé limité au container */
+    .nav-gradient-wrapper {
+      background: linear-gradient(135deg, $av-blue 0%, $av-teal 100%);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(16, 145, 255, 0.25);
+      position: relative;
+      padding: 0 20px;
+      display: block;
+
+      /* Effet de brillance subtil */
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        animation: shimmer 4s infinite;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+      }
+    }
+
+    /* Navbar pleine largeur */
+    .navbar {
+      width: 100% !important;
+      padding: 0 !important;
+      position: static !important;
+      background: transparent !important;
+      top: auto !important;
+    }
+
+    .site-nav-inner {
+      width: 100%;
+      position: static !important;
+    }
+
+    .navbar-collapse {
+      justify-content: center;
+    }
+
+    /* Forcer l'affichage sur desktop */
+    @media (min-width: 992px) {
+      .navbar-collapse {
+        display: flex !important;
+      }
+    }
+
+    /* Liste de navigation */
+    ul.navbar-nav {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      width: 100%;
+      gap: 0;
+    }
+
+    ul.navbar-nav > li {
+      flex-shrink: 0;
+      position: relative;
+
+      /* Effet de fond au survol */
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.12);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+      }
+
+      &:hover::before {
+        opacity: 1;
+      }
+
+      /* Suppression de l'ancien effet de ligne */
+      &::after {
+        display: none !important;
+      }
+    }
+
+    /* Liens du menu */
+    ul.navbar-nav > li > a {
+      color: #fff !important;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0 10px;
+      line-height: 50px;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      transition: all 0.3s ease;
+      position: relative;
+
+      /* Icône dropdown */
+      i {
+        font-size: 9px;
+        margin-left: 4px;
+        transition: transform 0.3s ease;
+      }
+
+      /* Effet de soulignement moderne */
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: #fff;
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+        border-radius: 2px;
+      }
+
+      &:hover::after,
+      &.active::after {
+        width: calc(100% - 24px);
+      }
+
+      &:hover {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      }
+
+      &:hover i {
+        transform: rotate(180deg);
+      }
+    }
+
+    /* Premier et dernier élément avec plus de padding */
+    ul.navbar-nav > li:first-child > a {
+      padding-left: 20px !important;
+    }
+
+    ul.navbar-nav > li:last-child > a {
+      padding-right: 20px !important;
+    }
+
+    /* Suppression des anciens effets */
+    ul.navbar-nav > li:hover:before,
+    ul.navbar-nav > li > a::before {
+      display: none !important;
+    }
+  }
+
+  /* ============================================
+     MENU DROPDOWN MODERNE
+     ============================================ */
+  .main-nav .navbar-nav li.dropdown {
+    position: relative;
+    z-index: 100;
+  }
+
+  .main-nav .navbar-nav li .dropdown-menu {
+    display: block !important;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px) scaleY(1) !important;
+    transform-origin: top;
+    transition: all 0.3s ease;
+    background: #fff;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 8px 0;
+    margin-top: 0;
+    min-width: 200px;
+    position: absolute !important;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+
+    li {
+      margin: 0;
+
+      a {
+        color: $av-dark !important;
+        font-size: 13px;
+        font-weight: 400;
+        padding: 10px 18px !important;
+        transition: all 0.2s ease;
+        position: relative;
+        background: transparent !important;
+        display: block;
+        line-height: 1.5 !important;
+
+        /* Barre latérale au survol */
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 3px;
+          height: 0;
+          background: linear-gradient(180deg, $av-blue, $av-teal);
+          border-radius: 0 3px 3px 0;
+          transition: height 0.2s ease;
+        }
+
+        &::after {
+          display: none !important;
+        }
+
+        &:hover {
+          background: rgba(16, 145, 255, 0.08) !important;
+          color: $av-blue !important;
+          padding-left: 22px !important;
+
+          &::before {
+            height: 60%;
+          }
+        }
+      }
+    }
+  }
+
+  /* Afficher le dropdown au survol */
+  .main-nav .navbar-nav li.dropdown:hover > .dropdown-menu {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) scaleY(1) !important;
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (min-width: 1400px) {
+    .main-nav ul.navbar-nav > li > a {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 0 14px;
+      line-height: 54px;
+    }
+    .main-nav ul.navbar-nav > li:first-child > a {
+      padding-left: 25px !important;
+    }
+    .main-nav ul.navbar-nav > li:last-child > a {
+      padding-right: 25px !important;
+    }
+  }
+
+  @media (min-width: 1200px) and (max-width: 1399px) {
+    .main-nav ul.navbar-nav > li > a {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0 10px;
+      line-height: 52px;
+    }
+    .main-nav ul.navbar-nav > li:first-child > a {
+      padding-left: 20px !important;
+    }
+    .main-nav ul.navbar-nav > li:last-child > a {
+      padding-right: 20px !important;
+    }
+  }
+
+  @media (min-width: 992px) and (max-width: 1199px) {
+    .main-nav ul.navbar-nav > li > a {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 0 7px;
+      line-height: 50px;
+    }
+    .main-nav ul.navbar-nav > li:first-child > a {
+      padding-left: 15px !important;
+    }
+    .main-nav ul.navbar-nav > li:last-child > a {
+      padding-right: 15px !important;
+    }
+  }
+
+  /* ============================================
+     BOUTON HAMBURGER MOBILE
+     ============================================ */
+  .navbar-toggler {
+    color: #fff !important;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    padding: 6px 10px;
+    transition: all 0.3s ease;
+    background: transparent;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    i {
+      color: #fff !important;
+    }
+  }
+
+  /* ============================================
+     STICKY HEADER
+     ============================================ */
+  .main-nav.is-ts-sticky {
+    &.fixed {
+      .nav-gradient-wrapper {
+        border-radius: 0;
+        box-shadow: 0 2px 15px rgba(16, 145, 255, 0.2);
+      }
+    }
+  }
+}
+
+/* Animation supprimée - gérée par les transitions CSS */
+
+/* ============================================
+   MOBILE - Menu dans le nav-wrapper
+   ============================================ */
+@media (max-width: 991px) {
+  .theme-1 .main-nav {
+    .nav-gradient-wrapper {
+      border-radius: 0;
+      padding: 10px 15px;
+    }
+
+    .navbar-toggler {
+      position: relative;
+      top: 0;
+      left: 0;
+    }
+  }
+}
