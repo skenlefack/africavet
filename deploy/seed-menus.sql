@@ -1,0 +1,16 @@
+INSERT INTO menus (name, slug, location) VALUES ('Menu Principal', 'menu-principal', 'header');
+INSERT INTO menus (name, slug, location) VALUES ('Menu Footer', 'menu-footer', 'footer');
+SET @hid = (SELECT id FROM menus WHERE slug='menu-principal');
+SET @fid = (SELECT id FROM menus WHERE slug='menu-footer');
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@hid, 'Accueil', '/', 0);
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@hid, 'A propos', '/about', 1);
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@hid, 'Actualites', '/news', 2);
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@hid, 'E-Learning', '/vet-elearning', 3);
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@hid, 'VetLink', '/vet-link', 4);
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@hid, 'Alertes', '/vet-alert', 5);
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@hid, 'Opportunites', '/opportunities', 6);
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@hid, 'Contact', '/contact', 7);
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@fid, 'Accueil', '/', 0);
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@fid, 'A propos', '/about', 1);
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@fid, 'Contact', '/contact', 2);
+INSERT INTO menu_items (menu_id, title, url, sort_order) VALUES (@fid, 'Mentions legales', '/legal', 3);

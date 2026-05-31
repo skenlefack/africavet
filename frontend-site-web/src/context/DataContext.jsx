@@ -32,6 +32,7 @@ export const DataProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -39,6 +40,7 @@ export const DataProvider = ({ children }) => {
 
   const loadData = async () => {
     try {
+      setError(null);
       const [postsRes, catRes] = await Promise.all([
         postsApi.getLatest(30),
         categoriesApi.getAll()
@@ -46,12 +48,16 @@ export const DataProvider = ({ children }) => {
 
       if (postsRes.success) {
         setPosts(postsRes.data || []);
+      } else {
+        console.warn('Posts API returned error:', postsRes.message);
+        setError(postsRes.message || 'Erreur de chargement des articles');
       }
       if (catRes.success) {
         setCategories(catRes.data || []);
       }
     } catch (error) {
       console.error('Error loading data:', error);
+      setError('Impossible de contacter le serveur. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }
@@ -101,6 +107,8 @@ export const DataProvider = ({ children }) => {
     posts,
     categories,
     loading,
+    error,
+    reload: loadData,
     getImageUrl,
     formatDate,
     truncate,

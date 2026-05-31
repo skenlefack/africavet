@@ -1,0 +1,333 @@
+.about-page {
+  // Hero section
+  .about-hero {
+    background: linear-gradient(135deg, #354e84 0%, #7ac142 100%);
+    color: #fff;
+    padding: 60px 0;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 500px;
+      height: 500px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 400px;
+      height: 400px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 50%;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+
+        span {
+          color: #7ac142;
+        }
+      }
+
+      .hero-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 700px;
+        line-height: 1.7;
+      }
+    }
+  }
+
+  // Mission section
+  .about-mission {
+    padding: 60px 0;
+    background: #f8f9fa;
+
+    .mission-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 35px 30px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+      height: 100%;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border-top: 4px solid transparent;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      &.mission { border-top-color: #354e84; }
+      &.vision { border-top-color: #7ac142; }
+      &.values { border-top-color: #ff6b35; }
+
+      .mission-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #fff;
+        margin-bottom: 20px;
+
+        &.bg-blue { background: #354e84; }
+        &.bg-green { background: #7ac142; }
+        &.bg-orange { background: #ff6b35; }
+      }
+
+      h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #222;
+      }
+
+      p {
+        color: #666;
+        line-height: 1.7;
+        margin: 0;
+      }
+    }
+  }
+
+  // Pillars section
+  .about-pillars {
+    padding: 60px 0;
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 45px;
+
+      h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 10px;
+      }
+
+      p {
+        color: #888;
+        font-size: 1.05rem;
+      }
+    }
+
+    .pillar-card {
+      text-align: center;
+      padding: 30px 20px;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      height: 100%;
+      transition: transform 0.3s, box-shadow 0.3s;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .pillar-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        color: #fff;
+        margin: 0 auto 18px;
+      }
+
+      h4 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #222;
+      }
+
+      p {
+        font-size: 0.92rem;
+        color: #777;
+        line-height: 1.6;
+        margin: 0;
+      }
+    }
+  }
+
+  // What we do section
+  .about-services {
+    padding: 60px 0;
+    background: #f8f9fa;
+
+    .service-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 28px;
+
+      .service-icon {
+        width: 45px;
+        height: 45px;
+        min-width: 45px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: #fff;
+        background: #354e84;
+      }
+
+      .service-text {
+        h5 {
+          font-size: 1.05rem;
+          font-weight: 600;
+          margin-bottom: 5px;
+          color: #222;
+        }
+        p {
+          color: #777;
+          font-size: 0.92rem;
+          line-height: 1.6;
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  // Stats section
+  .about-stats {
+    padding: 50px 0;
+    background: linear-gradient(135deg, #354e84 0%, #7ac142 100%);
+    color: #fff;
+
+    .stat-item {
+      text-align: center;
+      padding: 20px 10px;
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 0.95rem;
+        opacity: 0.85;
+      }
+    }
+  }
+
+  // Contact section
+  .about-contact {
+    padding: 60px 0;
+
+    .contact-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+      height: 100%;
+      text-align: center;
+
+      .contact-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        background: rgba(53, 78, 132, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: #354e84;
+        margin: 0 auto 15px;
+      }
+
+      h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #222;
+      }
+
+      p, a {
+        color: #666;
+        font-size: 0.92rem;
+        line-height: 1.6;
+      }
+
+      a:hover {
+        color: #7ac142;
+      }
+    }
+  }
+
+  // Social links
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 15px;
+
+    a {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.1rem;
+      transition: transform 0.3s, opacity 0.3s;
+
+      &:hover {
+        transform: translateY(-3px);
+        opacity: 0.9;
+      }
+
+      &.fb { background: #1877F2; }
+      &.tw { background: #1DA1F2; }
+      &.li { background: #0A66C2; }
+    }
+  }
+
+  // Disclaimer
+  .about-disclaimer {
+    padding: 40px 0;
+    background: #f0f2f5;
+
+    .disclaimer-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 25px 30px;
+      border-left: 4px solid #ff6b35;
+
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 0.92rem;
+        line-height: 1.7;
+
+        strong {
+          color: #354e84;
+        }
+      }
+    }
+  }
+}

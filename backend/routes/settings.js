@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const nodemailer = require('nodemailer');
 const db = require('../config/db');
 const { auth, authorize } = require('../middleware/auth');
 
@@ -32,6 +33,86 @@ router.get('/', auth, authorize('admin'), async (req, res) => {
     res.json({ success: true, data: settings });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// GET SMTP settings
+router.get('/smtp', auth, authorize('admin'), async (req, res) => {
+  try {
+    const [settings] = await db.query(
+      "SELECT setting_key, setting_value FROM settings WHERE setting_group = 'smtp'"
+    );
+    const smtp = {};
+    settings.forEach(s => {
+      const key = s.setting_key.replace('smtp_', '');
+      smtp[key] = s.setting_value;
+    });
+    res.json({ success: true, data: smtp });
+  } catch (error) {
+    console.error('SMTP settings error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// PUT SMTP settings
+router.put('/smtp', auth, authorize('admin'), async (req, res) => {
+  try {
+    const { host, port, secure, user, pass, from } = req.body;
+    const fields = { smtp_host: host, smtp_port: port, smtp_secure: secure, smtp_user: user, smtp_pass: pass, smtp_from: from };
+
+    for (const [key, value] of Object.entries(fields)) {
+      if (value === undefined) continue;
+      const stringValue = String(value || '');
+      const [existing] = await db.query('SELECT id FROM settings WHERE setting_key = ?', [key]);
+      if (existing.length === 0) {
+        await db.query(
+          "INSERT INTO settings (setting_key, setting_value, setting_group, autoload) VALUES (?, ?, 'smtp', 1)",
+          [key, stringValue]
+        );
+      } else {
+        await db.query('UPDATE settings SET setting_value = ? WHERE setting_key = ?', [stringValue, key]);
+      }
+    }
+
+    res.json({ success: true, message: 'SMTP settings updated' });
+  } catch (error) {
+    console.error('SMTP update error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// POST SMTP test
+router.post('/smtp/test', auth, authorize('admin'), async (req, res) => {
+  try {
+    const { host, port, secure, user, pass, from } = req.body;
+
+    if (!host || !user || !pass) {
+      return res.status(400).json({ success: false, message: 'Host, user and password are required' });
+    }
+
+    const transporter = nodemailer.createTransport({
+      host,
+      port: parseInt(port) || 587,
+      secure: secure === 'true' || secure === true,
+      auth: { user, pass },
+      connectionTimeout: 10000
+    });
+
+    await transporter.verify();
+
+    // Send a real test email to the admin
+    const adminEmail = req.user.email || from;
+    await transporter.sendMail({
+      from: `"AfricaVet Test" <${from || user}>`,
+      to: adminEmail,
+      subject: 'AfricaVet - Test SMTP',
+      html: '<p>SMTP configuration is working correctly.</p><p>Configuration SMTP fonctionnelle.</p>'
+    });
+
+    res.json({ success: true, message: 'Connection successful, test email sent' });
+  } catch (error) {
+    console.error('SMTP test error:', error);
+    res.status(400).json({ success: false, message: error.message });
   }
 });
 

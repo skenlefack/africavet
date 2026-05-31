@@ -230,6 +230,25 @@ export const newsletterApi = {
   }),
 };
 
+// Documents / Library API
+export const documentsApi = {
+  getAll: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return apiCall(`/documents${query ? `?${query}` : ''}`);
+  },
+  getById: (id) => apiCall(`/documents/${id}`),
+  getFeatured: (limit = 6) => apiCall(`/documents/featured?limit=${limit}`),
+  getRecent: (limit = 10) => apiCall(`/documents/recent?limit=${limit}`),
+  getStats: () => apiCall('/documents/stats'),
+  getCountries: () => apiCall('/documents/countries'),
+  getCategoriesTree: () => apiCall('/documents/categories/tree'),
+  getByCategory: (slug, params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return apiCall(`/documents/categories/${slug}${query ? `?${query}` : ''}`);
+  },
+  getDownloadUrl: (id) => `${API_BASE_URL}/documents/${id}/download`,
+};
+
 // Notifications API
 export const notificationsApi = {
   getAll: (token, params = {}) => {
@@ -240,6 +259,14 @@ export const notificationsApi = {
   markAsRead: (id, token) => authCall(`/notifications/${id}/read`, token, { method: 'PUT' }),
   markAllAsRead: (token) => authCall('/notifications/read-all', token, { method: 'PUT' }),
   delete: (id, token) => authCall(`/notifications/${id}`, token, { method: 'DELETE' }),
+};
+
+// Contact API
+export const contactApi = {
+  submit: (formData) => apiCall('/contact', {
+    method: 'POST',
+    body: JSON.stringify(formData),
+  }),
 };
 
 export { API_BASE_URL, BACKEND_URL, apiCall, authCall, apiUpload };
@@ -257,5 +284,7 @@ export default {
   opportunities: opportunitiesApi,
   vetAlerts: vetAlertsApi,
   annuaire: annuaireApi,
+  documents: documentsApi,
   notifications: notificationsApi,
+  contact: contactApi,
 };

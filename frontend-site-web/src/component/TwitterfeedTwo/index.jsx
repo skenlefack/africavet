@@ -4,13 +4,13 @@ import FontAwesome from "../uiStyle/FontAwesome";
 const twits = [
   {
     date: "March 26, 2020",
-    tag_line: "@newspark #technology https://dribbble.com/subash_chandra",
+    tag_line: "@africavet #technology https://dribbble.com/subash_chandra",
     title:
       "Cyber Monday Sale, Save 33% on Jannah theme during our year-end Sale, Purchase a new license for your next project…",
   },
   {
     date: "March 26, 2020",
-    tag_line: "@newspark #technology https://dribbble.com/subash_chandra",
+    tag_line: "@africavet #technology https://dribbble.com/subash_chandra",
     title:
       "Cyber Monday Sale, Save 33% on Jannah theme during our year-end Sale, Purchase a new license for your next project…",
   },

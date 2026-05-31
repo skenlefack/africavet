@@ -13,6 +13,9 @@ $av-light-blue: #70BDFF;
    TOPBAR - RECHERCHE ET LANGUE
    ============================================ */
 .topbar {
+  position: relative;
+  z-index: 1000;
+
   .topbar_separator {
     width: 1px;
     height: 20px;
@@ -110,6 +113,90 @@ $av-light-blue: #70BDFF;
     }
   }
 
+  /* Auth icons + tooltips */
+  .topbar_auth {
+    gap: 6px;
+  }
+
+  .topbar_auth_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: #555;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    position: relative;
+    text-decoration: none;
+
+    &:hover {
+      background: rgba($av-blue, 0.1);
+      color: $av-blue;
+      transform: translateY(-1px);
+    }
+
+    &--primary {
+      background: linear-gradient(135deg, $av-blue, $av-teal);
+      color: #fff;
+
+      &:hover {
+        background: linear-gradient(135deg, darken($av-blue, 8%), darken($av-teal, 8%));
+        color: #fff;
+        box-shadow: 0 3px 12px rgba($av-blue, 0.35);
+      }
+    }
+
+    /* Tooltip - en dessous, au-dessus de tout (z-index élevé) */
+    &::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: -34px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      background: $av-dark;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 5px;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Tooltip arrow - pointe vers le haut */
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-bottom-color: $av-dark;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    &:hover::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    &:hover::before {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
   /* Version dark */
   &.dark {
     .topbar_search button {
@@ -132,6 +219,19 @@ $av-light-blue: #70BDFF;
 
     .topbar_separator {
       background: #555;
+    }
+
+    .topbar_auth_btn {
+      color: #aaa;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      &--primary {
+        color: #fff;
+      }
     }
   }
 }

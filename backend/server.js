@@ -24,7 +24,13 @@ const allowedOrigins = [
   // Default production domains
   'https://africavet.com',
   'https://www.africavet.com',
-  'https://admin.africavet.com'
+  'https://admin.africavet.com',
+  'https://manager.africavet.com',
+  'http://www.africavet.com',
+  'http://manager.africavet.com',
+  // Temporary IP-based access
+  'http://83.228.241.6',
+  'http://83.228.241.6:8080'
 ];
 
 // Security middleware
@@ -36,8 +42,10 @@ app.use(cors({
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
+    } else if (process.env.NODE_ENV !== 'production') {
+      callback(null, true);
     } else {
-      callback(null, true); // Allow in development
+      callback(new Error('CORS not allowed'));
     }
   },
   credentials: true,
@@ -48,7 +56,7 @@ app.use(cors({
 app.options('*', cors());
 
 // Logging
-app.use(morgan('dev'));
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Compression
 app.use(compression());
@@ -91,8 +99,14 @@ app.use('/api/settings', require('./routes/settings'));
 // Dashboard
 app.use('/api/dashboard', require('./routes/dashboard'));
 
+// Analytics
+app.use('/api/analytics', require('./routes/analytics'));
+
 // OHWR-Mapping
 app.use('/api/mapping', require('./routes/mapping'));
+
+// Ads
+app.use('/api/ads', require('./routes/ads'));
 
 // E-Learning
 app.use('/api/elearning', require('./routes/elearning'));
@@ -114,6 +128,12 @@ app.use('/api/newsletter', require('./routes/newsletter'));
 
 // Notifications
 app.use('/api/notifications', require('./routes/notifications'));
+
+// Document Manager
+app.use('/api/documents', require('./routes/documents'));
+
+// Contact
+app.use('/api/contact', require('./routes/contact'));
 
 // Health check
 app.get('/api/health', (req, res) => {

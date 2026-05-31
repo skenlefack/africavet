@@ -5,19 +5,19 @@ const twitts = [
   {
     title:
       "Cyber Monday Sale, Save 33% on Jannah theme during our year-end Sale, Purchase a new license for your next project",
-    linkText: "@newspark #TECHNOLOGY https://dribbble.com/subash_chandra",
+    linkText: "@africavet #TECHNOLOGY https://dribbble.com/subash_chandra",
     date: "March 26, 2020",
   },
   {
     title:
       "Cyber Monday Sale, Save 33% on Jannah theme during our year-end Sale, Purchase a new license for your next project",
-    linkText: "@newspark #TECHNOLOGY https://dribbble.com/subash_chandra",
+    linkText: "@africavet #TECHNOLOGY https://dribbble.com/subash_chandra",
     date: "March 26, 2020",
   },
   {
     title:
       "Cyber Monday Sale, Save 33% on Jannah theme during our year-end Sale, Purchase a new license for your next project",
-    linkText: "@newspark #TECHNOLOGY https://dribbble.com/subash_chandra",
+    linkText: "@africavet #TECHNOLOGY https://dribbble.com/subash_chandra",
     date: "March 26, 2020",
   },
 ];

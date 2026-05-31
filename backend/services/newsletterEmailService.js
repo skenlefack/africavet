@@ -12,6 +12,7 @@
 
 const nodemailer = require('nodemailer');
 const db = require('../config/db');
+const { getSmtpConfig } = require('./emailService');
 const path = require('path');
 const fs = require('fs');
 
@@ -19,13 +20,22 @@ const fs = require('fs');
 const logoPath = path.join(__dirname, '../uploads/africavet-logo.png');
 
 // ============================================
-// TRANSPORTER SETUP
+// TRANSPORTER SETUP (reads from DB, falls back to env)
 // ============================================
 
-const createTransporter = () => {
-  if (process.env.NODE_ENV === 'development' && !process.env.SMTP_HOST) {
-    // Development fallback - log to console
-    return {
+let cachedTransporter = null;
+let cachedConfigHash = '';
+
+const getTransporter = async () => {
+  const config = await getSmtpConfig();
+  const hash = JSON.stringify(config);
+
+  if (cachedTransporter && hash === cachedConfigHash) {
+    return cachedTransporter;
+  }
+
+  if (!config.host) {
+    cachedTransporter = {
       sendMail: async (options) => {
         console.log('=== NEWSLETTER EMAIL (Development Mode) ===');
         console.log('To:', options.to);
@@ -35,24 +45,22 @@ const createTransporter = () => {
         return { messageId: 'dev-' + Date.now() };
       }
     };
+  } else {
+    console.log('SMTP configured:', config.host);
+    cachedTransporter = nodemailer.createTransport({
+      host: config.host,
+      port: config.port,
+      secure: config.secure,
+      auth: { user: config.user, pass: config.pass },
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100
+    });
   }
 
-  console.log('SMTP configured:', process.env.SMTP_HOST);
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    },
-    pool: true,
-    maxConnections: 5,
-    maxMessages: 100
-  });
+  cachedConfigHash = hash;
+  return cachedTransporter;
 };
-
-let transporter = createTransporter();
 
 // ============================================
 // HELPERS
@@ -352,7 +360,8 @@ const sendConfirmationEmail = async (subscriber) => {
     const template = templates.confirmation[subscriber.language] || templates.confirmation.fr;
     const { subject, html } = template(confirmUrl, subscriber.first_name);
 
-    await transporter.sendMail({
+    const transport = await getTransporter();
+    await transport.sendMail({
       from: `"${settings.sender_name || 'AfricaVet'}" <${settings.sender_email || process.env.SMTP_FROM || 'newsletter@africavet.com'}>`,
       replyTo: settings.reply_to || 'contact@africavet.com',
       to: subscriber.email,
@@ -380,7 +389,8 @@ const sendWelcomeEmail = async (subscriber) => {
     const template = templates.welcome[subscriber.language] || templates.welcome.fr;
     const { subject, html } = template(subscriber.first_name, unsubscribeUrl);
 
-    await transporter.sendMail({
+    const transport = await getTransporter();
+    await transport.sendMail({
       from: `"${settings.sender_name || 'AfricaVet'}" <${settings.sender_email || process.env.SMTP_FROM || 'newsletter@africavet.com'}>`,
       replyTo: settings.reply_to || 'contact@africavet.com',
       to: subscriber.email,
@@ -489,7 +499,8 @@ const sendNewsletter = async (newsletter, subscriber) => {
       }
     }
 
-    await transporter.sendMail(mailOptions);
+    const transport = await getTransporter();
+    await transport.sendMail(mailOptions);
 
     return true;
   } catch (error) {

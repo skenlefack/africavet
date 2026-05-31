@@ -50,6 +50,11 @@ captures/
 *.map
 package-lock.json
 
+# Deploy secrets & artifacts
+deploy/.env.production
+deploy/AfricaVet-Server-Key
+deploy/images/
+
 # Old/legacy files
 CLAUDE_DEV_NOTES.md
 CLAUDE_SESSION_NOTES.md

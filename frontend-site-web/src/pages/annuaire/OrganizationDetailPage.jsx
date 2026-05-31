@@ -4,7 +4,7 @@ import FontAwesome from '../../component/uiStyle/FontAwesome';
 import LoadingSpinner from '../../component/shared/LoadingSpinner';
 import { annuaireApi } from '../../services/api';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api\/?$/, '');
 
 const OrganizationDetailPage = () => {
   const { id } = useParams();

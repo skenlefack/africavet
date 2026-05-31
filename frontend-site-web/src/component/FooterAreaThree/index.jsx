@@ -16,13 +16,13 @@ const twitts = [
   {
     title:
       "Cyber Monday Sale, Save 33% on Jannah theme during our year-end Sale, Purchase a new license for your next project",
-    linkText: "@newspark #technology https://dribbble.com/subash_chandra",
+    linkText: "@africavet #technology https://dribbble.com/subash_chandra",
     date: "March 26, 2020",
   },
   {
     title:
       "Cyber Monday Sale, Save 33% on Jannah theme during our year-end Sale, Purchase a new license for your next project",
-    linkText: "@newspark #technology https://dribbble.com/subash_chandra",
+    linkText: "@africavet #technology https://dribbble.com/subash_chandra",
     date: "March 26, 2020",
   },
 ];
@@ -41,13 +41,13 @@ const FooterAreaThree = () => {
                 <div className="space-10" />
               </div>
               <p>
-                <span>Newspark</span> vitae elementum ros. Pellentesquees Leo
+                <span>AfricaVet</span> vitae elementum ros. Pellentesquees Leo
                 sed mi ullamcorper tristique mauris varius. congue enim in arcu
                 maximus feugiat vitae ut quam finibus risus molestie viverra.
               </p>
             </div>
             <div className="footer_contact">
-              <h3 className="widget-title2">Newspark news services</h3>
+              <h3 className="widget-title2">AfricaVet news services</h3>
               <div className="single_fcontact">
                 <div className="fcicon">
                   <img src={phone_black} alt="phone_black" />
@@ -64,7 +64,7 @@ const FooterAreaThree = () => {
                 <div className="fcicon">
                   <img src={envelope_black} alt="envelope_black" />
                 </div>
-                <Link to="/">Contact Newspark news</Link>
+                <Link to="/">Contact AfricaVet news</Link>
               </div>
             </div>
             <div className="space-30" />
@@ -109,8 +109,8 @@ const FooterAreaThree = () => {
               </div>
               <div className="single_contact3">
                 <h6>Let's Chat</h6>
-                <a href="mailto:hello@newspark.com">hello@newspark.com</a>
-                <a href="mailto:adsales@newspark.com">adsales@newspark.com</a>
+                <a href="mailto:hello@africavet.com">hello@africavet.com</a>
+                <a href="mailto:adsales@africavet.com">adsales@africavet.com</a>
               </div>
               <div className="single_contact3">
                 <h6>Headquaters</h6>
@@ -145,7 +145,7 @@ const FooterAreaThree = () => {
               <div className="row">
                 <div className="col-lg-6">
                   <div className="apps_desc">
-                    <h3 className="apps_title">Newspark app download</h3>
+                    <h3 className="apps_title">AfricaVet app download</h3>
                     <div className="space-5" />
                     <p>Free sign & download, iOS & Android app</p>
                   </div>

@@ -184,12 +184,17 @@ router.get('/:idOrSlug', optionalAuth, async (req, res) => {
     );
     post.tags = tags;
 
-    // Get category IDs from post_categories table
-    const [postCategories] = await db.query(
-      'SELECT category_id FROM post_categories WHERE post_id = ?',
-      [post.id]
-    );
-    post.category_ids = postCategories.map(pc => pc.category_id);
+    // Get additional category IDs (many-to-many)
+    try {
+      const [postCategories] = await db.query(
+        'SELECT category_id FROM post_categories WHERE post_id = ?',
+        [post.id]
+      );
+      post.category_ids = postCategories.map(pc => pc.category_id);
+    } catch (e) {
+      // post_categories table may not exist yet
+      post.category_ids = post.category_id ? [post.category_id] : [];
+    }
 
     // Don't increment view count when editing (when accessed by ID)
     if (!isId) {

@@ -31,13 +31,14 @@ const QuizEditor = () => {
         status: 'draft'
     });
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         fetchAllQuestions();
         if (isEditing) {
             fetchQuiz();
             fetchQuizQuestions();
         }
-    }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [id]);
 
     const fetchQuiz = async () => {
         const res = await api.get(`/elearning/quizzes/${id}`, token);

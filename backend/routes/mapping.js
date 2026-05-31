@@ -224,47 +224,502 @@ const uploadDocumentFiles = multer({
 // OHWR-MAPPING API ROUTES
 // =====================================================
 
+// =====================================================
+// AFRICAN COUNTRIES REFERENCE DATA (54 sovereign states)
+// =====================================================
+const AFRICAN_COUNTRIES = [
+  { code2: 'DZ', code3: 'DZA', nom_fr: 'Algérie', nom_en: 'Algeria' },
+  { code2: 'AO', code3: 'AGO', nom_fr: 'Angola', nom_en: 'Angola' },
+  { code2: 'BJ', code3: 'BEN', nom_fr: 'Bénin', nom_en: 'Benin' },
+  { code2: 'BW', code3: 'BWA', nom_fr: 'Botswana', nom_en: 'Botswana' },
+  { code2: 'BF', code3: 'BFA', nom_fr: 'Burkina Faso', nom_en: 'Burkina Faso' },
+  { code2: 'BI', code3: 'BDI', nom_fr: 'Burundi', nom_en: 'Burundi' },
+  { code2: 'CV', code3: 'CPV', nom_fr: 'Cabo Verde', nom_en: 'Cabo Verde' },
+  { code2: 'CM', code3: 'CMR', nom_fr: 'Cameroun', nom_en: 'Cameroon' },
+  { code2: 'CF', code3: 'CAF', nom_fr: 'République centrafricaine', nom_en: 'Central African Republic' },
+  { code2: 'TD', code3: 'TCD', nom_fr: 'Tchad', nom_en: 'Chad' },
+  { code2: 'KM', code3: 'COM', nom_fr: 'Comores', nom_en: 'Comoros' },
+  { code2: 'CG', code3: 'COG', nom_fr: 'Congo', nom_en: 'Congo' },
+  { code2: 'CD', code3: 'COD', nom_fr: 'RD Congo', nom_en: 'DR Congo' },
+  { code2: 'CI', code3: 'CIV', nom_fr: "Côte d'Ivoire", nom_en: "Côte d'Ivoire" },
+  { code2: 'DJ', code3: 'DJI', nom_fr: 'Djibouti', nom_en: 'Djibouti' },
+  { code2: 'EG', code3: 'EGY', nom_fr: 'Égypte', nom_en: 'Egypt' },
+  { code2: 'GQ', code3: 'GNQ', nom_fr: 'Guinée équatoriale', nom_en: 'Equatorial Guinea' },
+  { code2: 'ER', code3: 'ERI', nom_fr: 'Érythrée', nom_en: 'Eritrea' },
+  { code2: 'SZ', code3: 'SWZ', nom_fr: 'Eswatini', nom_en: 'Eswatini' },
+  { code2: 'ET', code3: 'ETH', nom_fr: 'Éthiopie', nom_en: 'Ethiopia' },
+  { code2: 'GA', code3: 'GAB', nom_fr: 'Gabon', nom_en: 'Gabon' },
+  { code2: 'GM', code3: 'GMB', nom_fr: 'Gambie', nom_en: 'Gambia' },
+  { code2: 'GH', code3: 'GHA', nom_fr: 'Ghana', nom_en: 'Ghana' },
+  { code2: 'GN', code3: 'GIN', nom_fr: 'Guinée', nom_en: 'Guinea' },
+  { code2: 'GW', code3: 'GNB', nom_fr: 'Guinée-Bissau', nom_en: 'Guinea-Bissau' },
+  { code2: 'KE', code3: 'KEN', nom_fr: 'Kenya', nom_en: 'Kenya' },
+  { code2: 'LS', code3: 'LSO', nom_fr: 'Lesotho', nom_en: 'Lesotho' },
+  { code2: 'LR', code3: 'LBR', nom_fr: 'Libéria', nom_en: 'Liberia' },
+  { code2: 'LY', code3: 'LBY', nom_fr: 'Libye', nom_en: 'Libya' },
+  { code2: 'MG', code3: 'MDG', nom_fr: 'Madagascar', nom_en: 'Madagascar' },
+  { code2: 'MW', code3: 'MWI', nom_fr: 'Malawi', nom_en: 'Malawi' },
+  { code2: 'ML', code3: 'MLI', nom_fr: 'Mali', nom_en: 'Mali' },
+  { code2: 'MR', code3: 'MRT', nom_fr: 'Mauritanie', nom_en: 'Mauritania' },
+  { code2: 'MU', code3: 'MUS', nom_fr: 'Maurice', nom_en: 'Mauritius' },
+  { code2: 'MA', code3: 'MAR', nom_fr: 'Maroc', nom_en: 'Morocco' },
+  { code2: 'MZ', code3: 'MOZ', nom_fr: 'Mozambique', nom_en: 'Mozambique' },
+  { code2: 'NA', code3: 'NAM', nom_fr: 'Namibie', nom_en: 'Namibia' },
+  { code2: 'NE', code3: 'NER', nom_fr: 'Niger', nom_en: 'Niger' },
+  { code2: 'NG', code3: 'NGA', nom_fr: 'Nigéria', nom_en: 'Nigeria' },
+  { code2: 'RW', code3: 'RWA', nom_fr: 'Rwanda', nom_en: 'Rwanda' },
+  { code2: 'ST', code3: 'STP', nom_fr: 'São Tomé-et-Príncipe', nom_en: 'São Tomé and Príncipe' },
+  { code2: 'SN', code3: 'SEN', nom_fr: 'Sénégal', nom_en: 'Senegal' },
+  { code2: 'SC', code3: 'SYC', nom_fr: 'Seychelles', nom_en: 'Seychelles' },
+  { code2: 'SL', code3: 'SLE', nom_fr: 'Sierra Leone', nom_en: 'Sierra Leone' },
+  { code2: 'SO', code3: 'SOM', nom_fr: 'Somalie', nom_en: 'Somalia' },
+  { code2: 'ZA', code3: 'ZAF', nom_fr: 'Afrique du Sud', nom_en: 'South Africa' },
+  { code2: 'SS', code3: 'SSD', nom_fr: 'Soudan du Sud', nom_en: 'South Sudan' },
+  { code2: 'SD', code3: 'SDN', nom_fr: 'Soudan', nom_en: 'Sudan' },
+  { code2: 'TZ', code3: 'TZA', nom_fr: 'Tanzanie', nom_en: 'Tanzania' },
+  { code2: 'TG', code3: 'TGO', nom_fr: 'Togo', nom_en: 'Togo' },
+  { code2: 'TN', code3: 'TUN', nom_fr: 'Tunisie', nom_en: 'Tunisia' },
+  { code2: 'UG', code3: 'UGA', nom_fr: 'Ouganda', nom_en: 'Uganda' },
+  { code2: 'ZM', code3: 'ZMB', nom_fr: 'Zambie', nom_en: 'Zambia' },
+  { code2: 'ZW', code3: 'ZWE', nom_fr: 'Zimbabwe', nom_en: 'Zimbabwe' },
+];
+
+// =====================================================
+// UNIFIED SEARCH / LIST ENDPOINT
+// =====================================================
+
+// GET / - Unified search across experts, organizations, etc.
+// Supports: type, search/q, country, country_code, city, species, services,
+//           status, emergency, speciality, organization_type, sort, page, limit
+router.get('/', auth, async (req, res) => {
+  try {
+    const {
+      type, search, q, country, country_code, city,
+      species, services, status, emergency,
+      speciality, specialization, organization_type,
+      sort = 'name', page = 1, limit = 20
+    } = req.query;
+
+    const searchTerm = search || q || '';
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const requestedType = type || '';
+
+    let allResults = [];
+    let totalCount = 0;
+
+    // --- EXPERTS ---
+    if (!requestedType || requestedType === 'expert' || requestedType === 'all') {
+      let expertQuery = `
+        SELECT h.id, 'expert' as type, CONCAT(h.first_name, ' ', h.last_name) as name,
+               h.title, h.category, h.specialization, h.email, h.phone,
+               h.photo, h.biography as bio, h.city, h.country, h.country_code,
+               h.region, h.years_experience, h.expertise_summary,
+               h.show_email, h.show_phone, h.is_verified,
+               h.expertise_domains as skills, h.submission_status,
+               h.created_at, h.updated_at,
+               o.name as organization_name, o.acronym as organization_acronym
+        FROM human_resources h
+        LEFT JOIN organizations o ON h.organization_id = o.id
+        WHERE h.is_active = 1
+      `;
+      const expertParams = [];
+
+      if (searchTerm) {
+        expertQuery += ` AND (h.first_name LIKE ? OR h.last_name LIKE ? OR h.title LIKE ?
+                          OR h.biography LIKE ? OR h.expertise_summary LIKE ? OR h.city LIKE ?)`;
+        const st = `%${searchTerm}%`;
+        expertParams.push(st, st, st, st, st, st);
+      }
+      if (country) {
+        expertQuery += ' AND (h.country = ? OR h.region = ?)';
+        expertParams.push(country, country);
+      }
+      if (country_code) {
+        expertQuery += ' AND h.country_code = ?';
+        expertParams.push(country_code);
+      }
+      if (city) {
+        expertQuery += ' AND h.city LIKE ?';
+        expertParams.push(`%${city}%`);
+      }
+      if (status) {
+        expertQuery += ' AND h.submission_status = ?';
+        expertParams.push(status);
+      }
+      if (speciality || specialization) {
+        const spec = speciality || specialization;
+        expertQuery += ' AND (h.category LIKE ? OR h.specialization LIKE ? OR h.title LIKE ?)';
+        expertParams.push(`%${spec}%`, `%${spec}%`, `%${spec}%`);
+      }
+
+      // Count
+      const expertCountQuery = expertQuery.replace(/SELECT[\s\S]*?FROM human_resources/, 'SELECT COUNT(*) as total FROM human_resources');
+      const [[{ total: expertTotal }]] = await db.query(expertCountQuery, expertParams);
+
+      // Only fetch if we're doing a unified query or specifically asking for experts
+      if (!requestedType || requestedType === 'all') {
+        totalCount += expertTotal;
+      } else {
+        totalCount = expertTotal;
+      }
+
+      // Sort
+      if (sort === 'name') expertQuery += ' ORDER BY h.last_name, h.first_name';
+      else if (sort === 'date' || sort === 'date_creation') expertQuery += ' ORDER BY h.created_at DESC';
+      else if (sort === 'country' || sort === 'pays') expertQuery += ' ORDER BY h.country, h.last_name';
+      else expertQuery += ' ORDER BY h.last_name, h.first_name';
+
+      if (requestedType === 'expert') {
+        expertQuery += ' LIMIT ? OFFSET ?';
+        expertParams.push(parseInt(limit), offset);
+      }
+
+      const [experts] = await db.query(expertQuery, expertParams);
+      allResults = allResults.concat(experts);
+    }
+
+    // --- ORGANIZATIONS ---
+    if (!requestedType || requestedType === 'organization' || requestedType === 'all') {
+      let orgQuery = `
+        SELECT o.id, 'organization' as type, o.name, o.acronym,
+               o.type as organization_type, o.description, o.mission,
+               o.logo, o.website, o.city, o.country, o.country_code,
+               o.region, o.address, o.contact_email as email,
+               o.contact_phone as phone, o.whatsapp,
+               o.services, o.species_treated as species,
+               o.emergency_available, o.available_24_7,
+               o.opening_hours as hours, o.languages_spoken as languages,
+               o.license_number, o.coverage_area,
+               o.founded_year, o.staff_count, o.veterinarians_count,
+               o.rating, o.reviews_count, o.show_email, o.show_phone,
+               o.submission_status, o.specialties,
+               o.created_at, o.updated_at
+        FROM organizations o
+        WHERE o.is_active = 1
+      `;
+      const orgParams = [];
+
+      if (searchTerm) {
+        orgQuery += ` AND (o.name LIKE ? OR o.acronym LIKE ? OR o.description LIKE ? OR o.city LIKE ?)`;
+        const st = `%${searchTerm}%`;
+        orgParams.push(st, st, st, st);
+      }
+      if (country) {
+        orgQuery += ' AND (o.country = ? OR o.region = ?)';
+        orgParams.push(country, country);
+      }
+      if (country_code) {
+        orgQuery += ' AND o.country_code = ?';
+        orgParams.push(country_code);
+      }
+      if (city) {
+        orgQuery += ' AND o.city LIKE ?';
+        orgParams.push(`%${city}%`);
+      }
+      if (status) {
+        orgQuery += ' AND o.submission_status = ?';
+        orgParams.push(status);
+      }
+      if (emergency === 'true' || emergency === '1') {
+        orgQuery += ' AND o.emergency_available = 1';
+      }
+      if (organization_type) {
+        orgQuery += ' AND o.type = ?';
+        orgParams.push(organization_type);
+      }
+      if (species) {
+        const speciesArr = Array.isArray(species) ? species : species.split(',');
+        const speciesClauses = speciesArr.map(() => 'JSON_CONTAINS(o.species_treated, ?)');
+        orgQuery += ` AND (${speciesClauses.join(' OR ')})`;
+        speciesArr.forEach(s => orgParams.push(JSON.stringify(s.trim())));
+      }
+      if (services) {
+        const servicesArr = Array.isArray(services) ? services : services.split(',');
+        const servicesClauses = servicesArr.map(() => 'JSON_CONTAINS(o.services, ?)');
+        orgQuery += ` AND (${servicesClauses.join(' OR ')})`;
+        servicesArr.forEach(s => orgParams.push(JSON.stringify(s.trim())));
+      }
+
+      // Count
+      const orgCountQuery = orgQuery.replace(/SELECT[\s\S]*?FROM organizations/, 'SELECT COUNT(*) as total FROM organizations');
+      const [[{ total: orgTotal }]] = await db.query(orgCountQuery, orgParams);
+
+      if (!requestedType || requestedType === 'all') {
+        totalCount += orgTotal;
+      } else {
+        totalCount = orgTotal;
+      }
+
+      // Sort
+      if (sort === 'name') orgQuery += ' ORDER BY o.name';
+      else if (sort === 'date' || sort === 'date_creation') orgQuery += ' ORDER BY o.created_at DESC';
+      else if (sort === 'country' || sort === 'pays') orgQuery += ' ORDER BY o.country, o.name';
+      else orgQuery += ' ORDER BY o.name';
+
+      if (requestedType === 'organization') {
+        orgQuery += ' LIMIT ? OFFSET ?';
+        orgParams.push(parseInt(limit), offset);
+      }
+
+      const [orgs] = await db.query(orgQuery, orgParams);
+      allResults = allResults.concat(orgs);
+    }
+
+    // For unified queries, sort combined results and paginate in JS
+    if (!requestedType || requestedType === 'all') {
+      if (sort === 'name') {
+        allResults.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'fr'));
+      } else if (sort === 'date' || sort === 'date_creation') {
+        allResults.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      } else if (sort === 'country' || sort === 'pays') {
+        allResults.sort((a, b) => (a.country || '').localeCompare(b.country || '', 'fr') || (a.name || '').localeCompare(b.name || '', 'fr'));
+      }
+      allResults = allResults.slice(offset, offset + parseInt(limit));
+    }
+
+    // Parse JSON fields for safe consumption
+    const data = allResults.map(item => {
+      const parsed = { ...item };
+      ['skills', 'services', 'species', 'hours', 'languages', 'specialties'].forEach(field => {
+        if (parsed[field] && typeof parsed[field] === 'string') {
+          try { parsed[field] = JSON.parse(parsed[field]); } catch (e) { /* keep as string */ }
+        }
+      });
+      return parsed;
+    });
+
+    res.json({
+      success: true,
+      data,
+      total: totalCount,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: totalCount,
+        pages: Math.ceil(totalCount / parseInt(limit))
+      }
+    });
+  } catch (error) {
+    console.error('Unified search error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// ==================== COUNTRIES ====================
+
+// GET /countries - African countries with organization/expert counts
+router.get('/countries', auth, async (req, res) => {
+  try {
+    const { has_organizations, has_experts, sort = 'name' } = req.query;
+
+    // Get org counts by country
+    const [orgCounts] = await db.query(`
+      SELECT country, country_code, COUNT(*) as organization_count
+      FROM organizations
+      WHERE is_active = 1 AND country IS NOT NULL AND country != ''
+      GROUP BY country, country_code
+    `);
+
+    // Get expert counts by country
+    const [expertCounts] = await db.query(`
+      SELECT country, country_code, COUNT(*) as expert_count
+      FROM human_resources
+      WHERE is_active = 1 AND country IS NOT NULL AND country != ''
+      GROUP BY country, country_code
+    `);
+
+    // Build lookup maps
+    const orgMap = {};
+    orgCounts.forEach(r => {
+      const key = r.country_code || r.country;
+      if (key) orgMap[key] = (orgMap[key] || 0) + r.organization_count;
+    });
+
+    const expertMap = {};
+    expertCounts.forEach(r => {
+      const key = r.country_code || r.country;
+      if (key) expertMap[key] = (expertMap[key] || 0) + r.expert_count;
+    });
+
+    // Build result from reference list
+    let countries = AFRICAN_COUNTRIES.map(c => ({
+      code2: c.code2,
+      code3: c.code3,
+      nom_fr: c.nom_fr,
+      nom_en: c.nom_en,
+      organization_count: orgMap[c.code3] || orgMap[c.code2] || orgMap[c.nom_fr] || orgMap[c.nom_en] || 0,
+      expert_count: expertMap[c.code3] || expertMap[c.code2] || expertMap[c.nom_fr] || expertMap[c.nom_en] || 0,
+    }));
+
+    // Compute total
+    countries.forEach(c => { c.total_count = c.organization_count + c.expert_count; });
+
+    // Apply filters
+    if (has_organizations === 'true') {
+      countries = countries.filter(c => c.organization_count > 0);
+    }
+    if (has_experts === 'true') {
+      countries = countries.filter(c => c.expert_count > 0);
+    }
+
+    // Sort
+    if (sort === 'count' || sort === 'entries') {
+      countries.sort((a, b) => b.total_count - a.total_count);
+    } else if (sort === 'organizations') {
+      countries.sort((a, b) => b.organization_count - a.organization_count);
+    } else if (sort === 'experts') {
+      countries.sort((a, b) => b.expert_count - a.expert_count);
+    } else {
+      countries.sort((a, b) => a.nom_fr.localeCompare(b.nom_fr, 'fr'));
+    }
+
+    res.json({ success: true, data: countries });
+  } catch (error) {
+    console.error('Get countries error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // ==================== STATS & DASHBOARD ====================
 
-// GET mapping statistics
-router.get('/stats', async (req, res) => {
+// GET /stats - Enhanced mapping statistics
+router.get('/stats', auth, async (req, res) => {
   try {
-    const [[humanStats]] = await db.query('SELECT COUNT(*) as total FROM human_resources WHERE is_active = 1');
-    const [[materialStats]] = await db.query('SELECT COUNT(*) as total FROM material_resources WHERE is_active = 1');
-    const [[orgStats]] = await db.query('SELECT COUNT(*) as total FROM organizations WHERE is_active = 1');
-    const [[docStats]] = await db.query('SELECT COUNT(*) as total FROM document_resources WHERE is_active = 1');
+    // --- Totals by type ---
+    const [[orgTotal]] = await db.query('SELECT COUNT(*) as total FROM organizations WHERE is_active = 1');
+    const [[expertTotal]] = await db.query('SELECT COUNT(*) as total FROM human_resources WHERE is_active = 1');
+    const [[materialTotal]] = await db.query('SELECT COUNT(*) as total FROM material_resources WHERE is_active = 1');
+    const [[docTotal]] = await db.query('SELECT COUNT(*) as total FROM document_resources WHERE is_active = 1');
 
-    // Stats by category/type
-    const [humanByCategory] = await db.query('SELECT category, COUNT(*) as count FROM human_resources WHERE is_active = 1 GROUP BY category');
-    const [materialByType] = await db.query('SELECT type, COUNT(*) as count FROM material_resources WHERE is_active = 1 GROUP BY type');
-    const [orgByType] = await db.query('SELECT type, COUNT(*) as count FROM organizations WHERE is_active = 1 GROUP BY type');
-    const [docByType] = await db.query('SELECT type, COUNT(*) as count FROM document_resources WHERE is_active = 1 GROUP BY type');
+    // --- Verified/approved counts ---
+    const [[verifiedOrgs]] = await db.query("SELECT COUNT(*) as total FROM organizations WHERE is_active = 1 AND submission_status = 'approved'");
+    const [[verifiedExperts]] = await db.query("SELECT COUNT(*) as total FROM human_resources WHERE is_active = 1 AND submission_status = 'approved'");
 
-    // Stats by region
-    const [humanByRegion] = await db.query('SELECT region, COUNT(*) as count FROM human_resources WHERE is_active = 1 AND region IS NOT NULL GROUP BY region');
-    const [materialByRegion] = await db.query('SELECT region, COUNT(*) as count FROM material_resources WHERE is_active = 1 AND region IS NOT NULL GROUP BY region');
+    // --- Distinct countries ---
+    const [[countryCount]] = await db.query(`
+      SELECT COUNT(DISTINCT country) as total FROM (
+        SELECT country FROM organizations WHERE is_active = 1 AND country IS NOT NULL AND country != ''
+        UNION
+        SELECT country FROM human_resources WHERE is_active = 1 AND country IS NOT NULL AND country != ''
+      ) c
+    `);
+
+    // --- Pending submissions ---
+    const [[pendingOrgs]] = await db.query("SELECT COUNT(*) as total FROM organizations WHERE submission_status = 'pending'");
+    const [[pendingExperts]] = await db.query("SELECT COUNT(*) as total FROM human_resources WHERE submission_status = 'pending'");
+    const [[pendingMaterials]] = await db.query("SELECT COUNT(*) as total FROM material_resources WHERE submission_status = 'pending'");
+    const [[pendingDocs]] = await db.query("SELECT COUNT(*) as total FROM document_resources WHERE submission_status = 'pending'");
+
+    // --- By type (organizations) ---
+    const [orgByType] = await db.query('SELECT type, COUNT(*) as count FROM organizations WHERE is_active = 1 GROUP BY type ORDER BY count DESC');
+
+    // --- By type (experts) ---
+    const [expertByCategory] = await db.query('SELECT category, COUNT(*) as count FROM human_resources WHERE is_active = 1 GROUP BY category ORDER BY count DESC');
+
+    // --- Top 10 countries ---
+    const [byCountry] = await db.query(`
+      SELECT country, SUM(cnt) as count FROM (
+        SELECT country, COUNT(*) as cnt FROM organizations WHERE is_active = 1 AND country IS NOT NULL AND country != '' GROUP BY country
+        UNION ALL
+        SELECT country, COUNT(*) as cnt FROM human_resources WHERE is_active = 1 AND country IS NOT NULL AND country != '' GROUP BY country
+      ) combined
+      GROUP BY country ORDER BY count DESC LIMIT 10
+    `);
+
+    // --- By status (all types combined) ---
+    const [orgByStatus] = await db.query("SELECT submission_status as status, COUNT(*) as count FROM organizations GROUP BY submission_status");
+    const [expertByStatus] = await db.query("SELECT submission_status as status, COUNT(*) as count FROM human_resources GROUP BY submission_status");
+    const statusMap = {};
+    [...orgByStatus, ...expertByStatus].forEach(r => {
+      statusMap[r.status || 'none'] = (statusMap[r.status || 'none'] || 0) + r.count;
+    });
+
+    // --- New registrations this month ---
+    const [[newOrgsMonth]] = await db.query("SELECT COUNT(*) as total FROM organizations WHERE created_at >= DATE_FORMAT(NOW(), '%Y-%m-01')");
+    const [[newExpertsMonth]] = await db.query("SELECT COUNT(*) as total FROM human_resources WHERE created_at >= DATE_FORMAT(NOW(), '%Y-%m-01')");
+
+    // --- By specialty/service (top 10 org types) ---
+    const [bySpecialty] = await db.query(`
+      SELECT type as specialty, COUNT(*) as count
+      FROM organizations WHERE is_active = 1 AND type IS NOT NULL
+      GROUP BY type ORDER BY count DESC LIMIT 10
+    `);
+
+    // --- Monthly evolution (last 12 months) ---
+    const [monthlyOrgs] = await db.query(`
+      SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count
+      FROM organizations
+      WHERE created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+      GROUP BY month ORDER BY month
+    `);
+    const [monthlyExperts] = await db.query(`
+      SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count
+      FROM human_resources
+      WHERE created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+      GROUP BY month ORDER BY month
+    `);
+
+    // Merge monthly data
+    const monthlyMap = {};
+    monthlyOrgs.forEach(r => {
+      if (!monthlyMap[r.month]) monthlyMap[r.month] = { month: r.month, organizations: 0, experts: 0 };
+      monthlyMap[r.month].organizations = r.count;
+    });
+    monthlyExperts.forEach(r => {
+      if (!monthlyMap[r.month]) monthlyMap[r.month] = { month: r.month, organizations: 0, experts: 0 };
+      monthlyMap[r.month].experts = r.count;
+    });
+    const monthlyEvolution = Object.values(monthlyMap).sort((a, b) => a.month.localeCompare(b.month));
 
     res.json({
       success: true,
       data: {
-        human_resources: {
-          total: humanStats.total,
-          by_category: humanByCategory.reduce((acc, r) => ({ ...acc, [r.category]: r.count }), {}),
-          by_region: humanByRegion.reduce((acc, r) => ({ ...acc, [r.region]: r.count }), {})
+        // Totals
+        totalOrganizations: orgTotal.total,
+        totalExperts: expertTotal.total,
+        totalMaterials: materialTotal.total,
+        totalDocuments: docTotal.total,
+        totalEntries: orgTotal.total + expertTotal.total + materialTotal.total + docTotal.total,
+
+        // Verified
+        verifiedCount: verifiedOrgs.total + verifiedExperts.total,
+        verifiedOrganizations: verifiedOrgs.total,
+        verifiedExperts: verifiedExperts.total,
+
+        // Countries
+        totalCountries: countryCount.total,
+
+        // Pending
+        pendingSubmissions: pendingOrgs.total + pendingExperts.total + pendingMaterials.total + pendingDocs.total,
+        pendingByType: {
+          organizations: pendingOrgs.total,
+          experts: pendingExperts.total,
+          materials: pendingMaterials.total,
+          documents: pendingDocs.total,
         },
-        material_resources: {
-          total: materialStats.total,
-          by_type: materialByType.reduce((acc, r) => ({ ...acc, [r.type]: r.count }), {}),
-          by_region: materialByRegion.reduce((acc, r) => ({ ...acc, [r.region]: r.count }), {})
+
+        // Breakdowns
+        byType: orgByType,
+        byExpertCategory: expertByCategory,
+        byCountry,
+        byStatus: statusMap,
+        bySpecialty,
+
+        // This month
+        newThisMonth: {
+          organizations: newOrgsMonth.total,
+          experts: newExpertsMonth.total,
+          total: newOrgsMonth.total + newExpertsMonth.total,
         },
-        organizations: {
-          total: orgStats.total,
-          by_type: orgByType.reduce((acc, r) => ({ ...acc, [r.type]: r.count }), {})
-        },
-        documents: {
-          total: docStats.total,
-          by_type: docByType.reduce((acc, r) => ({ ...acc, [r.type]: r.count }), {})
-        }
+
+        // Evolution
+        monthlyEvolution,
+
+        // Legacy format (backward compat)
+        human_resources: { total: expertTotal.total },
+        material_resources: { total: materialTotal.total },
+        organizations: { total: orgTotal.total, by_type: orgByType.reduce((acc, r) => ({ ...acc, [r.type]: r.count }), {}) },
+        documents: { total: docTotal.total },
       }
     });
   } catch (error) {
@@ -274,7 +729,7 @@ router.get('/stats', async (req, res) => {
 });
 
 // GET all map markers (for interactive map)
-router.get('/markers', async (req, res) => {
+router.get('/markers', auth, async (req, res) => {
   try {
     const { types } = req.query; // human,material,organization
     const typeArray = types ? types.split(',') : ['human', 'material', 'organization'];
@@ -346,7 +801,7 @@ router.get('/markers', async (req, res) => {
 
 // ==================== REGIONS ====================
 
-router.get('/regions', async (req, res) => {
+router.get('/regions', auth, async (req, res) => {
   try {
     const [regions] = await db.query('SELECT * FROM regions ORDER BY name');
     res.json({ success: true, data: regions });
@@ -358,7 +813,7 @@ router.get('/regions', async (req, res) => {
 
 // ==================== EXPERTISE DOMAINS ====================
 
-router.get('/expertise-domains', async (req, res) => {
+router.get('/expertise-domains', auth, async (req, res) => {
   try {
     const { category, search } = req.query;
     let query = 'SELECT * FROM expertise_domains WHERE is_active = 1';
@@ -467,7 +922,7 @@ router.delete('/expertise-domains/:id', auth, async (req, res) => {
 });
 
 // Get expert's expertise domains
-router.get('/experts/:id/expertise', async (req, res) => {
+router.get('/experts/:id/expertise', auth, async (req, res) => {
   try {
     const [expertises] = await db.query(`
       SELECT ed.*, ee.level, ee.years_in_domain
@@ -519,7 +974,7 @@ router.put('/experts/:id/expertise', auth, async (req, res) => {
 
 // ==================== DOCUMENT THEMES ====================
 
-router.get('/document-themes', async (req, res) => {
+router.get('/document-themes', auth, async (req, res) => {
   try {
     const [themes] = await db.query('SELECT * FROM document_themes WHERE is_active = 1 ORDER BY display_order, name');
     res.json({ success: true, data: themes });
@@ -550,7 +1005,7 @@ router.post('/document-themes', auth, authorize('admin'), async (req, res) => {
 // ==================== HUMAN RESOURCES (PILIER 1) ====================
 
 // GET all experts
-router.get('/experts', async (req, res) => {
+router.get('/experts', auth, async (req, res) => {
   try {
     const { page = 1, limit = 20, category, region, organization_id, search, is_verified } = req.query;
     const offset = (page - 1) * limit;
@@ -612,7 +1067,7 @@ router.get('/experts', async (req, res) => {
 });
 
 // GET single expert
-router.get('/experts/:id', async (req, res) => {
+router.get('/experts/:id', auth, async (req, res) => {
   try {
     const [experts] = await db.query(`
       SELECT h.*, o.name as organization_name, o.acronym as organization_acronym
@@ -801,7 +1256,7 @@ router.delete('/experts/:id', auth, authorize('admin'), async (req, res) => {
 // ==================== ORGANIZATIONS (PILIER 3) ====================
 
 // GET all organizations
-router.get('/organizations', async (req, res) => {
+router.get('/organizations', auth, async (req, res) => {
   try {
     const { page = 1, limit = 20, type, region, search, parent_id } = req.query;
     const offset = (page - 1) * limit;
@@ -854,7 +1309,7 @@ router.get('/organizations', async (req, res) => {
 });
 
 // GET single organization
-router.get('/organizations/:id', async (req, res) => {
+router.get('/organizations/:id', auth, async (req, res) => {
   try {
     const [orgs] = await db.query('SELECT * FROM organizations WHERE id = ?', [req.params.id]);
 
@@ -972,7 +1427,7 @@ router.delete('/organizations/:id', auth, authorize('admin'), async (req, res) =
 // ==================== MATERIAL RESOURCES (PILIER 2) ====================
 
 // GET all materials
-router.get('/materials', async (req, res) => {
+router.get('/materials', auth, async (req, res) => {
   try {
     const { page = 1, limit = 20, type, status, region, organization_id, search } = req.query;
     const offset = (page - 1) * limit;
@@ -1035,7 +1490,7 @@ router.get('/materials', async (req, res) => {
 });
 
 // GET single material
-router.get('/materials/:id', async (req, res) => {
+router.get('/materials/:id', auth, async (req, res) => {
   try {
     const [materials] = await db.query(`
       SELECT m.*, o.name as organization_name, o.acronym as organization_acronym,
@@ -1144,7 +1599,7 @@ router.delete('/materials/:id', auth, authorize('admin'), async (req, res) => {
 // ==================== DOCUMENT RESOURCES (PILIER 4) ====================
 
 // GET all documents
-router.get('/documents', async (req, res) => {
+router.get('/documents', auth, async (req, res) => {
   try {
     const { page = 1, limit = 20, type, theme, language, year, organization_id, access_level, search, is_featured } = req.query;
     const offset = (page - 1) * limit;
@@ -1214,7 +1669,7 @@ router.get('/documents', async (req, res) => {
 });
 
 // GET featured documents
-router.get('/documents/featured', async (req, res) => {
+router.get('/documents/featured', auth, async (req, res) => {
   try {
     const { limit = 6 } = req.query;
     const [documents] = await db.query(`
@@ -1234,7 +1689,7 @@ router.get('/documents/featured', async (req, res) => {
 });
 
 // GET recent documents
-router.get('/documents/recent', async (req, res) => {
+router.get('/documents/recent', auth, async (req, res) => {
   try {
     const { limit = 10 } = req.query;
     const [documents] = await db.query(`
@@ -1254,7 +1709,7 @@ router.get('/documents/recent', async (req, res) => {
 });
 
 // GET single document (by id or slug)
-router.get('/documents/:idOrSlug', async (req, res) => {
+router.get('/documents/:idOrSlug', auth, async (req, res) => {
   try {
     const { idOrSlug } = req.params;
     const isNumeric = /^\d+$/.test(idOrSlug);
@@ -1551,7 +2006,7 @@ createConfigRoutes('ohwr_document_types', 'document-types');
 createConfigRoutes('ohwr_expert_categories', 'expert-categories');
 
 // GET all config types at once (for forms)
-router.get('/config/all', async (req, res) => {
+router.get('/config/all', auth, async (req, res) => {
   try {
     const [materialTypes] = await db.query('SELECT * FROM ohwr_material_types WHERE is_active = 1 ORDER BY display_order, name');
     const [organizationTypes] = await db.query('SELECT * FROM ohwr_organization_types WHERE is_active = 1 ORDER BY display_order, name');
@@ -1961,9 +2416,472 @@ router.post('/submit/expert', auth, (req, res) => {
   });
 });
 
-// ==================== ADMIN VALIDATION ====================
+// ==================== ADMIN ENDPOINTS ====================
 
-// GET pending submissions (admin)
+const ADMIN_TABLE_MAP = {
+  expert: 'human_resources',
+  organization: 'organizations',
+  material: 'material_resources',
+  document: 'document_resources',
+};
+
+// GET /admin/pending - List pending entries with pagination
+router.get('/admin/pending', auth, authorize('admin'), async (req, res) => {
+  try {
+    const { type, page = 1, limit = 20 } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    let results = [];
+    let totalCount = 0;
+
+    // Query pending experts
+    if (!type || type === 'expert') {
+      const [[{ total: eTotal }]] = await db.query("SELECT COUNT(*) as total FROM human_resources WHERE submission_status = 'pending'");
+      const [experts] = await db.query(`
+        SELECT h.*, 'expert' as resource_type, CONCAT(h.first_name, ' ', h.last_name) as display_name,
+               u.username as submitter_username, u.email as submitter_email
+        FROM human_resources h LEFT JOIN users u ON h.submitted_by = u.id
+        WHERE h.submission_status = 'pending' ORDER BY h.submitted_at ASC
+      `);
+      results = results.concat(experts);
+      totalCount += eTotal;
+    }
+
+    // Query pending organizations
+    if (!type || type === 'organization') {
+      const [[{ total: oTotal }]] = await db.query("SELECT COUNT(*) as total FROM organizations WHERE submission_status = 'pending'");
+      const [orgs] = await db.query(`
+        SELECT o.*, 'organization' as resource_type, o.name as display_name,
+               u.username as submitter_username, u.email as submitter_email
+        FROM organizations o LEFT JOIN users u ON o.submitted_by = u.id
+        WHERE o.submission_status = 'pending' ORDER BY o.submitted_at ASC
+      `);
+      results = results.concat(orgs);
+      totalCount += oTotal;
+    }
+
+    // Query pending materials
+    if (!type || type === 'material') {
+      const [[{ total: mTotal }]] = await db.query("SELECT COUNT(*) as total FROM material_resources WHERE submission_status = 'pending'");
+      const [materials] = await db.query(`
+        SELECT m.*, 'material' as resource_type, m.name as display_name,
+               u.username as submitter_username, u.email as submitter_email
+        FROM material_resources m LEFT JOIN users u ON m.submitted_by = u.id
+        WHERE m.submission_status = 'pending' ORDER BY m.submitted_at ASC
+      `);
+      results = results.concat(materials);
+      totalCount += mTotal;
+    }
+
+    // Query pending documents
+    if (!type || type === 'document') {
+      const [[{ total: dTotal }]] = await db.query("SELECT COUNT(*) as total FROM document_resources WHERE submission_status = 'pending'");
+      const [docs] = await db.query(`
+        SELECT d.*, 'document' as resource_type, d.title as display_name,
+               u.username as submitter_username, u.email as submitter_email
+        FROM document_resources d LEFT JOIN users u ON d.submitted_by = u.id
+        WHERE d.submission_status = 'pending' ORDER BY d.submitted_at ASC
+      `);
+      results = results.concat(docs);
+      totalCount += dTotal;
+    }
+
+    // Sort by submission date and paginate
+    results.sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at));
+    const paginatedResults = results.slice(offset, offset + parseInt(limit));
+
+    res.json({
+      success: true,
+      data: paginatedResults,
+      totalPending: totalCount,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: totalCount,
+        pages: Math.ceil(totalCount / parseInt(limit))
+      }
+    });
+  } catch (error) {
+    console.error('Get pending entries error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// GET /admin/pending/count - Count pending entries (for sidebar badge)
+router.get('/admin/pending/count', auth, async (req, res) => {
+  try {
+    const [[{ c1 }]] = await db.query("SELECT COUNT(*) as c1 FROM organizations WHERE submission_status = 'pending'");
+    const [[{ c2 }]] = await db.query("SELECT COUNT(*) as c2 FROM human_resources WHERE submission_status = 'pending'");
+    const [[{ c3 }]] = await db.query("SELECT COUNT(*) as c3 FROM material_resources WHERE submission_status = 'pending'");
+    const [[{ c4 }]] = await db.query("SELECT COUNT(*) as c4 FROM document_resources WHERE submission_status = 'pending'");
+
+    res.json({
+      success: true,
+      count: c1 + c2 + c3 + c4,
+      byType: { organizations: c1, experts: c2, materials: c3, documents: c4 }
+    });
+  } catch (error) {
+    console.error('Get pending count error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// GET /admin/:id - Full detail of any entry for admin
+router.get('/admin/:id', auth, authorize('admin'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { type } = req.query; // expert, organization, material, document
+
+    if (!type || !ADMIN_TABLE_MAP[type]) {
+      return res.status(400).json({ success: false, message: 'Query param "type" required: expert|organization|material|document' });
+    }
+
+    const table = ADMIN_TABLE_MAP[type];
+    const [rows] = await db.query(`SELECT * FROM ${table} WHERE id = ?`, [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Entry not found' });
+    }
+
+    const entry = rows[0];
+
+    // Enrich based on type
+    if (type === 'expert') {
+      const [expertises] = await db.query(`
+        SELECT ed.*, ee.level, ee.years_in_domain
+        FROM expertise_domains ed
+        INNER JOIN expert_expertise ee ON ed.id = ee.expertise_domain_id
+        WHERE ee.expert_id = ?
+      `, [id]);
+      entry.expertises = expertises;
+
+      if (entry.organization_id) {
+        const [orgs] = await db.query('SELECT id, name, acronym FROM organizations WHERE id = ?', [entry.organization_id]);
+        entry.organization = orgs[0] || null;
+      }
+    }
+
+    if (type === 'organization') {
+      const [[{ expertCount }]] = await db.query(
+        'SELECT COUNT(*) as expertCount FROM human_resources WHERE organization_id = ? AND is_active = 1', [id]
+      );
+      entry.expert_count = expertCount;
+
+      if (entry.parent_organization_id) {
+        const [parents] = await db.query('SELECT id, name, acronym FROM organizations WHERE id = ?', [entry.parent_organization_id]);
+        entry.parent = parents[0] || null;
+      }
+
+      const [children] = await db.query('SELECT id, name, acronym, type FROM organizations WHERE parent_organization_id = ?', [id]);
+      entry.children = children;
+    }
+
+    // Get submitter info
+    if (entry.submitted_by) {
+      const [users] = await db.query('SELECT id, username, email FROM users WHERE id = ?', [entry.submitted_by]);
+      entry.submitter = users[0] || null;
+    }
+
+    // Get validator info
+    if (entry.validated_by) {
+      const [users] = await db.query('SELECT id, username, email FROM users WHERE id = ?', [entry.validated_by]);
+      entry.validator = users[0] || null;
+    }
+
+    res.json({ success: true, data: entry });
+  } catch (error) {
+    console.error('Admin get entry error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// PUT /admin/:id - Update any entry (admin)
+router.put('/admin/:id', auth, authorize('admin'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { type, ...fields } = req.body;
+
+    if (!type || !ADMIN_TABLE_MAP[type]) {
+      return res.status(400).json({ success: false, message: 'Field "type" required: expert|organization|material|document' });
+    }
+
+    const table = ADMIN_TABLE_MAP[type];
+
+    // Get current entry
+    const [existing] = await db.query(`SELECT id FROM ${table} WHERE id = ?`, [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Entry not found' });
+    }
+
+    // Define allowed fields per type
+    const allowedByType = {
+      expert: [
+        'first_name', 'last_name', 'title', 'category', 'specialization', 'organization_id',
+        'email', 'phone', 'photo', 'biography', 'expertise_domains', 'qualifications',
+        'latitude', 'longitude', 'region', 'city', 'country', 'country_code', 'address',
+        'is_active', 'is_verified', 'years_experience', 'cv_url', 'linkedin_url',
+        'twitter_url', 'website', 'languages', 'education', 'certifications',
+        'publications_count', 'available_for_collaboration', 'expertise_summary',
+        'show_email', 'show_phone',
+      ],
+      organization: [
+        'name', 'acronym', 'type', 'description', 'mission', 'logo', 'website',
+        'parent_organization_id', 'latitude', 'longitude', 'region', 'city',
+        'country', 'country_code', 'address', 'contact_email', 'contact_phone',
+        'whatsapp', 'social_links', 'domains', 'services', 'species_treated',
+        'opening_hours', 'emergency_available', 'available_24_7', 'languages_spoken',
+        'license_number', 'coverage_area', 'founded_year', 'staff_count',
+        'veterinarians_count', 'is_active', 'show_email', 'show_phone', 'specialties',
+      ],
+      material: [
+        'name', 'type', 'description', 'specifications', 'capacity', 'organization_id',
+        'manager_id', 'latitude', 'longitude', 'region', 'city', 'address',
+        'status', 'certifications', 'contact_email', 'contact_phone', 'is_active', 'image',
+      ],
+      document: [
+        'title', 'type', 'description', 'content', 'file_path', 'file_type', 'file_size',
+        'thumbnail', 'organization_id', 'publication_date', 'language', 'themes',
+        'access_level', 'is_featured', 'is_active',
+      ],
+    };
+
+    const jsonFields = ['expertise_domains', 'qualifications', 'languages', 'education',
+      'certifications', 'social_links', 'domains', 'services', 'species_treated',
+      'opening_hours', 'languages_spoken', 'specialties', 'specifications', 'themes'];
+
+    const allowed = allowedByType[type] || [];
+    const updates = [];
+    const params = [];
+
+    for (const [key, value] of Object.entries(fields)) {
+      if (allowed.includes(key)) {
+        updates.push(`${key} = ?`);
+        params.push(jsonFields.includes(key) && typeof value !== 'string' ? JSON.stringify(value) : value);
+      }
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ success: false, message: 'No valid fields to update' });
+    }
+
+    params.push(id);
+    await db.query(`UPDATE ${table} SET ${updates.join(', ')} WHERE id = ?`, params);
+
+    const [updated] = await db.query(`SELECT * FROM ${table} WHERE id = ?`, [id]);
+    res.json({ success: true, data: updated[0] });
+  } catch (error) {
+    console.error('Admin update entry error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// PATCH /admin/:id/status - Approve or reject with reason
+router.patch('/admin/:id/status', auth, authorize('admin'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { type, status, reason } = req.body;
+    const adminId = req.user.id;
+
+    if (!type || !ADMIN_TABLE_MAP[type]) {
+      return res.status(400).json({ success: false, message: 'Field "type" required: expert|organization|material|document' });
+    }
+    if (!['approved', 'rejected', 'pending'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Status must be: approved, rejected, or pending' });
+    }
+
+    const table = ADMIN_TABLE_MAP[type];
+
+    // Update status
+    const isApproved = status === 'approved';
+    await db.query(
+      `UPDATE ${table} SET
+        submission_status = ?,
+        validated_by = ?,
+        validated_at = NOW(),
+        rejection_reason = ?,
+        is_active = ?
+      WHERE id = ?`,
+      [status, adminId, status === 'rejected' ? (reason || null) : null, isApproved ? 1 : 0, id]
+    );
+
+    // Mark related notifications as read
+    await db.query(
+      `UPDATE admin_notifications SET is_read = 1, read_by = ?, read_at = NOW()
+       WHERE resource_type = ? AND resource_id = ? AND is_read = 0`,
+      [adminId, type, id]
+    );
+
+    const [updated] = await db.query(`SELECT * FROM ${table} WHERE id = ?`, [id]);
+    res.json({
+      success: true,
+      data: updated[0],
+      message: status === 'approved' ? 'Entrée approuvée' : status === 'rejected' ? 'Entrée rejetée' : 'Statut mis à jour'
+    });
+  } catch (error) {
+    console.error('Admin status change error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// POST /admin/import - Import CSV data
+const uploadCSV = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const dir = path.join(__dirname, '..', 'uploads', 'imports');
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+      cb(null, `import-${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`);
+    }
+  }),
+  fileFilter: (req, file, cb) => {
+    const allowed = [
+      'text/csv', 'text/plain',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ];
+    if (allowed.includes(file.mimetype) || file.originalname.match(/\.(csv|xlsx?)$/i)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only CSV and Excel files are allowed'), false);
+    }
+  },
+  limits: { fileSize: 10 * 1024 * 1024 }
+}).single('file');
+
+router.post('/admin/import', auth, authorize('admin'), (req, res) => {
+  uploadCSV(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    try {
+      const { type } = req.body; // expert or organization
+      if (!type || !['expert', 'organization'].includes(type)) {
+        return res.status(400).json({ success: false, message: 'Type must be "expert" or "organization"' });
+      }
+
+      // Read and parse CSV
+      const content = fs.readFileSync(req.file.path, 'utf-8');
+      const lines = content.split(/\r?\n/).filter(l => l.trim());
+
+      if (lines.length < 2) {
+        return res.status(400).json({ success: false, message: 'CSV file is empty or has no data rows' });
+      }
+
+      // Parse CSV with simple delimiter detection
+      const delimiter = lines[0].includes(';') ? ';' : ',';
+      const parseCSVLine = (line) => {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') {
+            inQuotes = !inQuotes;
+          } else if (ch === delimiter && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+          } else {
+            current += ch;
+          }
+        }
+        result.push(current.trim());
+        return result;
+      };
+
+      const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z0-9_]/g, '_'));
+      const rows = lines.slice(1).map(line => {
+        const values = parseCSVLine(line);
+        const row = {};
+        headers.forEach((h, i) => { row[h] = values[i] || ''; });
+        return row;
+      });
+
+      let imported = 0;
+      let skipped = 0;
+      const errors = [];
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        try {
+          if (type === 'organization') {
+            const name = row.name || row.nom || row.organisation;
+            if (!name) { skipped++; errors.push(`Row ${i + 2}: Missing name`); continue; }
+
+            await db.query(`
+              INSERT INTO organizations (name, acronym, type, description, city, country, country_code,
+                contact_email, contact_phone, website, address, region, submission_status, is_active)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', 1)
+            `, [
+              name,
+              row.acronym || row.sigle || null,
+              row.type || row.type_organisation || 'other',
+              row.description || null,
+              row.city || row.ville || null,
+              row.country || row.pays || null,
+              row.country_code || row.code_pays || null,
+              row.email || row.contact_email || null,
+              row.phone || row.telephone || row.contact_phone || null,
+              row.website || row.site_web || null,
+              row.address || row.adresse || null,
+              row.region || null,
+            ]);
+            imported++;
+          } else if (type === 'expert') {
+            const firstName = row.first_name || row.prenom || '';
+            const lastName = row.last_name || row.nom || row.nom_famille || '';
+            if (!firstName && !lastName) { skipped++; errors.push(`Row ${i + 2}: Missing name`); continue; }
+
+            await db.query(`
+              INSERT INTO human_resources (first_name, last_name, title, category, specialization,
+                email, phone, city, country, country_code, region, biography,
+                years_experience, submission_status, is_active)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', 1)
+            `, [
+              firstName, lastName,
+              row.title || row.titre || null,
+              row.category || row.categorie || 'veterinarian',
+              row.specialization || row.specialisation || row.specialite || null,
+              row.email || null,
+              row.phone || row.telephone || null,
+              row.city || row.ville || null,
+              row.country || row.pays || null,
+              row.country_code || row.code_pays || null,
+              row.region || null,
+              row.biography || row.biographie || row.bio || null,
+              parseInt(row.years_experience || row.experience) || 0,
+            ]);
+            imported++;
+          }
+        } catch (rowError) {
+          skipped++;
+          errors.push(`Row ${i + 2}: ${rowError.message}`);
+        }
+      }
+
+      // Clean up uploaded file
+      try { fs.unlinkSync(req.file.path); } catch (e) { /* ignore */ }
+
+      res.json({
+        success: true,
+        message: `Import terminé: ${imported} entrées importées, ${skipped} ignorées`,
+        data: { imported, skipped, total: rows.length, errors: errors.slice(0, 20) }
+      });
+    } catch (error) {
+      console.error('Admin import error:', error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  });
+});
+
+// ==================== ADMIN VALIDATION (legacy) ====================
+
+// GET pending submissions (admin) - Legacy endpoint kept for backward compat
 router.get('/admin/pending-submissions', auth, authorize('admin'), async (req, res) => {
   try {
     const { type } = req.query;
@@ -2163,6 +3081,264 @@ router.put('/admin/notifications/read-all', auth, authorize('admin'), async (req
     res.json({ success: true, message: 'All notifications marked as read' });
   } catch (error) {
     console.error('Mark all notifications read error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// =====================================================
+// UNIFIED GET /:id - Public detail for any entry
+// =====================================================
+// IMPORTANT: This must be AFTER all other routes since /:id is a catch-all pattern
+
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { type } = req.query;
+
+    // Validate numeric ID
+    if (!/^\d+$/.test(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid ID' });
+    }
+
+    let entry = null;
+    let resourceType = null;
+
+    // If type is specified, search only that table
+    if (type === 'expert') {
+      const [rows] = await db.query(`
+        SELECT h.*, 'expert' as resource_type,
+               CONCAT(h.first_name, ' ', h.last_name) as name,
+               h.biography as bio,
+               u.username as submitter_username
+        FROM human_resources h
+        LEFT JOIN users u ON h.submitted_by = u.id
+        WHERE h.id = ? AND h.is_active = 1
+      `, [id]);
+      if (rows.length) { entry = rows[0]; resourceType = 'expert'; }
+    } else if (type === 'organization') {
+      const [rows] = await db.query(`
+        SELECT o.*, 'organization' as resource_type,
+               o.contact_email as email,
+               o.contact_phone as phone,
+               o.type as organization_type,
+               u.username as submitter_username
+        FROM organizations o
+        LEFT JOIN users u ON o.submitted_by = u.id
+        WHERE o.id = ? AND o.is_active = 1
+      `, [id]);
+      if (rows.length) { entry = rows[0]; resourceType = 'organization'; }
+    } else {
+      // No type specified — search both tables (experts first, then organizations)
+      const [experts] = await db.query(`
+        SELECT h.*, 'expert' as resource_type,
+               CONCAT(h.first_name, ' ', h.last_name) as name,
+               h.biography as bio,
+               u.username as submitter_username
+        FROM human_resources h
+        LEFT JOIN users u ON h.submitted_by = u.id
+        WHERE h.id = ? AND h.is_active = 1
+      `, [id]);
+
+      if (experts.length) {
+        entry = experts[0];
+        resourceType = 'expert';
+      } else {
+        const [orgs] = await db.query(`
+          SELECT o.*, 'organization' as resource_type,
+                 o.contact_email as email,
+                 o.contact_phone as phone,
+                 o.type as organization_type,
+                 u.username as submitter_username
+          FROM organizations o
+          LEFT JOIN users u ON o.submitted_by = u.id
+          WHERE o.id = ? AND o.is_active = 1
+        `, [id]);
+        if (orgs.length) { entry = orgs[0]; resourceType = 'organization'; }
+      }
+    }
+
+    if (!entry) {
+      return res.status(404).json({ success: false, message: 'Entrée introuvable' });
+    }
+
+    // Parse JSON fields
+    const jsonFields = ['services', 'species_treated', 'opening_hours', 'languages_spoken',
+                        'specialties', 'skills', 'experience', 'education', 'publications'];
+    jsonFields.forEach(field => {
+      if (entry[field] && typeof entry[field] === 'string') {
+        try { entry[field] = JSON.parse(entry[field]); } catch (e) { /* keep as string */ }
+      }
+    });
+
+    // Enrich experts with expertise domains
+    if (resourceType === 'expert') {
+      try {
+        const [expertises] = await db.query(`
+          SELECT ed.id, ed.name, ed.name_fr, ed.category
+          FROM expert_expertise ee
+          JOIN expertise_domains ed ON ee.domain_id = ed.id
+          WHERE ee.expert_id = ?
+        `, [id]);
+        entry.expertises = expertises;
+      } catch (e) {
+        entry.expertises = [];
+      }
+    }
+
+    // Enrich organizations with members/staff count
+    if (resourceType === 'organization') {
+      try {
+        const [[{ memberCount }]] = await db.query(
+          'SELECT COUNT(*) as memberCount FROM human_resources WHERE organization_id = ? AND is_active = 1',
+          [id]
+        );
+        entry.member_count = memberCount;
+      } catch (e) {
+        entry.member_count = 0;
+      }
+    }
+
+    res.json({ success: true, data: entry });
+  } catch (error) {
+    console.error('Get entry by ID error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// =====================================================
+// UNIFIED POST / - Public submission from frontend form
+// =====================================================
+
+router.post('/', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { type } = req.body;
+
+    if (!type || !['expert', 'organization'].includes(type)) {
+      return res.status(400).json({ success: false, message: 'Type must be "expert" or "organization"' });
+    }
+
+    let insertId;
+
+    if (type === 'expert') {
+      const {
+        name, specialization, skills, years_experience, bio,
+        education_text, experience_text,
+        country, city, address, email, phone,
+        show_email, show_phone
+      } = req.body;
+
+      if (!name || !name.trim()) {
+        return res.status(400).json({ success: false, message: 'Le nom est obligatoire' });
+      }
+
+      // Split name into first_name / last_name
+      const nameParts = name.trim().split(/\s+/);
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      const [result] = await db.query(`
+        INSERT INTO human_resources
+        (first_name, last_name, specialization, email, phone, city, country,
+         address, biography, years_experience,
+         show_email, show_phone, submitted_by, submission_status, submitted_at, is_active)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), 0)
+      `, [
+        firstName, lastName,
+        specialization || null,
+        email || null,
+        phone || null,
+        city || null,
+        country || null,
+        address || null,
+        bio || null,
+        years_experience ? parseInt(years_experience) : null,
+        show_email !== false ? 1 : 0,
+        show_phone !== false ? 1 : 0,
+        userId,
+      ]);
+
+      insertId = result.insertId;
+
+      // Store skills as JSON
+      if (skills && Array.isArray(skills) && skills.length > 0) {
+        await db.query('UPDATE human_resources SET skills = ? WHERE id = ?',
+          [JSON.stringify(skills), insertId]);
+      }
+
+      // Store education/experience as text in biography if provided
+      if (education_text || experience_text) {
+        let fullBio = bio || '';
+        if (education_text) fullBio += '\n\n--- Formation ---\n' + education_text;
+        if (experience_text) fullBio += '\n\n--- Expérience ---\n' + experience_text;
+        await db.query('UPDATE human_resources SET biography = ? WHERE id = ?',
+          [fullBio.trim(), insertId]);
+      }
+    } else {
+      // organization
+      const {
+        name, organization_type, description, services, website, founded_year, mission,
+        country, city, address, email, phone,
+        show_email, show_phone
+      } = req.body;
+
+      if (!name || !name.trim()) {
+        return res.status(400).json({ success: false, message: 'Le nom est obligatoire' });
+      }
+
+      const [result] = await db.query(`
+        INSERT INTO organizations
+        (name, type, description, contact_email, contact_phone, website, city, country,
+         address, founded_year, mission, services,
+         show_email, show_phone, submitted_by, submission_status, submitted_at, is_active)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), 0)
+      `, [
+        name.trim(),
+        organization_type || 'other',
+        description || null,
+        email || null,
+        phone || null,
+        website || null,
+        city || null,
+        country || null,
+        address || null,
+        founded_year ? parseInt(founded_year) : null,
+        mission || null,
+        services && Array.isArray(services) ? JSON.stringify(services) : null,
+        show_email !== false ? 1 : 0,
+        show_phone !== false ? 1 : 0,
+        userId,
+      ]);
+
+      insertId = result.insertId;
+    }
+
+    // Create admin notification
+    try {
+      await db.query(`
+        INSERT INTO admin_notifications (type, title, message, resource_type, resource_id, created_by)
+        VALUES ('resource_submission', ?, ?, ?, ?, ?)
+      `, [
+        `Nouvelle inscription ${type === 'expert' ? 'expert' : 'organisation'}`,
+        `${req.user.email} a soumis une inscription: ${req.body.name}`,
+        type, insertId, userId
+      ]);
+    } catch (e) {
+      // Non-critical, don't fail the whole request
+      console.error('Notification creation error:', e.message);
+    }
+
+    // Fetch and return the created entry
+    const table = type === 'expert' ? 'human_resources' : 'organizations';
+    const [created] = await db.query(`SELECT * FROM ${table} WHERE id = ?`, [insertId]);
+
+    res.status(201).json({
+      success: true,
+      data: { id: insertId, ...created[0] },
+      message: 'Votre inscription a été soumise et est en attente de validation'
+    });
+  } catch (error) {
+    console.error('Submit entry error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

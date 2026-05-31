@@ -18,7 +18,8 @@ const uploadDirs = [
   'uploads/elearning/thumbnails',
   'uploads/elearning/pdfs',
   'uploads/elearning/attachments',
-  'uploads/elearning/presentations'
+  'uploads/elearning/presentations',
+  'uploads/library'
 ];
 
 uploadDirs.forEach(dir => {

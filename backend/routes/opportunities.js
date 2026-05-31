@@ -48,7 +48,7 @@ const upload = multer({
  * GET /api/opportunities
  * List all published opportunities with filters
  */
-router.get('/', optionalAuth, async (req, res) => {
+router.get('/', authenticate, async (req, res) => {
   try {
     const {
       type,           // job, tender, market
@@ -213,7 +213,7 @@ router.get('/', optionalAuth, async (req, res) => {
  * GET /api/opportunities/categories
  * Get all opportunity categories
  */
-router.get('/categories', async (req, res) => {
+router.get('/categories', authenticate, async (req, res) => {
   try {
     const { type } = req.query;
 
@@ -243,7 +243,7 @@ router.get('/categories', async (req, res) => {
  * GET /api/opportunities/stats
  * Get opportunity statistics
  */
-router.get('/stats', async (req, res) => {
+router.get('/stats', authenticate, async (req, res) => {
   try {
     const [stats] = await db.query(`
       SELECT
@@ -288,7 +288,7 @@ router.get('/stats', async (req, res) => {
  * GET /api/opportunities/:id
  * Get single opportunity detail
  */
-router.get('/:id', optionalAuth, async (req, res) => {
+router.get('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 

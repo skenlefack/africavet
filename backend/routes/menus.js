@@ -87,6 +87,35 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET /api/menus/slug/:slug
+// @desc    Get menu by slug (public)
+router.get('/slug/:slug', async (req, res) => {
+  try {
+    const [menus] = await db.query('SELECT * FROM menus WHERE slug = ? LIMIT 1', [req.params.slug]);
+
+    if (menus.length === 0) {
+      return res.json({ success: true, data: null });
+    }
+
+    const [items] = await db.query(
+      'SELECT * FROM menu_items WHERE menu_id = ? ORDER BY COALESCE(sort_order, 999) ASC, id ASC',
+      [menus[0].id]
+    );
+
+    // Build tree structure
+    const buildTree = (items, parentId = null) => {
+      return items
+        .filter(item => item.parent_id === parentId)
+        .map(item => ({ ...item, children: buildTree(items, item.id) }));
+    };
+
+    res.json({ success: true, data: { ...menus[0], items: buildTree(items) } });
+  } catch (error) {
+    console.error('Get menu by slug error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // @route   GET /api/menus/:id
 // @desc    Get single menu with items
 router.get('/:id', async (req, res) => {

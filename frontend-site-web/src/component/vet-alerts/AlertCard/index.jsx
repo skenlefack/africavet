@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import FontAwesome from '../../uiStyle/FontAwesome';
 
+const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api\/?$/, '');
+
 const PRIORITY_CONFIG = {
   critical: { label: 'Critique', color: '#d32f2f', bg: '#ffebee', icon: 'exclamation-circle' },
   high: { label: '\u00c9lev\u00e9e', color: '#e65100', bg: '#fff3e0', icon: 'exclamation-triangle' },
@@ -67,14 +69,14 @@ const AlertCard = ({ alert }) => {
     if (photos && photos.length > 0) {
       const photo = photos[0];
       if (typeof photo === 'string') {
-        return photo.startsWith('http') ? photo : `http://localhost:5000${photo}`;
+        return photo.startsWith('http') ? photo : `${BACKEND_URL}${photo}`;
       }
       if (photo.url) {
-        return photo.url.startsWith('http') ? photo.url : `http://localhost:5000${photo.url}`;
+        return photo.url.startsWith('http') ? photo.url : `${BACKEND_URL}${photo.url}`;
       }
     }
     if (image) {
-      return image.startsWith('http') ? image : `http://localhost:5000${image}`;
+      return image.startsWith('http') ? image : `${BACKEND_URL}${image}`;
     }
     return null;
   })();

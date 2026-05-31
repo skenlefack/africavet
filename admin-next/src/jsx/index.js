@@ -45,6 +45,11 @@ import GroupEditor from "./pages/Groups/GroupEditor";
 /// Pages - Annuaire
 import AnnuaireDashboard from "./pages/Annuaire/AnnuaireDashboard";
 import AnnuaireList from "./pages/Annuaire/AnnuaireList";
+import AnnuaireView from "./pages/Annuaire/AnnuaireView";
+import AnnuaireNew from "./pages/Annuaire/AnnuaireNew";
+import AnnuaireEdit from "./pages/Annuaire/AnnuaireEdit";
+import AnnuairePending from "./pages/Annuaire/AnnuairePending";
+import AnnuaireImport from "./pages/Annuaire/AnnuaireImport";
 
 /// Pages - E-Learning
 import ELearningDashboard from "./pages/ELearning/ELearningDashboard";
@@ -67,6 +72,28 @@ import SettingsPage from "./pages/Settings/SettingsPage";
 import ModulesPage from "./pages/Modules/ModulesPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import ThemesPage from "./pages/Themes/ThemesPage";
+
+/// Pages - Analytics
+import AnalyticsDashboard from "./pages/Analytics/AnalyticsDashboard";
+
+/// Pages - Documents
+import DocumentsDashboard from "./pages/Documents/DocumentsDashboard";
+import DocumentsList from "./pages/Documents/DocumentsList";
+import DocumentEditor from "./pages/Documents/DocumentEditor";
+import DocumentView from "./pages/Documents/DocumentView";
+import DocumentCategoriesList from "./pages/Documents/DocumentCategoriesList";
+import DocumentCategoryEditor from "./pages/Documents/DocumentCategoryEditor";
+
+/// Pages - Alerts
+import AlertsDashboard from "./pages/Alerts/AlertsDashboard";
+import AlertsList from "./pages/Alerts/AlertsList";
+import AlertView from "./pages/Alerts/AlertView";
+
+/// Pages - Opportunities
+import OpportunitiesDashboard from "./pages/Opportunities/OpportunitiesDashboard";
+import OpportunitiesList from "./pages/Opportunities/OpportunitiesList";
+import OpportunityView from "./pages/Opportunities/OpportunityView";
+import OpportunityEditor from "./pages/Opportunities/OpportunityEditor";
 
 /// Pages - Ads
 import AdsDashboard from "./pages/Ads/AdsDashboard";
@@ -119,6 +146,9 @@ const Markup = () => {
                     <Route path="/" element={<AfricaVetDashboard />} />
                     <Route path="/dashboard" element={<AfricaVetDashboard />} />
 
+                    {/* Analytics */}
+                    <Route path="/analytics" element={<AnalyticsDashboard />} />
+
                     {/* Content Management - Posts */}
                     <Route path="/posts" element={<PostsList />} />
                     <Route path="/posts/new" element={<PostEditor />} />
@@ -161,11 +191,11 @@ const Markup = () => {
                     <Route path="/annuaire" element={<AnnuaireDashboard />} />
                     <Route path="/annuaire/list" element={<AnnuaireList />} />
                     <Route path="/annuaire/search" element={<AnnuaireList />} />
-                    <Route path="/annuaire/view/:id" element={<PlaceholderPage title="Fiche Établissement" />} />
-                    <Route path="/annuaire/new" element={<PlaceholderPage title="Nouvel Établissement" />} />
-                    <Route path="/annuaire/edit/:id" element={<PlaceholderPage title="Modifier Établissement" />} />
-                    <Route path="/annuaire/pending" element={<PlaceholderPage title="Soumissions en attente" />} />
-                    <Route path="/annuaire/import" element={<PlaceholderPage title="Importer des données" />} />
+                    <Route path="/annuaire/view/:id" element={<AnnuaireView />} />
+                    <Route path="/annuaire/new" element={<AnnuaireNew />} />
+                    <Route path="/annuaire/edit/:id" element={<AnnuaireEdit />} />
+                    <Route path="/annuaire/pending" element={<AnnuairePending />} />
+                    <Route path="/annuaire/import" element={<AnnuaireImport />} />
                     <Route path="/annuaire/report/:id" element={<PlaceholderPage title="Signaler une erreur" />} />
 
                     {/* E-Learning */}
@@ -198,6 +228,28 @@ const Markup = () => {
                     <Route path="/groups" element={<GroupsList />} />
                     <Route path="/groups/new" element={<GroupEditor />} />
                     <Route path="/groups/:id" element={<GroupEditor />} />
+
+                    {/* Document Manager */}
+                    <Route path="/documents" element={<DocumentsDashboard />} />
+                    <Route path="/documents/list" element={<DocumentsList />} />
+                    <Route path="/documents/new" element={<DocumentEditor />} />
+                    <Route path="/documents/edit/:id" element={<DocumentEditor />} />
+                    <Route path="/documents/view/:id" element={<DocumentView />} />
+                    <Route path="/documents/categories" element={<DocumentCategoriesList />} />
+                    <Route path="/documents/categories/new" element={<DocumentCategoryEditor />} />
+                    <Route path="/documents/categories/edit/:id" element={<DocumentCategoryEditor />} />
+
+                    {/* Alerts */}
+                    <Route path="/alerts" element={<AlertsDashboard />} />
+                    <Route path="/alerts/list" element={<AlertsList />} />
+                    <Route path="/alerts/view/:id" element={<AlertView />} />
+
+                    {/* Opportunities */}
+                    <Route path="/opportunities" element={<OpportunitiesDashboard />} />
+                    <Route path="/opportunities/list" element={<OpportunitiesList />} />
+                    <Route path="/opportunities/view/:id" element={<OpportunityView />} />
+                    <Route path="/opportunities/new" element={<OpportunityEditor />} />
+                    <Route path="/opportunities/edit/:id" element={<OpportunityEditor />} />
 
                     {/* Ads Management */}
                     <Route path="/ads/dashboard" element={<AdsDashboard />} />

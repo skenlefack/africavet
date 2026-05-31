@@ -102,6 +102,74 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+// GET scan filesystem - list all images in uploads directory
+router.get('/scan', auth, authorize('admin'), async (req, res) => {
+  try {
+    const uploadsDir = path.join(__dirname, '../uploads');
+    const { page = 1, limit = 40, search } = req.query;
+    const allFiles = [];
+
+    const scanDir = (dir, prefix = '') => {
+      if (!fs.existsSync(dir)) return;
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          scanDir(path.join(dir, entry.name), `${prefix}${entry.name}/`);
+        } else if (/\.(jpg|jpeg|png|gif|webp|svg|pdf)$/i.test(entry.name)) {
+          const filePath = path.join(dir, entry.name);
+          const stats = fs.statSync(filePath);
+          allFiles.push({
+            filename: entry.name,
+            original_name: entry.name,
+            url: `/uploads/${prefix}${entry.name}`,
+            folder: prefix.replace(/\/$/, '') || 'root',
+            size: stats.size,
+            mime_type: /\.(jpg|jpeg)$/i.test(entry.name) ? 'image/jpeg'
+              : /\.png$/i.test(entry.name) ? 'image/png'
+              : /\.gif$/i.test(entry.name) ? 'image/gif'
+              : /\.webp$/i.test(entry.name) ? 'image/webp'
+              : /\.svg$/i.test(entry.name) ? 'image/svg+xml'
+              : /\.pdf$/i.test(entry.name) ? 'application/pdf'
+              : 'application/octet-stream',
+            created_at: stats.mtime,
+          });
+        }
+      }
+    };
+
+    scanDir(uploadsDir);
+    allFiles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    let filtered = allFiles;
+    if (search) {
+      const q = search.toLowerCase();
+      filtered = allFiles.filter(f => f.filename.toLowerCase().includes(q) || f.folder.toLowerCase().includes(q));
+    }
+
+    const total = filtered.length;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const data = filtered.slice(offset, offset + parseInt(limit));
+    const folders = [...new Set(allFiles.map(f => f.folder))].sort();
+
+    res.json({ success: true, data, folders, pagination: {
+      page: parseInt(page), limit: parseInt(limit), total, pages: Math.ceil(total / parseInt(limit))
+    }});
+  } catch (error) {
+    console.error('Scan media error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// GET folders
+router.get('/folders/list', auth, async (req, res) => {
+  try {
+    const [folders] = await db.query('SELECT DISTINCT folder FROM media ORDER BY folder');
+    res.json({ success: true, data: folders.map(f => f.folder) });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // GET single media
 router.get('/:id', auth, async (req, res) => {
   try {
@@ -175,16 +243,6 @@ router.delete('/:id', auth, authorize('admin', 'editor'), async (req, res) => {
 
     await db.query('DELETE FROM media WHERE id = ?', [req.params.id]);
     res.json({ success: true, message: 'Media deleted' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// GET folders
-router.get('/folders/list', auth, async (req, res) => {
-  try {
-    const [folders] = await db.query('SELECT DISTINCT folder FROM media ORDER BY folder');
-    res.json({ success: true, data: folders.map(f => f.folder) });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
   }

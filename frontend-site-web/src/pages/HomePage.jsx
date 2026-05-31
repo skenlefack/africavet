@@ -32,27 +32,24 @@ function HomePage() {
 
       {/* Trending Section */}
       <div className="container">
-        <div className="row">
+        <div className="row" style={{ alignItems: 'stretch' }}>
           <div className="col-lg-8">
             <TrendingNews />
           </div>
-          <div className="col-md-12 col-lg-4">
+          <div className="col-md-12 col-lg-4" style={{ display: 'flex', flexDirection: 'column' }}>
             <FollowUs title="Suivez-nous" />
             <MostView title="Les Plus Vus" />
-            {/* Encadré publicitaire Sidebar - 300x250px */}
+            {/* Encadré publicitaire Sidebar */}
             {/* Position: sidebar-mostview - Géré dans le gestionnaire de publicités */}
             <div className="space-20" />
             <AdBanner
               placement="sidebar-mostview"
               className="sidebar-ad"
               style={{
-                width: '300px',
-                height: '250px',
-                maxWidth: '100%',
-                border: '1px solid #e0e0e0',
-                borderRadius: '4px',
-                overflow: 'hidden',
-                backgroundColor: '#f9f9f9'
+                width: '100%',
+                flex: 1,
+                minHeight: '250px',
+                overflow: 'hidden'
               }}
             />
           </div>
@@ -218,8 +215,8 @@ function HomePage() {
               placement="sidebar-interviews"
               className="sidebar-ad"
               style={{
-                width: '300px',
-                height: '250px',
+                width: '350px',
+                height: '400px',
                 maxWidth: '100%',
                 border: '1px solid #e0e0e0',
                 borderRadius: '4px',

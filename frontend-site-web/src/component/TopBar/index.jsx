@@ -12,14 +12,6 @@ const TopBar = ({ className, dark }) => {
   const [searchShow, setSearchShow] = useState(false);
   const { isAuthenticated } = useAuth();
 
-  // Date du jour en français
-  const today = new Date().toLocaleDateString('fr-FR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
-
   return (
     <>
       <div className={`topbar ${className ? className : ""}`} id="top">
@@ -80,9 +72,6 @@ const TopBar = ({ className, dark }) => {
             </div>
             <div className="col-lg-6 col-md-4 align-self-center">
               <div className="top_date_social text-right d-flex align-items-center justify-content-end">
-                <div className={`paper_date ${dark ? "white" : ""}`}>
-                  <p>{today}</p>
-                </div>
                 <div className={`social1 ${dark ? "white" : ""}`}>
                   <ul className="inline">
                     <li>
@@ -129,7 +118,7 @@ const TopBar = ({ className, dark }) => {
                 </div>
                 {/* Auth */}
                 <div className="topbar_separator d-none d-lg-block"></div>
-                <div className="d-none d-lg-flex align-items-center" style={{ gap: '8px' }}>
+                <div className="d-none d-lg-flex align-items-center topbar_auth">
                   {isAuthenticated ? (
                     <>
                       <NotificationBell />
@@ -137,11 +126,11 @@ const TopBar = ({ className, dark }) => {
                     </>
                   ) : (
                     <>
-                      <Link to="/connexion" className="btn btn-sm" style={{ color: dark ? '#fff' : '#333', fontWeight: '500', fontSize: '13px' }}>
-                        Connexion
+                      <Link to="/connexion" className="topbar_auth_btn" aria-label="Connexion" data-tooltip="Connexion">
+                        <i className="fa fa-sign-in" />
                       </Link>
-                      <Link to="/inscription" className="btn btn-sm" style={{ background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)', color: 'white', borderRadius: '20px', fontSize: '13px', padding: '4px 16px' }}>
-                        Inscription
+                      <Link to="/inscription" className="topbar_auth_btn topbar_auth_btn--primary" aria-label="Inscription" data-tooltip="Inscription">
+                        <i className="fa fa-user-plus" />
                       </Link>
                     </>
                   )}

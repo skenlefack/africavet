@@ -37,14 +37,14 @@ function HomeDarkAbout() {
                   </div>
                 </div>
                 <div className="author_content">
-                  <Link to="/">QuomodoSoft</Link>
+                  <Link to="/">AfricaVet</Link>
                   <ul className="inline">
                     <li>News Writer</li>
                     <li>Since: April 25, 2020</li>
                   </ul>
                 </div>
                 <p>
-                  QuomodoSoft is an investigative reporter for Newspark, based
+                  AfricaVet is an investigative reporter for AfricaVet, based
                   in Bangladesh. He started at The Times in 1999 covering Mayor
                   Rudolph W. Giuliani and then the Sept. 11, 2001, attacks.
                 </p>

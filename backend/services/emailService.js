@@ -1,34 +1,75 @@
 const nodemailer = require('nodemailer');
+const db = require('../config/db');
 
-// Create transporter
-const createTransporter = () => {
-  // For development, use ethereal email or configure your SMTP
-  if (process.env.NODE_ENV === 'development' && !process.env.SMTP_HOST) {
-    // Development fallback - log to console
-    return {
+// Cached transporter and config hash
+let cachedTransporter = null;
+let cachedConfigHash = '';
+
+// Load SMTP config: DB first, then env fallback
+const getSmtpConfig = async () => {
+  try {
+    const [rows] = await db.query(
+      "SELECT setting_key, setting_value FROM settings WHERE setting_group = 'smtp'"
+    );
+    const dbConfig = {};
+    rows.forEach(r => { dbConfig[r.setting_key] = r.setting_value; });
+
+    if (dbConfig.smtp_host) {
+      return {
+        host: dbConfig.smtp_host,
+        port: parseInt(dbConfig.smtp_port) || 587,
+        secure: dbConfig.smtp_secure === 'true',
+        user: dbConfig.smtp_user,
+        pass: dbConfig.smtp_pass,
+        from: dbConfig.smtp_from || 'noreply@africavet.com'
+      };
+    }
+  } catch (e) {
+    // DB not ready yet, fall through to env
+  }
+
+  return {
+    host: process.env.SMTP_HOST || '',
+    port: parseInt(process.env.SMTP_PORT) || 587,
+    secure: process.env.SMTP_SECURE === 'true',
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || '',
+    from: process.env.SMTP_FROM || 'noreply@africavet.com'
+  };
+};
+
+// Get or create transporter (recreate if config changed)
+const getTransporter = async () => {
+  const config = await getSmtpConfig();
+  const hash = JSON.stringify(config);
+
+  if (cachedTransporter && hash === cachedConfigHash) {
+    return { transporter: cachedTransporter, from: config.from };
+  }
+
+  if (!config.host) {
+    // Dev fallback
+    cachedTransporter = {
       sendMail: async (options) => {
         console.log('=== EMAIL (Development Mode) ===');
         console.log('To:', options.to);
         console.log('Subject:', options.subject);
-        console.log('HTML:', options.html);
         console.log('================================');
         return { messageId: 'dev-' + Date.now() };
       }
     };
+  } else {
+    cachedTransporter = nodemailer.createTransport({
+      host: config.host,
+      port: config.port,
+      secure: config.secure,
+      auth: { user: config.user, pass: config.pass }
+    });
   }
 
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    }
-  });
+  cachedConfigHash = hash;
+  return { transporter: cachedTransporter, from: config.from };
 };
-
-const transporter = createTransporter();
 
 // Email templates
 const templates = {
@@ -195,8 +236,9 @@ const sendVerificationEmail = async (email, userName, token, lang = 'fr') => {
   const { subject, html } = template(verificationUrl, userName);
 
   try {
+    const { transporter, from } = await getTransporter();
     await transporter.sendMail({
-      from: `"AfricaVet" <${process.env.SMTP_FROM || 'noreply@africavet.com'}>`,
+      from: `"AfricaVet" <${from}>`,
       to: email,
       subject,
       html
@@ -214,8 +256,9 @@ const sendAccountActivatedEmail = async (email, userName, lang = 'fr') => {
   const { subject, html } = template(userName);
 
   try {
+    const { transporter, from } = await getTransporter();
     await transporter.sendMail({
-      from: `"AfricaVet" <${process.env.SMTP_FROM || 'noreply@africavet.com'}>`,
+      from: `"AfricaVet" <${from}>`,
       to: email,
       subject,
       html
@@ -228,7 +271,8 @@ const sendAccountActivatedEmail = async (email, userName, lang = 'fr') => {
 };
 
 module.exports = {
-  createTransporter,
+  getSmtpConfig,
+  getTransporter,
   generateVerificationToken,
   sendVerificationEmail,
   sendAccountActivatedEmail

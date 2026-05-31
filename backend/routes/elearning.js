@@ -103,7 +103,7 @@ const calculateCourseProgress = async (userId, courseId, enrollmentId) => {
 // ============================================
 
 // GET /api/elearning/categories - Liste des catégories
-router.get('/categories', async (req, res) => {
+router.get('/categories', auth, async (req, res) => {
   try {
     const [categories] = await db.query(`
       SELECT c.*,
@@ -204,7 +204,7 @@ router.delete('/categories/:id', auth, authorize('admin'), async (req, res) => {
 // ============================================
 
 // GET /api/elearning/courses - Liste des cours
-router.get('/courses', optionalAuth, async (req, res) => {
+router.get('/courses', auth, async (req, res) => {
   try {
     const {
       page = 1,
@@ -306,7 +306,7 @@ router.get('/courses', optionalAuth, async (req, res) => {
 });
 
 // GET /api/elearning/courses/featured - Cours en vedette
-router.get('/courses/featured', async (req, res) => {
+router.get('/courses/featured', auth, async (req, res) => {
   try {
     const { limit = 6 } = req.query;
 
@@ -336,7 +336,7 @@ router.get('/courses/featured', async (req, res) => {
 });
 
 // GET /api/elearning/courses/:slug - Détail d'un cours
-router.get('/courses/:slug', optionalAuth, async (req, res) => {
+router.get('/courses/:slug', auth, async (req, res) => {
   try {
     const { slug } = req.params;
 
@@ -420,7 +420,7 @@ router.get('/courses/:slug', optionalAuth, async (req, res) => {
 });
 
 // GET /api/elearning/courses/:id/curriculum - Programme complet
-router.get('/courses/:id/curriculum', optionalAuth, async (req, res) => {
+router.get('/courses/:id/curriculum', auth, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;
@@ -660,7 +660,7 @@ router.delete('/courses/:id', auth, authorize('admin'), async (req, res) => {
 // ============================================
 
 // GET /api/elearning/courses/:courseId/modules - Modules d'un cours
-router.get('/courses/:courseId/modules', optionalAuth, async (req, res) => {
+router.get('/courses/:courseId/modules', auth, async (req, res) => {
   try {
     const { courseId } = req.params;
 
@@ -830,7 +830,7 @@ router.put('/modules/reorder', auth, authorize('admin', 'editor'), async (req, r
 // ============================================
 
 // GET /api/elearning/modules/:moduleId/lessons - Leçons d'un module
-router.get('/modules/:moduleId/lessons', optionalAuth, async (req, res) => {
+router.get('/modules/:moduleId/lessons', auth, async (req, res) => {
   try {
     const { moduleId } = req.params;
 
@@ -848,7 +848,7 @@ router.get('/modules/:moduleId/lessons', optionalAuth, async (req, res) => {
 });
 
 // GET /api/elearning/lessons/:id - Détail d'une leçon
-router.get('/lessons/:id', optionalAuth, async (req, res) => {
+router.get('/lessons/:id', auth, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -1557,7 +1557,7 @@ router.get('/stats/user', auth, async (req, res) => {
 // ============================================
 
 // GET /api/elearning/paths - Liste des parcours
-router.get('/paths', optionalAuth, async (req, res) => {
+router.get('/paths', auth, async (req, res) => {
   try {
     const { page = 1, limit = 12, status, level, featured, search } = req.query;
     const offset = (page - 1) * limit;
@@ -1617,7 +1617,7 @@ router.get('/paths', optionalAuth, async (req, res) => {
 });
 
 // GET /api/elearning/paths/:slug - Détail d'un parcours
-router.get('/paths/:slug', optionalAuth, async (req, res) => {
+router.get('/paths/:slug', auth, async (req, res) => {
   try {
     const { slug } = req.params;
 

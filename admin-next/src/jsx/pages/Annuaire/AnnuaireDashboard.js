@@ -2,6 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api, getToken } from '../../../services/api';
 
+const COUNTRY_FLAGS = {
+    DZ: '\u{1F1E9}\u{1F1FF}', AO: '\u{1F1E6}\u{1F1F4}', BJ: '\u{1F1E7}\u{1F1EF}', BW: '\u{1F1E7}\u{1F1FC}', BF: '\u{1F1E7}\u{1F1EB}',
+    BI: '\u{1F1E7}\u{1F1EE}', CV: '\u{1F1E8}\u{1F1FB}', CM: '\u{1F1E8}\u{1F1F2}', CF: '\u{1F1E8}\u{1F1EB}', TD: '\u{1F1F9}\u{1F1E9}',
+    KM: '\u{1F1F0}\u{1F1F2}', CG: '\u{1F1E8}\u{1F1EC}', CD: '\u{1F1E8}\u{1F1E9}', CI: '\u{1F1E8}\u{1F1EE}', DJ: '\u{1F1E9}\u{1F1EF}',
+    EG: '\u{1F1EA}\u{1F1EC}', GQ: '\u{1F1EC}\u{1F1F6}', ER: '\u{1F1EA}\u{1F1F7}', SZ: '\u{1F1F8}\u{1F1FF}', ET: '\u{1F1EA}\u{1F1F9}',
+    GA: '\u{1F1EC}\u{1F1E6}', GM: '\u{1F1EC}\u{1F1F2}', GH: '\u{1F1EC}\u{1F1ED}', GN: '\u{1F1EC}\u{1F1F3}', GW: '\u{1F1EC}\u{1F1FC}',
+    KE: '\u{1F1F0}\u{1F1EA}', LS: '\u{1F1F1}\u{1F1F8}', LR: '\u{1F1F1}\u{1F1F7}', LY: '\u{1F1F1}\u{1F1FE}', MG: '\u{1F1F2}\u{1F1EC}',
+    MW: '\u{1F1F2}\u{1F1FC}', ML: '\u{1F1F2}\u{1F1F1}', MR: '\u{1F1F2}\u{1F1F7}', MU: '\u{1F1F2}\u{1F1FA}', MA: '\u{1F1F2}\u{1F1E6}',
+    MZ: '\u{1F1F2}\u{1F1FF}', NA: '\u{1F1F3}\u{1F1E6}', NE: '\u{1F1F3}\u{1F1EA}', NG: '\u{1F1F3}\u{1F1EC}', RW: '\u{1F1F7}\u{1F1FC}',
+    ST: '\u{1F1F8}\u{1F1F9}', SN: '\u{1F1F8}\u{1F1F3}', SC: '\u{1F1F8}\u{1F1E8}', SL: '\u{1F1F8}\u{1F1F1}', SO: '\u{1F1F8}\u{1F1F4}',
+    ZA: '\u{1F1FF}\u{1F1E6}', SS: '\u{1F1F8}\u{1F1F8}', SD: '\u{1F1F8}\u{1F1E9}', TZ: '\u{1F1F9}\u{1F1FF}', TG: '\u{1F1F9}\u{1F1EC}',
+    TN: '\u{1F1F9}\u{1F1F3}', UG: '\u{1F1FA}\u{1F1EC}', ZM: '\u{1F1FF}\u{1F1F2}', ZW: '\u{1F1FF}\u{1F1FC}',
+};
+
+const getCountryFlag = (code) => {
+    if (!code) return '\u{1F30D}';
+    const upper = code.toUpperCase();
+    return COUNTRY_FLAGS[upper] || '\u{1F30D}';
+};
+
 const AnnuaireDashboard = () => {
     const navigate = useNavigate();
     const token = getToken();
@@ -474,7 +494,7 @@ const AnnuaireDashboard = () => {
                                     className="d-flex align-items-center p-2 rounded"
                                     style={{ textDecoration: 'none', background: '#f8f9fa' }}
                                 >
-                                    <span className="me-2" style={{ fontSize: '24px' }}>🇨🇮</span>
+                                    <span className="me-2" style={{ fontSize: '24px' }}>{getCountryFlag(item.country_code || item.country)}</span>
                                     <div>
                                         <h6 className="mb-0 text-dark">{item.country}</h6>
                                         <small className="text-muted">{item.count} établissements</small>

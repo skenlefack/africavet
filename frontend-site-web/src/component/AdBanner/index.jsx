@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import PropTypes from "prop-types";
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 // Generate unique visitor ID
 const getVisitorId = () => {
@@ -98,13 +98,21 @@ const AdBanner = ({
 
       // Redirect to target URL
       if (ad.target_url) {
-        window.open(ad.target_url, "_blank", "noopener,noreferrer");
+        if (ad.target_url.startsWith('/')) {
+          window.location.href = ad.target_url;
+        } else {
+          window.open(ad.target_url, "_blank", "noopener,noreferrer");
+        }
       }
     } catch (err) {
       console.error("AdBanner: Failed to track click", err);
       // Still redirect even if tracking fails
       if (ad.target_url) {
-        window.open(ad.target_url, "_blank", "noopener,noreferrer");
+        if (ad.target_url.startsWith('/')) {
+          window.location.href = ad.target_url;
+        } else {
+          window.open(ad.target_url, "_blank", "noopener,noreferrer");
+        }
       }
     }
   }, []);
@@ -206,17 +214,15 @@ const AdBanner = ({
       <div
         className="ad-banner-image-wrapper"
         onClick={() => trackClick(ad)}
-        style={{ cursor: ad.target_url ? "pointer" : "default" }}
+        style={{ cursor: ad.target_url ? "pointer" : "default", width: "100%", height: "100%" }}
       >
         <img
           src={imageUrl}
           alt={ad.alt_text || "Publicite"}
           style={{
             width: "100%",
-            height: "auto",
-            maxWidth: ad.width || placementInfo?.width || "100%",
-            maxHeight: ad.height || placementInfo?.height || "auto",
-            objectFit: "contain",
+            height: "100%",
+            objectFit: "cover",
           }}
         />
       </div>
@@ -314,27 +320,8 @@ const AdBanner = ({
       className={`ad-banner ${className || ""}`}
       style={containerStyle}
     >
-      {/* Ad Label */}
-      <span
-        className="ad-banner-label"
-        style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          background: "rgba(0,0,0,0.5)",
-          color: "#fff",
-          fontSize: "0.6rem",
-          padding: "2px 6px",
-          textTransform: "uppercase",
-          letterSpacing: "0.5px",
-          zIndex: 1,
-        }}
-      >
-        Pub
-      </span>
-
       {/* Ad Content */}
-      <div className="ad-banner-content">
+      <div className="ad-banner-content" style={{ width: "100%", height: "100%" }}>
         {renderAd()}
       </div>
 

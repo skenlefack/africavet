@@ -37,6 +37,12 @@ const VetAlertsPage = lazy(() => import("./pages/vet-alerts/VetAlertsPage"));
 const VetAlertDetailPage = lazy(() => import("./pages/vet-alerts/VetAlertDetailPage"));
 const VetAlertSubmitPage = lazy(() => import("./pages/vet-alerts/VetAlertSubmitPage"));
 
+// Documents / Library pages
+const DocumentsLibraryPage = lazy(() => import("./pages/documents/DocumentsLibraryPage"));
+const DocumentsCategoryPage = lazy(() => import("./pages/documents/DocumentsCategoryPage"));
+const DocumentDetailPage = lazy(() => import("./pages/documents/DocumentDetailPage"));
+const DocumentsSearchPage = lazy(() => import("./pages/documents/DocumentsSearchPage"));
+
 // Annuaire pages
 const AnnuairePage = lazy(() => import("./pages/annuaire/AnnuairePage"));
 const ExpertDetailPage = lazy(() => import("./pages/annuaire/ExpertDetailPage"));
@@ -51,6 +57,14 @@ const NewsletterUnsubscribePage = lazy(() => import("./pages/newsletter/Newslett
 const ProfilePage = lazy(() => import("./pages/profile/ProfilePage"));
 const DashboardPage = lazy(() => import("./pages/profile/DashboardPage"));
 const NotificationsPage = lazy(() => import("./pages/profile/NotificationsPage"));
+
+// RecallVET
+const RecallVetPage = lazy(() => import("./pages/recallvet/RecallVetPage"));
+
+// Legal pages
+const ConditionsPage = lazy(() => import("./pages/legal/ConditionsPage"));
+const ConfidentialitePage = lazy(() => import("./pages/legal/ConfidentialitePage"));
+const MentionsLegalesPage = lazy(() => import("./pages/legal/MentionsLegalesPage"));
 
 // Email verification
 const EmailVerificationPage = lazy(() => import("./pages/EmailVerificationPage"));
@@ -79,20 +93,20 @@ const router = createBrowserRouter([
       { path: "connexion", element: <ConnexionPage /> },
       { path: "verification-email/:token", element: <Lazy><EmailVerificationPage /></Lazy> },
 
-      // E-Learning
-      { path: "formations", element: <Lazy><CourseCatalogPage /></Lazy> },
-      { path: "formations/:slug", element: <Lazy><CourseDetailPage /></Lazy> },
+      // E-Learning (requires login)
+      { path: "formations", element: <Protected><CourseCatalogPage /></Protected> },
+      { path: "formations/:slug", element: <Protected><CourseDetailPage /></Protected> },
       { path: "formations/:slug/lecon/:lessonId", element: <Protected><LessonViewerPage /></Protected> },
       { path: "formations/:slug/quiz/:quizId", element: <Protected><QuizPage /></Protected> },
       { path: "formations/:slug/quiz/:quizId/resultats", element: <Protected><QuizResultsPage /></Protected> },
       { path: "mon-apprentissage", element: <Protected><MyLearningPage /></Protected> },
-      { path: "parcours", element: <Lazy><LearningPathsPage /></Lazy> },
-      { path: "parcours/:slug", element: <Lazy><LearningPathDetailPage /></Lazy> },
+      { path: "parcours", element: <Protected><LearningPathsPage /></Protected> },
+      { path: "parcours/:slug", element: <Protected><LearningPathDetailPage /></Protected> },
       { path: "certificat/verification/:code", element: <Lazy><CertificateVerifyPage /></Lazy> },
 
-      // Opportunities
-      { path: "opportunites", element: <Lazy><OpportunitiesPage /></Lazy> },
-      { path: "opportunites/:id", element: <Lazy><OpportunityDetailPage /></Lazy> },
+      // Opportunities (requires login)
+      { path: "opportunites", element: <Protected><OpportunitiesPage /></Protected> },
+      { path: "opportunites/:id", element: <Protected><OpportunityDetailPage /></Protected> },
       { path: "opportunites/:id/postuler", element: <Protected><OpportunityApplyPage /></Protected> },
 
       // Vet Alerts
@@ -100,11 +114,25 @@ const router = createBrowserRouter([
       { path: "alertes-veterinaires/:id", element: <Lazy><VetAlertDetailPage /></Lazy> },
       { path: "soumettre-alerte", element: <Protected><VetAlertSubmitPage /></Protected> },
 
-      // Annuaire
-      { path: "annuaire", element: <Lazy><AnnuairePage /></Lazy> },
-      { path: "annuaire/expert/:id", element: <Lazy><ExpertDetailPage /></Lazy> },
-      { path: "annuaire/organisation/:id", element: <Lazy><OrganizationDetailPage /></Lazy> },
+      // Documents / Library (requires login)
+      { path: "bibliotheque", element: <Protected><DocumentsLibraryPage /></Protected> },
+      { path: "bibliotheque/categorie/:slug", element: <Protected><DocumentsCategoryPage /></Protected> },
+      { path: "bibliotheque/document/:id", element: <Protected><DocumentDetailPage /></Protected> },
+      { path: "bibliotheque/recherche", element: <Protected><DocumentsSearchPage /></Protected> },
+
+      // Annuaire (requires login)
+      { path: "annuaire", element: <Protected><AnnuairePage /></Protected> },
+      { path: "annuaire/expert/:id", element: <Protected><ExpertDetailPage /></Protected> },
+      { path: "annuaire/organisation/:id", element: <Protected><OrganizationDetailPage /></Protected> },
       { path: "annuaire/inscription", element: <Protected><AnnuaireSubmitPage /></Protected> },
+
+      // RecallVET (public)
+      { path: "recallvet", element: <Lazy><RecallVetPage /></Lazy> },
+
+      // Legal pages (public)
+      { path: "conditions", element: <Lazy><ConditionsPage /></Lazy> },
+      { path: "confidentialite", element: <Lazy><ConfidentialitePage /></Lazy> },
+      { path: "mentions-legales", element: <Lazy><MentionsLegalesPage /></Lazy> },
 
       // Newsletter
       { path: "newsletter/confirmation/:token", element: <Lazy><NewsletterConfirmPage /></Lazy> },

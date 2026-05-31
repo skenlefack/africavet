@@ -22,7 +22,7 @@ const dashboardItems = [
     subtitle: "Formation continue",
     description: "Cours et certifications en ligne",
     stats: { value: "150+", label: "Formations" },
-    link: "/e-learning",
+    link: "/formations",
     color: "#FF6B35",
     gradient: "linear-gradient(135deg, #FF6B35 0%, #FF8C5A 100%)"
   },
@@ -33,7 +33,7 @@ const dashboardItems = [
     subtitle: "& Emploi",
     description: "Offres d'emploi et appels d'offres",
     stats: { value: "200+", label: "Offres actives" },
-    link: "/categorie/opportunites",
+    link: "/opportunites",
     color: "#8B5CF6",
     gradient: "linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)"
   },
@@ -44,7 +44,7 @@ const dashboardItems = [
     subtitle: "Sanitaires",
     description: "Alertes épidémiologiques en temps réel",
     stats: { value: "24/7", label: "Surveillance" },
-    link: "/alertes",
+    link: "/alertes-veterinaires",
     color: "#EF4444",
     gradient: "linear-gradient(135deg, #EF4444 0%, #F87171 100%)"
   }

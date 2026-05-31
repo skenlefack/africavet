@@ -30,9 +30,10 @@ const QuestionsList = () => {
         { value: 'hard', label: 'Difficile', color: 'danger' }
     ];
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         fetchQuestions();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []);
 
     const fetchQuestions = async () => {
         const res = await api.get('/elearning/questions', token);

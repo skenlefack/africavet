@@ -49,6 +49,14 @@ const modules = [
         color: '#E74C3C',
         to: '/ads/dashboard',
         status: 'active'
+    },
+    {
+        name: 'Analytiques',
+        description: 'Statistiques de visite, tendances et géolocalisation',
+        icon: 'fa-chart-line',
+        color: '#17a2b8',
+        to: '/analytics',
+        status: 'active'
     }
 ];
 

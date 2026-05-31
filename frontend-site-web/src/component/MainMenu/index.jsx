@@ -42,6 +42,8 @@ const MainMenu = ({ className, dark }) => {
     { id: 6, linkText: "Opportunités", link: "/opportunites" },
     { id: 7, linkText: "Alertes", link: "/alertes-veterinaires" },
     { id: 8, linkText: "Annuaire", link: "/annuaire" },
+    { id: 10, linkText: "Bibliothèque", link: "/bibliotheque" },
+    { id: 11, linkText: "À propos", link: "/about" },
     { id: 9, linkText: "Contact", link: "/contact" },
   ];
 
@@ -82,6 +84,9 @@ const MainMenu = ({ className, dark }) => {
 
     // Annuaire (vet-link)
     if (url.startsWith('/vet-link')) return '/annuaire';
+
+    // Bibliothèque documentaire
+    if (url === '/documents' || url === '/library') return '/bibliotheque';
 
     // Catégories d'articles
     if (url.startsWith('/news?category=')) {

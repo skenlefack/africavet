@@ -7,6 +7,11 @@ export const MenuList = [
         iconStyle: SVGICON.Home,
         to: 'dashboard',
     },
+    {
+        title: 'Analytiques',
+        iconStyle: SVGICON.Charts,
+        to: 'analytics',
+    },
 
     // Content Management
     {
@@ -133,8 +138,77 @@ export const MenuList = [
                 to: 'annuaire/pending',
             },
             {
+                title: 'Importer',
+                to: 'annuaire/import',
+            },
+            {
                 title: 'Ajouter',
                 to: 'annuaire/new',
+            },
+        ],
+    },
+    {
+        title: 'Alertes Vétérinaires',
+        classsChange: 'mm-collapse',
+        iconStyle: SVGICON.Charts,
+        content: [
+            {
+                title: 'Tableau de bord',
+                to: 'alerts',
+            },
+            {
+                title: 'Toutes les alertes',
+                to: 'alerts/list',
+            },
+            {
+                title: 'En attente',
+                to: 'alerts/list?status=pending',
+            },
+        ],
+    },
+    {
+        title: 'Opportunités',
+        classsChange: 'mm-collapse',
+        iconStyle: SVGICON.Blog,
+        content: [
+            {
+                title: 'Tableau de bord',
+                to: 'opportunities',
+            },
+            {
+                title: 'Toutes les opportunités',
+                to: 'opportunities/list',
+            },
+            {
+                title: 'Ajouter',
+                to: 'opportunities/new',
+            },
+            {
+                title: 'En attente',
+                to: 'opportunities/list?status=pending',
+            },
+        ],
+    },
+    {
+        title: 'Documents',
+        classsChange: 'mm-collapse',
+        iconStyle: SVGICON.Forms,
+        content: [
+            {
+                title: 'Tableau de bord',
+                to: 'documents',
+            },
+            {
+                title: 'Tous les documents',
+                to: 'documents/list',
+            },
+            {
+                title: 'Ajouter',
+                to: 'documents/new',
+            },
+            {
+                title: 'Catégories',
+                to: 'documents/categories',
             },
         ],
     },

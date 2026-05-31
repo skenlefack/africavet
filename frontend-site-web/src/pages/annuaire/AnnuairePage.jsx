@@ -5,13 +5,15 @@ import LoadingSpinner from '../../component/shared/LoadingSpinner';
 import Pagination from '../../component/shared/Pagination';
 import DirectoryCard from '../../component/annuaire/DirectoryCard';
 import DirectoryFilters from '../../component/annuaire/DirectoryFilters';
-import { annuaireApi } from '../../services/api';
+import DocumentCard from '../../component/documents/DocumentCard';
+import { annuaireApi, documentsApi } from '../../services/api';
 
 const TABS = [
   { key: 'all', label: 'Tout', icon: 'th-large' },
   { key: 'experts', label: 'Experts', icon: 'user-md' },
   { key: 'organisations', label: 'Organisations', icon: 'building' },
   { key: 'produits', label: 'Materiels / Produits', icon: 'cube' },
+  { key: 'documents', label: 'Documents', icon: 'file-text-o' },
 ];
 
 const ITEMS_PER_PAGE = 12;
@@ -64,13 +66,26 @@ const AnnuairePage = () => {
           params.type = 'produit';
           response = await annuaireApi.getAll(params);
           break;
+        case 'documents':
+          response = await documentsApi.getAll({
+            page: currentPage,
+            limit: ITEMS_PER_PAGE,
+            ...(searchQuery ? { query: searchQuery } : {}),
+            ...(filters.country ? { country: filters.country } : {}),
+          });
+          break;
         default:
           response = await annuaireApi.getAll(params);
       }
 
       if (response.success) {
-        setItems(response.data?.items || response.data || []);
-        setTotalItems(response.data?.total || response.data?.length || 0);
+        if (activeTab === 'documents') {
+          setItems(response.data || []);
+          setTotalItems(response.pagination?.total || response.data?.length || 0);
+        } else {
+          setItems(response.data?.items || response.data || []);
+          setTotalItems(response.data?.total || response.data?.length || 0);
+        }
       } else {
         setError(response.message || 'Erreur lors du chargement des donnees.');
       }
@@ -382,7 +397,13 @@ const AnnuairePage = () => {
               <>
                 <div className="row">
                   {items.map((item) => (
-                    <DirectoryCard key={item.id} item={item} />
+                    activeTab === 'documents' ? (
+                      <div key={item.id} className="col-md-6 col-lg-4 mb-4">
+                        <DocumentCard document={item} layout="grid" />
+                      </div>
+                    ) : (
+                      <DirectoryCard key={item.id} item={item} />
+                    )
                   ))}
                 </div>
 

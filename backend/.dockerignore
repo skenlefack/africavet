@@ -30,6 +30,14 @@ docs
 .DS_Store
 Thumbs.db
 
+# Uploads (mounted as Docker volume in production)
+uploads
+
+# Tests
+__tests__
+jest.config.js
+scripts
+
 # Temporary files
 tmp
 temp

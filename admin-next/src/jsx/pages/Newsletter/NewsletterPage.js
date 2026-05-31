@@ -46,9 +46,10 @@ const NewsletterPage = () => {
     const [settings, setSettings] = useState({ from_name: '', from_email: '', reply_to: '', track_opens: true, track_clicks: true, batch_size: 50, batch_delay: 1000 });
     const [savingSettings, setSavingSettings] = useState(false);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         fetchAll();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []);
 
     const fetchAll = async () => {
         const [statsRes, listsRes, subsRes, campsRes, tmplRes, settRes] = await Promise.all([

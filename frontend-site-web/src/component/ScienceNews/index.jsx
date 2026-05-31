@@ -133,7 +133,7 @@ const ScienceNews = () => {
                   <FontAwesome name="bookmark" />
                 </div>
                 <h6>
-                  QuomodoSoft <span>March 25, 2020</span>
+                  AfricaVet <span>March 25, 2020</span>
                 </h6>
               </div>
             </div>

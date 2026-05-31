@@ -71,7 +71,8 @@ const CategorySection = ({
     return text.substring(0, maxLength).trim() + '...';
   };
 
-  if (loading || posts.length === 0) return null;
+  if (loading) return null;
+  if (posts.length === 0) return null;
 
   // Layout: Cards (2 colonnes, image en haut, texte en bas - comme Tendances)
   if (layout === "cards") {

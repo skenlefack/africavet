@@ -11,7 +11,7 @@ const posts = [
   {
     photo: most26,
     date: "April 26, 2020",
-    author: "QuomodoSoft",
+    author: "AfricaVet",
     title: "Copa America: Luis Suarez from devastated US",
     description:
       "The property, complete with 30-seat screening from room, a 100-seat amphitheater and a swimming pond with sandy shower…",
@@ -19,7 +19,7 @@ const posts = [
   {
     photo: most27,
     date: "April 26, 2020",
-    author: "QuomodoSoft",
+    author: "AfricaVet",
     title: "Copa America: Luis Suarez from devastated US",
     description:
       "The property, complete with 30-seat screening from room, a 100-seat amphitheater and a swimming pond with sandy shower…",
@@ -27,7 +27,7 @@ const posts = [
   {
     photo: most28,
     date: "April 26, 2020",
-    author: "QuomodoSoft",
+    author: "AfricaVet",
     title: "Copa America: Luis Suarez from devastated US",
     description:
       "The property, complete with 30-seat screening from room, a 100-seat amphitheater and a swimming pond with sandy shower…",
