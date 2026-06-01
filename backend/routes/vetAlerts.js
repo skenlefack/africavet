@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { auth, authorize } = require('../middleware/auth');
+const { auth, authorize, optionalAuth } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -43,7 +43,7 @@ const upload = multer({
 // =====================================================
 
 // GET all alerts (public, approved only)
-router.get('/', async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const {
       page = 1,
