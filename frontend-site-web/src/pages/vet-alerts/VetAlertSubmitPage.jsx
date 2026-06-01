@@ -6,22 +6,22 @@ import FontAwesome from '../../component/uiStyle/FontAwesome';
 
 const ALERT_TYPES = [
   { value: 'maladie', label: 'Maladie', icon: 'bug' },
-  { value: 'mortalite', label: 'Mortalit\u00e9', icon: 'heartbeat' },
+  { value: 'mortalite', label: 'Mortalité', icon: 'heartbeat' },
   { value: 'intoxication', label: 'Intoxication', icon: 'flask' },
   { value: 'autre', label: 'Autre', icon: 'bell' },
 ];
 
 const PRIORITIES = [
-  { value: 'critical', label: 'Critique - Urgence imm\u00e9diate', color: '#d32f2f' },
-  { value: 'high', label: '\u00c9lev\u00e9e - Situation pr\u00e9occupante', color: '#e65100' },
+  { value: 'critical', label: 'Critique - Urgence immédiate', color: '#d32f2f' },
+  { value: 'high', label: 'Élevée - Situation préoccupante', color: '#e65100' },
   { value: 'medium', label: 'Moyenne - Surveillance requise', color: '#f9a825' },
-  { value: 'low', label: 'Faible - Information pr\u00e9ventive', color: '#2e7d32' },
+  { value: 'low', label: 'Faible - Information préventive', color: '#2e7d32' },
 ];
 
 const COUNTRIES = [
-  'S\u00e9n\u00e9gal', "C\u00f4te d'Ivoire", 'Mali', 'Burkina Faso', 'Niger', 'Cameroun',
-  'Tchad', 'Guin\u00e9e', 'Togo', 'B\u00e9nin', 'RDC', 'Congo', 'Gabon',
-  'Madagascar', 'Maroc', 'Tunisie', 'Alg\u00e9rie', 'Mauritanie', 'Autre',
+  'Sénégal', "Côte d'Ivoire", 'Mali', 'Burkina Faso', 'Niger', 'Cameroun',
+  'Tchad', 'Guinée', 'Togo', 'Bénin', 'RDC', 'Congo', 'Gabon',
+  'Madagascar', 'Maroc', 'Tunisie', 'Algérie', 'Mauritanie', 'Autre',
 ];
 
 const VetAlertSubmitPage = () => {
@@ -69,7 +69,7 @@ const VetAlertSubmitPage = () => {
 
     files.forEach(file => {
       if (file.size > 10 * 1024 * 1024) {
-        alert(`Le fichier "${file.name}" d\u00e9passe 10 MB et ne sera pas ajout\u00e9.`);
+        alert(`Le fichier "${file.name}" dépasse 10 MB et ne sera pas ajouté.`);
         return;
       }
       if (!file.type.startsWith('image/')) {
@@ -94,11 +94,11 @@ const VetAlertSubmitPage = () => {
   };
 
   const validateForm = () => {
-    if (!form.type) return 'Veuillez s\u00e9lectionner un type d\u2019alerte.';
-    if (!form.title.trim()) return 'Veuillez saisir un titre pour l\u2019alerte.';
-    if (!form.species.trim()) return 'Veuillez indiquer l\u2019esp\u00e8ce concern\u00e9e.';
-    if (!form.description.trim()) return 'Veuillez d\u00e9crire la situation observ\u00e9e.';
-    if (!form.country) return 'Veuillez s\u00e9lectionner le pays.';
+    if (!form.type) return 'Veuillez sélectionner un type d\'alerte.';
+    if (!form.title.trim()) return 'Veuillez saisir un titre pour l\'alerte.';
+    if (!form.species.trim()) return 'Veuillez indiquer l\'espèce concernée.';
+    if (!form.description.trim()) return 'Veuillez décrire la situation observée.';
+    if (!form.country) return 'Veuillez sélectionner le pays.';
     if (!form.contact_name.trim()) return 'Veuillez indiquer votre nom.';
     if (!form.contact_email.trim()) return 'Veuillez indiquer votre email.';
     return null;
@@ -132,10 +132,10 @@ const VetAlertSubmitPage = () => {
         setSuccess(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        setError(res.message || '\u00c9chec de la soumission. Veuillez r\u00e9essayer.');
+        setError(res.message || 'Échec de la soumission. Veuillez réessayer.');
       }
     } catch (err) {
-      setError('Une erreur est survenue. Veuillez r\u00e9essayer.');
+      setError('Une erreur est survenue. Veuillez réessayer.');
     }
 
     setSubmitting(false);
@@ -159,7 +159,7 @@ const VetAlertSubmitPage = () => {
               </Link>
               <span style={{ margin: '0 8px', opacity: 0.6 }}><FontAwesome name="angle-right" /></span>
               <Link to="/alertes-veterinaires" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none' }}>
-                Alertes V\u00e9t\u00e9rinaires
+                Alertes Vétérinaires
               </Link>
               <span style={{ margin: '0 8px', opacity: 0.6 }}><FontAwesome name="angle-right" /></span>
               <span>Alerte soumise</span>
@@ -185,14 +185,14 @@ const VetAlertSubmitPage = () => {
                 <FontAwesome name="check" style={{ fontSize: '36px', color: '#4CAF50' }} />
               </div>
               <h2 style={{ fontWeight: '700', color: '#333', marginBottom: '10px' }}>
-                Alerte soumise avec succ\u00e8s !
+                Alerte soumise avec succès !
               </h2>
               <p style={{ color: '#666', fontSize: '16px', marginBottom: '10px' }}>
-                Votre alerte <strong>"{form.title}"</strong> a \u00e9t\u00e9 enregistr\u00e9e.
+                Votre alerte <strong>"{form.title}"</strong> a été enregistrée.
               </p>
               <p style={{ color: '#999', fontSize: '14px', marginBottom: '25px' }}>
-                Notre \u00e9quipe va examiner votre signalement et le publier apr\u00e8s v\u00e9rification.
-                Vous serez notifi\u00e9(e) par email \u00e0 <strong>{form.contact_email}</strong>.
+                Notre équipe va examiner votre signalement et le publier après vérification.
+                Vous serez notifié(e) par email à <strong>{form.contact_email}</strong>.
               </p>
               <div className="d-flex justify-content-center gap-3">
                 <Link to="/alertes-veterinaires" className="btn btn-outline-primary">
@@ -240,16 +240,16 @@ const VetAlertSubmitPage = () => {
             </Link>
             <span style={{ margin: '0 8px', opacity: 0.6 }}><FontAwesome name="angle-right" /></span>
             <Link to="/alertes-veterinaires" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none' }}>
-              Alertes V\u00e9t\u00e9rinaires
+              Alertes Vétérinaires
             </Link>
             <span style={{ margin: '0 8px', opacity: 0.6 }}><FontAwesome name="angle-right" /></span>
             <span>Soumettre une alerte</span>
           </nav>
           <h1 style={{ fontSize: '24px', fontWeight: '700' }}>
-            <FontAwesome name="plus-circle" /> Soumettre une alerte v\u00e9t\u00e9rinaire
+            <FontAwesome name="plus-circle" /> Soumettre une alerte vétérinaire
           </h1>
           <p style={{ opacity: 0.9, fontSize: '15px', maxWidth: '600px' }}>
-            Signalez un cas suspect de maladie, mortalit\u00e9 ou intoxication animale pour aider la communaut\u00e9 v\u00e9t\u00e9rinaire.
+            Signalez un cas suspect de maladie, mortalité ou intoxication animale pour aider la communauté vétérinaire.
           </p>
         </div>
       </section>
@@ -270,7 +270,7 @@ const VetAlertSubmitPage = () => {
               <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
                 <div className="card-body" style={{ padding: '25px' }}>
                   <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '20px', color: '#354e84' }}>
-                    <FontAwesome name="tag" /> Type et priorit\u00e9
+                    <FontAwesome name="tag" /> Type et priorité
                   </h3>
 
                   <div className="row g-3">
@@ -286,7 +286,7 @@ const VetAlertSubmitPage = () => {
                         required
                         style={{ borderRadius: '8px' }}
                       >
-                        <option value="">-- S\u00e9lectionnez --</option>
+                        <option value="">-- Sélectionnez --</option>
                         {ALERT_TYPES.map(t => (
                           <option key={t.value} value={t.value}>{t.label}</option>
                         ))}
@@ -294,7 +294,7 @@ const VetAlertSubmitPage = () => {
                     </div>
                     <div className="col-md-6">
                       <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
-                        Niveau de priorit\u00e9 <span style={{ color: '#d32f2f' }}>*</span>
+                        Niveau de priorité <span style={{ color: '#d32f2f' }}>*</span>
                       </label>
                       <select
                         className="form-select"
@@ -314,7 +314,7 @@ const VetAlertSubmitPage = () => {
                   <div className="row g-3 mt-1">
                     <div className="col-md-6">
                       <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
-                        Esp\u00e8ce(s) concern\u00e9e(s) <span style={{ color: '#d32f2f' }}>*</span>
+                        Espèce(s) concernée(s) <span style={{ color: '#d32f2f' }}>*</span>
                       </label>
                       <input
                         type="text"
@@ -337,7 +337,7 @@ const VetAlertSubmitPage = () => {
                         name="title"
                         value={form.title}
                         onChange={handleChange}
-                        placeholder="R\u00e9sum\u00e9 court de l'alerte"
+                        placeholder="Résumé court de l'alerte"
                         required
                         style={{ borderRadius: '8px' }}
                       />
@@ -350,7 +350,7 @@ const VetAlertSubmitPage = () => {
               <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
                 <div className="card-body" style={{ padding: '25px' }}>
                   <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '20px', color: '#354e84' }}>
-                    <FontAwesome name="file-text-o" /> D\u00e9tails de l'alerte
+                    <FontAwesome name="file-text-o" /> Détails de l'alerte
                   </h3>
 
                   <div className="mb-3">
@@ -363,7 +363,7 @@ const VetAlertSubmitPage = () => {
                       rows={5}
                       value={form.description}
                       onChange={handleChange}
-                      placeholder="D\u00e9crivez la situation observ\u00e9e en d\u00e9tail: nombre d'animaux, chronologie, circonstances..."
+                      placeholder="Décrivez la situation observée en détail: nombre d'animaux, chronologie, circonstances..."
                       required
                       style={{ borderRadius: '8px', resize: 'vertical' }}
                     />
@@ -371,7 +371,7 @@ const VetAlertSubmitPage = () => {
 
                   <div className="mb-0">
                     <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
-                      Sympt\u00f4mes observ\u00e9s
+                      Symptômes observés
                     </label>
                     <textarea
                       className="form-control"
@@ -379,7 +379,7 @@ const VetAlertSubmitPage = () => {
                       rows={4}
                       value={form.symptoms}
                       onChange={handleChange}
-                      placeholder="D\u00e9crivez les sympt\u00f4mes observ\u00e9s chez les animaux affect\u00e9s..."
+                      placeholder="Décrivez les symptômes observés chez les animaux affectés..."
                       style={{ borderRadius: '8px', resize: 'vertical' }}
                     />
                   </div>
@@ -406,7 +406,7 @@ const VetAlertSubmitPage = () => {
                         required
                         style={{ borderRadius: '8px' }}
                       >
-                        <option value="">-- S\u00e9lectionnez --</option>
+                        <option value="">-- Sélectionnez --</option>
                         {COUNTRIES.map(c => (
                           <option key={c} value={c}>{c}</option>
                         ))}
@@ -414,7 +414,7 @@ const VetAlertSubmitPage = () => {
                     </div>
                     <div className="col-md-4">
                       <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
-                        R\u00e9gion
+                        Région
                       </label>
                       <input
                         type="text"
@@ -422,13 +422,13 @@ const VetAlertSubmitPage = () => {
                         name="region"
                         value={form.region}
                         onChange={handleChange}
-                        placeholder="R\u00e9gion / Province"
+                        placeholder="Région / Province"
                         style={{ borderRadius: '8px' }}
                       />
                     </div>
                     <div className="col-md-4">
                       <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
-                        Ville / Localit\u00e9
+                        Ville / Localité
                       </label>
                       <input
                         type="text"
@@ -451,7 +451,7 @@ const VetAlertSubmitPage = () => {
                     <FontAwesome name="camera" /> Photos
                   </h3>
                   <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>
-                    Ajoutez jusqu'\u00e0 5 photos pour illustrer la situation (max 10 MB par photo).
+                    Ajoutez jusqu'à 5 photos pour illustrer la situation (max 10 MB par photo).
                   </p>
 
                   {/* Photo Previews */}
@@ -543,7 +543,7 @@ const VetAlertSubmitPage = () => {
               <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
                 <div className="card-body" style={{ padding: '25px' }}>
                   <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '20px', color: '#354e84' }}>
-                    <FontAwesome name="user" /> Vos coordonn\u00e9es
+                    <FontAwesome name="user" /> Vos coordonnées
                   </h3>
 
                   <div className="row g-3">
@@ -579,7 +579,7 @@ const VetAlertSubmitPage = () => {
                     </div>
                     <div className="col-md-4">
                       <label className="form-label" style={{ fontWeight: '600', color: '#333' }}>
-                        T\u00e9l\u00e9phone
+                        Téléphone
                       </label>
                       <input
                         type="tel"
@@ -642,12 +642,12 @@ const VetAlertSubmitPage = () => {
                   <FontAwesome name="lightbulb-o" /> Conseils pour bien signaler
                 </h4>
                 <ul style={{ fontSize: '13px', color: '#555', lineHeight: '1.8', paddingLeft: '18px' }}>
-                  <li>Soyez aussi pr\u00e9cis que possible dans la description de la situation.</li>
-                  <li>Indiquez le nombre d'animaux touch\u00e9s si possible.</li>
-                  <li>D\u00e9crivez les sympt\u00f4mes observ\u00e9s de mani\u00e8re d\u00e9taill\u00e9e.</li>
-                  <li>Prenez des photos claires des animaux affect\u00e9s.</li>
-                  <li>Pr\u00e9cisez la localisation exacte pour faciliter l'intervention.</li>
-                  <li>Laissez des coordonn\u00e9es valides pour le suivi.</li>
+                  <li>Soyez aussi précis que possible dans la description de la situation.</li>
+                  <li>Indiquez le nombre d'animaux touchés si possible.</li>
+                  <li>Décrivez les symptômes observés de manière détaillée.</li>
+                  <li>Prenez des photos claires des animaux affectés.</li>
+                  <li>Précisez la localisation exacte pour faciliter l'intervention.</li>
+                  <li>Laissez des coordonnées valides pour le suivi.</li>
                 </ul>
               </div>
             </div>
@@ -656,7 +656,7 @@ const VetAlertSubmitPage = () => {
             <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
               <div className="card-body" style={{ padding: '20px' }}>
                 <h4 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '15px', color: '#354e84' }}>
-                  <FontAwesome name="exclamation-triangle" /> Guide des priorit\u00e9s
+                  <FontAwesome name="exclamation-triangle" /> Guide des priorités
                 </h4>
                 {PRIORITIES.map(p => (
                   <div key={p.value} className="d-flex align-items-start gap-2 mb-3">
@@ -685,11 +685,11 @@ const VetAlertSubmitPage = () => {
             <div className="card border-0 shadow-sm" style={{ borderRadius: '12px', borderLeft: '4px solid #d32f2f' }}>
               <div className="card-body" style={{ padding: '20px' }}>
                 <h4 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '10px', color: '#d32f2f' }}>
-                  <FontAwesome name="phone" /> Urgence v\u00e9t\u00e9rinaire ?
+                  <FontAwesome name="phone" /> Urgence vétérinaire ?
                 </h4>
                 <p style={{ fontSize: '13px', color: '#555', marginBottom: '10px' }}>
-                  En cas d'urgence imm\u00e9diate, contactez les services v\u00e9t\u00e9rinaires de votre r\u00e9gion
-                  ou les autorit\u00e9s sanitaires locales.
+                  En cas d'urgence immédiate, contactez les services vétérinaires de votre région
+                  ou les autorités sanitaires locales.
                 </p>
                 <p style={{ fontSize: '13px', color: '#666', marginBottom: 0 }}>
                   <FontAwesome name="envelope" /> contact@africavet.com

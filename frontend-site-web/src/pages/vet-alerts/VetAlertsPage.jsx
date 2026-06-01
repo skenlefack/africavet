@@ -10,15 +10,15 @@ import AlertCard from '../../component/vet-alerts/AlertCard';
 const TYPE_FILTERS = [
   { value: '', label: 'Tous les types', icon: 'list' },
   { value: 'maladie', label: 'Maladie', icon: 'bug' },
-  { value: 'mortalite', label: 'Mortalit\u00e9', icon: 'heartbeat' },
+  { value: 'mortalite', label: 'Mortalité', icon: 'heartbeat' },
   { value: 'intoxication', label: 'Intoxication', icon: 'flask' },
   { value: 'autre', label: 'Autre', icon: 'bell' },
 ];
 
 const PRIORITY_FILTERS = [
-  { value: '', label: 'Toutes les priorit\u00e9s' },
+  { value: '', label: 'Toutes les priorités' },
   { value: 'critical', label: 'Critique', color: '#d32f2f' },
-  { value: 'high', label: '\u00c9lev\u00e9e', color: '#e65100' },
+  { value: 'high', label: 'Élevée', color: '#e65100' },
   { value: 'medium', label: 'Moyenne', color: '#f9a825' },
   { value: 'low', label: 'Faible', color: '#2e7d32' },
 ];
@@ -121,17 +121,17 @@ const VetAlertsPage = () => {
               <FontAwesome name="home" /> Accueil
             </Link>
             <span style={{ margin: '0 8px', opacity: 0.6 }}><FontAwesome name="angle-right" /></span>
-            <span>Alertes V\u00e9t\u00e9rinaires</span>
+            <span>Alertes Vétérinaires</span>
           </nav>
 
           <div className="d-flex flex-wrap justify-content-between align-items-start">
             <div>
               <h1 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '10px' }}>
-                <FontAwesome name="bell" /> Alertes V\u00e9t\u00e9rinaires
+                <FontAwesome name="bell" /> Alertes Vétérinaires
               </h1>
               <p style={{ fontSize: '16px', opacity: 0.9, marginBottom: '25px', maxWidth: '600px' }}>
-                Consultez les alertes sanitaires v\u00e9t\u00e9rinaires en Afrique.
-                Signalez les \u00e9pid\u00e9mies, mortalit\u00e9s ou intoxications pour prot\u00e9ger la sant\u00e9 animale.
+                Consultez les alertes sanitaires vétérinaires en Afrique.
+                Signalez les épidémies, mortalités ou intoxications pour protéger la santé animale.
               </p>
             </div>
             <Link
@@ -175,7 +175,7 @@ const VetAlertsPage = () => {
             <div className="col-6 col-md-3">
               <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '10px', padding: '15px', textAlign: 'center', backdropFilter: 'blur(10px)' }}>
                 <div style={{ fontSize: '28px', fontWeight: '700' }}>{(byType.mortalite || 0) + (byType.intoxication || 0)}</div>
-                <div style={{ fontSize: '13px', opacity: 0.9 }}><FontAwesome name="heartbeat" /> Mortalit\u00e9s & Intox.</div>
+                <div style={{ fontSize: '13px', opacity: 0.9 }}><FontAwesome name="heartbeat" /> Mortalités & Intox.</div>
               </div>
             </div>
           </div>
@@ -245,21 +245,21 @@ const VetAlertsPage = () => {
                 style={{ border: '1px solid #ddd', borderRadius: '8px' }}
               >
                 <option value="">Tous les pays</option>
-                <option value="Senegal">S\u00e9n\u00e9gal</option>
-                <option value="Cote d'Ivoire">C\u00f4te d'Ivoire</option>
+                <option value="Senegal">Sénégal</option>
+                <option value="Cote d'Ivoire">Côte d'Ivoire</option>
                 <option value="Mali">Mali</option>
                 <option value="Burkina Faso">Burkina Faso</option>
                 <option value="Niger">Niger</option>
                 <option value="Cameroun">Cameroun</option>
                 <option value="Tchad">Tchad</option>
-                <option value="Guinee">Guin\u00e9e</option>
+                <option value="Guinee">Guinée</option>
                 <option value="Togo">Togo</option>
-                <option value="Benin">B\u00e9nin</option>
+                <option value="Benin">Bénin</option>
                 <option value="RDC">RDC</option>
                 <option value="Madagascar">Madagascar</option>
                 <option value="Maroc">Maroc</option>
                 <option value="Tunisie">Tunisie</option>
-                <option value="Algerie">Alg\u00e9rie</option>
+                <option value="Algerie">Algérie</option>
                 <option value="Mauritanie">Mauritanie</option>
                 <option value="Congo">Congo</option>
                 <option value="Gabon">Gabon</option>
@@ -270,9 +270,9 @@ const VetAlertsPage = () => {
           {/* Results count */}
           {!loading && (
             <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>
-              <strong>{pagination.total || alerts.length}</strong> alerte(s) trouv\u00e9e(s)
+              <strong>{pagination.total || alerts.length}</strong> alerte(s) trouvée(s)
               {activeType && <span> de type <strong>{TYPE_FILTERS.find(t => t.value === activeType)?.label}</strong></span>}
-              {activePriority && <span>, priorit\u00e9 <strong>{PRIORITY_FILTERS.find(p => p.value === activePriority)?.label}</strong></span>}
+              {activePriority && <span>, priorité <strong>{PRIORITY_FILTERS.find(p => p.value === activePriority)?.label}</strong></span>}
               {countryFilter && <span> en <strong>{countryFilter}</strong></span>}
             </p>
           )}
@@ -285,15 +285,15 @@ const VetAlertsPage = () => {
               <div style={{ fontSize: '60px', color: '#ddd', marginBottom: '20px' }}>
                 <FontAwesome name="bell-slash-o" />
               </div>
-              <h3 style={{ color: '#666', marginBottom: '10px' }}>Aucune alerte trouv\u00e9e</h3>
+              <h3 style={{ color: '#666', marginBottom: '10px' }}>Aucune alerte trouvée</h3>
               <p style={{ color: '#999' }}>
-                Aucune alerte ne correspond \u00e0 vos crit\u00e8res de recherche.
+                Aucune alerte ne correspond à vos critères de recherche.
               </p>
               <button
                 className="btn btn-outline-primary mt-3"
                 onClick={() => setSearchParams({})}
               >
-                <FontAwesome name="refresh" /> R\u00e9initialiser les filtres
+                <FontAwesome name="refresh" /> Réinitialiser les filtres
               </button>
             </div>
           ) : (

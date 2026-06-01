@@ -103,7 +103,7 @@ $av-teal: #00AB6C;
 }
 
 .alerts-card {
-  background: rgba(255,255,255,0.1); backdrop-filter: blur(15px);
+  background: #fff; backdrop-filter: blur(15px);
   border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.12);
   height: 100%; display: flex; flex-direction: column;
 }
@@ -112,10 +112,10 @@ $av-teal: #00AB6C;
   display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
   .alerts-icon-pulse {
     width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    background: rgba(211,47,47,0.2); color: #ff8a80; font-size: 16px;
+    background: rgba(211,47,47,0.1); color: #d32f2f; font-size: 16px;
     animation: alertPulse 2s ease-in-out infinite;
   }
-  h3 { font-size: 15px; font-weight: 700; color: #fff; margin: 0; }
+  h3 { font-size: 15px; font-weight: 700; color: #222; margin: 0; }
 }
 @keyframes alertPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(211,47,47,0.3); }
@@ -128,9 +128,9 @@ $av-teal: #00AB6C;
 
 .alert-ticker-item {
   display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px;
-  background: rgba(255,255,255,0.06); border-radius: 8px; text-decoration: none;
+  background: #f8f9fa; border-radius: 8px; text-decoration: none;
   transition: all 0.3s ease; animation: tickerSlideIn 0.4s ease both;
-  &:hover { background: rgba(255,255,255,0.12); transform: translateX(3px); }
+  &:hover { background: #f0f1f3; transform: translateX(3px); }
 }
 @keyframes tickerSlideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
 
@@ -143,15 +143,15 @@ $av-teal: #00AB6C;
 .alert-ticker-text {
   display: flex; flex-direction: column; gap: 2px; min-width: 0;
   .alert-ticker-title {
-    font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); line-height: 1.3;
+    font-size: 12px; font-weight: 600; color: #333; line-height: 1.3;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .alert-ticker-meta { font-size: 10px; color: rgba(255,255,255,0.45); }
+  .alert-ticker-meta { font-size: 10px; color: #999; }
 }
 
 .alerts-empty {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 8px; color: rgba(255,255,255,0.4); padding: 20px 0;
+  gap: 8px; color: #bbb; padding: 20px 0;
   i { font-size: 24px; color: $av-teal; }
   span { font-size: 12px; }
 }
@@ -159,9 +159,9 @@ $av-teal: #00AB6C;
 .alerts-see-all {
   display: flex; align-items: center; justify-content: center; gap: 6px;
   margin-top: 12px; padding: 8px; border-radius: 8px;
-  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7);
+  background: #f5f5f5; color: #666;
   font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.3s ease;
-  &:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  &:hover { background: #eee; color: #333; }
 }
 
 // ===== AUTH BAR (below pillars) =====

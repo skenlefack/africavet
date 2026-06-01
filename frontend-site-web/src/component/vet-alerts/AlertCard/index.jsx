@@ -6,14 +6,14 @@ const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 const PRIORITY_CONFIG = {
   critical: { label: 'Critique', color: '#d32f2f', bg: '#ffebee', icon: 'exclamation-circle' },
-  high: { label: '\u00c9lev\u00e9e', color: '#e65100', bg: '#fff3e0', icon: 'exclamation-triangle' },
+  high: { label: 'Élevée', color: '#e65100', bg: '#fff3e0', icon: 'exclamation-triangle' },
   medium: { label: 'Moyenne', color: '#f9a825', bg: '#fffde7', icon: 'info-circle' },
   low: { label: 'Faible', color: '#2e7d32', bg: '#e8f5e9', icon: 'check-circle' },
 };
 
 const TYPE_CONFIG = {
   maladie: { label: 'Maladie', icon: 'bug' },
-  mortalite: { label: 'Mortalit\u00e9', icon: 'heartbeat' },
+  mortalite: { label: 'Mortalité', icon: 'heartbeat' },
   intoxication: { label: 'Intoxication', icon: 'flask' },
   autre: { label: 'Autre', icon: 'bell' },
 };
@@ -21,8 +21,8 @@ const TYPE_CONFIG = {
 const STATUS_CONFIG = {
   active: { label: 'Active', color: '#d32f2f', bg: '#ffebee' },
   investigating: { label: 'En cours', color: '#e65100', bg: '#fff3e0' },
-  resolved: { label: 'R\u00e9solue', color: '#2e7d32', bg: '#e8f5e9' },
-  closed: { label: 'Cl\u00f4tur\u00e9e', color: '#607d8b', bg: '#eceff1' },
+  resolved: { label: 'Résolue', color: '#2e7d32', bg: '#e8f5e9' },
+  closed: { label: 'Clôturée', color: '#607d8b', bg: '#eceff1' },
 };
 
 const AlertCard = ({ alert }) => {
@@ -215,7 +215,7 @@ const AlertCard = ({ alert }) => {
               padding: '5px 12px',
             }}
           >
-            D\u00e9tails <FontAwesome name="arrow-right" />
+            Détails <FontAwesome name="arrow-right" />
           </Link>
         </div>
       </div>

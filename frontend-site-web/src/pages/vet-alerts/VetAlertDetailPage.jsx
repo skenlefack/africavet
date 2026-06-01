@@ -6,23 +6,23 @@ import LoadingSpinner from '../../component/shared/LoadingSpinner';
 
 const PRIORITY_CONFIG = {
   critical: { label: 'Critique', color: '#d32f2f', bg: '#ffebee', icon: 'exclamation-circle' },
-  high: { label: '\u00c9lev\u00e9e', color: '#e65100', bg: '#fff3e0', icon: 'exclamation-triangle' },
+  high: { label: 'Élevée', color: '#e65100', bg: '#fff3e0', icon: 'exclamation-triangle' },
   medium: { label: 'Moyenne', color: '#f9a825', bg: '#fffde7', icon: 'info-circle' },
   low: { label: 'Faible', color: '#2e7d32', bg: '#e8f5e9', icon: 'check-circle' },
 };
 
 const TYPE_CONFIG = {
   maladie: { label: 'Maladie', icon: 'bug' },
-  mortalite: { label: 'Mortalit\u00e9', icon: 'heartbeat' },
+  mortalite: { label: 'Mortalité', icon: 'heartbeat' },
   intoxication: { label: 'Intoxication', icon: 'flask' },
   autre: { label: 'Autre', icon: 'bell' },
 };
 
 const STATUS_CONFIG = {
   active: { label: 'Active', color: '#d32f2f', bg: '#ffebee' },
-  investigating: { label: 'En cours d\u2019investigation', color: '#e65100', bg: '#fff3e0' },
-  resolved: { label: 'R\u00e9solue', color: '#2e7d32', bg: '#e8f5e9' },
-  closed: { label: 'Cl\u00f4tur\u00e9e', color: '#607d8b', bg: '#eceff1' },
+  investigating: { label: 'En cours d\'investigation', color: '#e65100', bg: '#fff3e0' },
+  resolved: { label: 'Résolue', color: '#2e7d32', bg: '#e8f5e9' },
+  closed: { label: 'Clôturée', color: '#607d8b', bg: '#eceff1' },
 };
 
 const VetAlertDetailPage = () => {
@@ -91,7 +91,7 @@ const VetAlertDetailPage = () => {
           <FontAwesome name="exclamation-triangle" />
         </div>
         <h2 style={{ color: '#666' }}>{error || 'Alerte introuvable'}</h2>
-        <p style={{ color: '#999' }}>Cette alerte n'existe pas ou a \u00e9t\u00e9 retir\u00e9e.</p>
+        <p style={{ color: '#999' }}>Cette alerte n'existe pas ou a été retirée.</p>
         <Link to="/alertes-veterinaires" className="btn btn-primary mt-3">
           <FontAwesome name="arrow-left" /> Retour aux alertes
         </Link>
@@ -140,7 +140,7 @@ const VetAlertDetailPage = () => {
             </Link>
             <span style={{ margin: '0 8px', opacity: 0.6 }}><FontAwesome name="angle-right" /></span>
             <Link to="/alertes-veterinaires" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none' }}>
-              Alertes V\u00e9t\u00e9rinaires
+              Alertes Vétérinaires
             </Link>
             <span style={{ margin: '0 8px', opacity: 0.6 }}><FontAwesome name="angle-right" /></span>
             <span>{displayTitle.length > 50 ? displayTitle.substring(0, 50) + '...' : displayTitle}</span>
@@ -159,7 +159,7 @@ const VetAlertDetailPage = () => {
                 border: '1px solid rgba(255,255,255,0.3)',
               }}
             >
-              <FontAwesome name={priorityCfg.icon} /> Priorit\u00e9 : {priorityCfg.label}
+              <FontAwesome name={priorityCfg.icon} /> Priorité : {priorityCfg.label}
             </span>
             <span
               className="badge"
@@ -286,7 +286,7 @@ const VetAlertDetailPage = () => {
                 <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
                   <div className="card-body" style={{ padding: '25px' }}>
                     <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '15px', color: '#354e84' }}>
-                      <FontAwesome name="stethoscope" /> Sympt\u00f4mes observ\u00e9s
+                      <FontAwesome name="stethoscope" /> Symptômes observés
                     </h3>
                     <div
                       style={{ lineHeight: '1.8', color: '#444', fontSize: '15px' }}
@@ -301,14 +301,14 @@ const VetAlertDetailPage = () => {
                 <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '12px' }}>
                   <div className="card-body" style={{ padding: '25px' }}>
                     <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '15px', color: '#354e84' }}>
-                      <FontAwesome name="bar-chart" /> Donn\u00e9es compl\u00e9mentaires
+                      <FontAwesome name="bar-chart" /> Données complémentaires
                     </h3>
                     <div className="row g-3">
                       {alert.affected_count && (
                         <div className="col-md-4">
                           <div className="p-3 border rounded text-center" style={{ borderRadius: '8px' }}>
                             <div style={{ fontSize: '24px', fontWeight: '700', color: '#d32f2f' }}>{alert.affected_count}</div>
-                            <div style={{ fontSize: '13px', color: '#666' }}>Animaux affect\u00e9s</div>
+                            <div style={{ fontSize: '13px', color: '#666' }}>Animaux affectés</div>
                           </div>
                         </div>
                       )}
@@ -316,7 +316,7 @@ const VetAlertDetailPage = () => {
                         <div className="col-md-4">
                           <div className="p-3 border rounded text-center" style={{ borderRadius: '8px' }}>
                             <div style={{ fontSize: '24px', fontWeight: '700', color: '#b71c1c' }}>{alert.mortality_count}</div>
-                            <div style={{ fontSize: '13px', color: '#666' }}>D\u00e9c\u00e8s</div>
+                            <div style={{ fontSize: '13px', color: '#666' }}>Décès</div>
                           </div>
                         </div>
                       )}
@@ -381,7 +381,7 @@ const VetAlertDetailPage = () => {
                   }}
                 >
                   <FontAwesome name={priorityCfg.icon} style={{ fontSize: '28px', marginBottom: '8px', display: 'block' }} />
-                  <div style={{ fontSize: '20px', fontWeight: '700' }}>Priorit\u00e9 {priorityCfg.label}</div>
+                  <div style={{ fontSize: '20px', fontWeight: '700' }}>Priorité {priorityCfg.label}</div>
                   <div
                     className="badge mt-2"
                     style={{
@@ -415,7 +415,7 @@ const VetAlertDetailPage = () => {
                       <li className="d-flex align-items-start mb-3">
                         <span style={{ width: '28px', color: '#666' }}><FontAwesome name="paw" /></span>
                         <div>
-                          <strong style={{ color: '#333' }}>Esp\u00e8ce(s)</strong><br />
+                          <strong style={{ color: '#333' }}>Espèce(s)</strong><br />
                           <span style={{ color: '#666' }}>{alert.species}</span>
                         </div>
                       </li>
@@ -433,7 +433,7 @@ const VetAlertDetailPage = () => {
                       <li className="d-flex align-items-start mb-3">
                         <span style={{ width: '28px', color: '#666' }}><FontAwesome name="map-o" /></span>
                         <div>
-                          <strong style={{ color: '#333' }}>R\u00e9gion</strong><br />
+                          <strong style={{ color: '#333' }}>Région</strong><br />
                           <span style={{ color: '#666' }}>{alert.region}</span>
                         </div>
                       </li>
@@ -460,7 +460,7 @@ const VetAlertDetailPage = () => {
                       <li className="d-flex align-items-start mb-3">
                         <span style={{ width: '28px', color: '#666' }}><FontAwesome name="refresh" /></span>
                         <div>
-                          <strong style={{ color: '#333' }}>Derni\u00e8re mise \u00e0 jour</strong><br />
+                          <strong style={{ color: '#333' }}>Dernière mise à jour</strong><br />
                           <span style={{ color: '#666' }}>{formatDate(alert.updated_at)}</span>
                         </div>
                       </li>
@@ -469,7 +469,7 @@ const VetAlertDetailPage = () => {
                       <li className="d-flex align-items-start mb-3">
                         <span style={{ width: '28px', color: '#666' }}><FontAwesome name="user" /></span>
                         <div>
-                          <strong style={{ color: '#333' }}>Signal\u00e9 par</strong><br />
+                          <strong style={{ color: '#333' }}>Signalé par</strong><br />
                           <span style={{ color: '#666' }}>{alert.contact_name}</span>
                         </div>
                       </li>
@@ -482,10 +482,10 @@ const VetAlertDetailPage = () => {
               <div className="card border-0 shadow-sm" style={{ borderRadius: '12px' }}>
                 <div className="card-body" style={{ padding: '20px', textAlign: 'center' }}>
                   <h4 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '12px', color: '#354e84' }}>
-                    <FontAwesome name="bell" /> Vous avez observ\u00e9 un cas similaire ?
+                    <FontAwesome name="bell" /> Vous avez observé un cas similaire ?
                   </h4>
                   <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>
-                    Aidez \u00e0 suivre cette alerte en soumettant vos propres observations.
+                    Aidez à suivre cette alerte en soumettant vos propres observations.
                   </p>
                   <Link
                     to="/soumettre-alerte"
