@@ -215,7 +215,7 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), async (req, res) 
   try {
     const {
       title, title_fr, title_en, content, content_fr, content_en,
-      excerpt, excerpt_fr, excerpt_en, featured_image, category_id, type = 'post',
+      excerpt, excerpt_fr, excerpt_en, featured_image, image_caption, category_id, type = 'post',
       status = 'draft', visibility = 'public', password, featured = false,
       allow_comments = true, meta_title, meta_title_fr, meta_title_en,
       meta_description, meta_description_fr, meta_description_en, meta_keywords,
@@ -256,13 +256,13 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), async (req, res) 
 
     const [result] = await db.query(
       `INSERT INTO posts (title, title_fr, title_en, slug, content, content_fr, content_en,
-       excerpt, excerpt_fr, excerpt_en, featured_image, author_id, category_id,
+       excerpt, excerpt_fr, excerpt_en, featured_image, image_caption, author_id, category_id,
        type, status, visibility, password, featured, allow_comments,
        meta_title, meta_title_fr, meta_title_en, meta_description, meta_description_fr, meta_description_en,
        meta_keywords, published_at, scheduled_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [finalTitle, finalTitleFr, finalTitleEn, slug, finalContentFr, finalContentFr, finalContentEn,
-       finalExcerptFr, finalExcerptFr, finalExcerptEn, featured_image, req.user.id, finalCategoryId,
+       finalExcerptFr, finalExcerptFr, finalExcerptEn, featured_image, image_caption || null, req.user.id, finalCategoryId,
        type, status, visibility, password, featured, allow_comments,
        finalMetaTitleFr, finalMetaTitleFr, finalMetaTitleEn, finalMetaDescFr, finalMetaDescFr, finalMetaDescEn,
        meta_keywords,
@@ -312,7 +312,7 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), async (req, res
 
     const {
       title, title_fr, title_en, content, content_fr, content_en,
-      excerpt, excerpt_fr, excerpt_en, featured_image, category_id, type,
+      excerpt, excerpt_fr, excerpt_en, featured_image, image_caption, category_id, type,
       status, visibility, password, featured, allow_comments,
       meta_title, meta_title_fr, meta_title_en,
       meta_description, meta_description_fr, meta_description_en,
@@ -360,6 +360,7 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), async (req, res
        excerpt_fr = COALESCE(?, excerpt_fr),
        excerpt_en = COALESCE(?, excerpt_en),
        featured_image = COALESCE(?, featured_image),
+       image_caption = ?,
        category_id = COALESCE(?, category_id),
        author_id = COALESCE(?, author_id),
        type = COALESCE(?, type),
@@ -381,7 +382,7 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), async (req, res
       [finalTitle, finalTitleFr, finalTitleEn, slug,
        finalContentFr, finalContentFr, finalContentEn,
        finalExcerptFr, finalExcerptFr, finalExcerptEn,
-       featured_image, finalCategoryId, finalAuthorId, type, status, visibility, password, featured, allow_comments,
+       featured_image, image_caption != null ? image_caption : null, finalCategoryId, finalAuthorId, type, status, visibility, password, featured, allow_comments,
        finalMetaTitleFr, finalMetaTitleFr, finalMetaTitleEn,
        finalMetaDescFr, finalMetaDescFr, finalMetaDescEn,
        meta_keywords, status, toMySQLDateTime(published_at), toMySQLDateTime(scheduled_at), id]

@@ -402,6 +402,48 @@ router.post('/', (req, res) => {
 // ADMIN ROUTES
 // =====================================================
 
+// POST admin create alert (admin only)
+router.post('/admin', auth, authorize('admin'), async (req, res) => {
+  try {
+    const {
+      title_fr, title_en, description_fr, description_en,
+      alert_type = 'emergency', severity_level = 'informational',
+      priority = 'medium', country, affected_regions,
+      responsible_authority, contact_info,
+      broadcast_status = 'inactive', auto_expire_at,
+      verification_status = 'unverified', status = 'pending'
+    } = req.body;
+
+    if (!title_fr) {
+      return res.status(400).json({ success: false, message: 'title_fr is required' });
+    }
+
+    const code = 'ALT-' + Date.now().toString(36).toUpperCase();
+    const finalStatus = broadcast_status === 'active' ? 'approved' : (status || 'pending');
+
+    const [result] = await db.query(
+      `INSERT INTO vet_alerts (code, alert_type, title_fr, title_en, description_fr, description_en,
+       country, affected_regions, priority, severity_level, responsible_authority, contact_info,
+       broadcast_status, auto_expire_at, verification_status,
+       status, is_public, user_id, validated_by, validated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)`,
+      [code, alert_type, title_fr, title_en || null, description_fr || null, description_en || null,
+       country || null, affected_regions || null, priority, severity_level,
+       responsible_authority || null, contact_info || null,
+       broadcast_status, auto_expire_at || null, verification_status,
+       finalStatus, req.user.id,
+       finalStatus === 'approved' ? req.user.id : null,
+       finalStatus === 'approved' ? new Date() : null]
+    );
+
+    const [newAlert] = await db.query('SELECT * FROM vet_alerts WHERE id = ?', [result.insertId]);
+    res.status(201).json({ success: true, data: newAlert[0] });
+  } catch (error) {
+    console.error('Admin create alert error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // GET pending alerts (admin)
 router.get('/admin/pending', auth, authorize('admin'), async (req, res) => {
   try {
@@ -568,7 +610,9 @@ router.put('/:id', auth, authorize('admin'), async (req, res) => {
       'alert_type', 'title_fr', 'title_en', 'description_fr', 'description_en',
       'country', 'region', 'city', 'location_details', 'latitude', 'longitude',
       'species', 'disease_name', 'symptoms', 'affected_count', 'dead_count', 'suspected_cause',
-      'status', 'priority', 'is_public'
+      'responsible_authority', 'contact_info', 'affected_regions',
+      'status', 'priority', 'severity_level', 'is_public',
+      'broadcast_status', 'auto_expire_at', 'verification_status'
     ];
 
     const updates = [];

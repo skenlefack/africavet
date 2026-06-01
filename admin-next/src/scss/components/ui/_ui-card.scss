@@ -5,13 +5,13 @@
     position: relative;
     border: 0rem solid transparent;
     border-radius: $radius;
-	height: calc(100% - 20px);
+	height: auto;
 	border: 1px solid $card-border;
-	
+
 	// z-index: 0;
 	@include custommq($max: 35.9375rem) {
 		margin-bottom:0.938rem;
-		height: calc(100% - 0.938rem);
+		height: auto;
 	}
 
     &-body {

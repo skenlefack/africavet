@@ -48,10 +48,11 @@ const upload = multer({
  * GET /api/opportunities
  * List all published opportunities with filters
  */
-router.get('/', authenticate, async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const {
       type,           // job, tender, market
+      status,         // draft, pending, published, closed, cancelled
       category,       // category slug
       country,
       region,
@@ -65,31 +66,31 @@ router.get('/', authenticate, async (req, res) => {
       sort = 'newest'
     } = req.query;
 
+    // If admin query (has auth token and admin/editor role), show all statuses
+    const isAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'editor');
+    const statusFilter = isAdmin && !req.query.public ? '1=1' : "o.status = 'published'";
+
     let query = `
       SELECT o.*,
-        oc.name_fr as category_name_fr,
-        oc.name_en as category_name_en,
         org.name as org_name,
         org.logo as org_logo
       FROM opportunities o
-      LEFT JOIN opportunity_category_links ocl ON o.id = ocl.opportunity_id
-      LEFT JOIN opportunity_categories oc ON ocl.category_id = oc.id
       LEFT JOIN organizations org ON o.organization_id = org.id
-      WHERE o.status = 'published'
+      WHERE ${statusFilter}
     `;
 
     const params = [];
+
+    // Status filter (admin only)
+    if (isAdmin && status) {
+      query += ' AND o.status = ?';
+      params.push(status);
+    }
 
     // Type filter
     if (type) {
       query += ' AND o.opportunity_type = ?';
       params.push(type);
-    }
-
-    // Category filter
-    if (category) {
-      query += ' AND oc.slug = ?';
-      params.push(category);
     }
 
     // Location filters
@@ -130,11 +131,10 @@ router.get('/', authenticate, async (req, res) => {
       params.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
     }
 
-    // Deadline not passed
-    query += ' AND (o.deadline IS NULL OR o.deadline >= NOW())';
-
-    // Group by to handle multiple categories
-    query += ' GROUP BY o.id';
+    // Deadline not passed (only for public view)
+    if (!isAdmin) {
+      query += ' AND (o.deadline IS NULL OR o.deadline >= NOW())';
+    }
 
     // Sorting
     switch (sort) {
@@ -162,33 +162,14 @@ router.get('/', authenticate, async (req, res) => {
 
     const [opportunities] = await db.query(query, params);
 
-    // Get total count
-    let countQuery = `
-      SELECT COUNT(DISTINCT o.id) as total
-      FROM opportunities o
-      LEFT JOIN opportunity_category_links ocl ON o.id = ocl.opportunity_id
-      LEFT JOIN opportunity_categories oc ON ocl.category_id = oc.id
-      WHERE o.status = 'published'
-        AND (o.deadline IS NULL OR o.deadline >= NOW())
-    `;
-
+    // Get total count - build same WHERE conditions
+    let countQuery = `SELECT COUNT(*) as total FROM opportunities o WHERE ${statusFilter}`;
     const countParams = [];
-    if (type) {
-      countQuery += ' AND o.opportunity_type = ?';
-      countParams.push(type);
-    }
-    if (category) {
-      countQuery += ' AND oc.slug = ?';
-      countParams.push(category);
-    }
-    if (country) {
-      countQuery += ' AND o.country = ?';
-      countParams.push(country);
-    }
-    if (search) {
-      countQuery += ` AND (o.title_fr LIKE ? OR o.title_en LIKE ?)`;
-      countParams.push(`%${search}%`, `%${search}%`);
-    }
+    if (isAdmin && status) { countQuery += ' AND o.status = ?'; countParams.push(status); }
+    if (!isAdmin) { countQuery += ' AND (o.deadline IS NULL OR o.deadline >= NOW())'; }
+    if (type) { countQuery += ' AND o.opportunity_type = ?'; countParams.push(type); }
+    if (country) { countQuery += ' AND o.country = ?'; countParams.push(country); }
+    if (search) { countQuery += ' AND (o.title_fr LIKE ? OR o.title_en LIKE ?)'; countParams.push(`%${search}%`, `%${search}%`); }
 
     const [countResult] = await db.query(countQuery, countParams);
     const total = countResult[0].total;
@@ -213,7 +194,7 @@ router.get('/', authenticate, async (req, res) => {
  * GET /api/opportunities/categories
  * Get all opportunity categories
  */
-router.get('/categories', authenticate, async (req, res) => {
+router.get('/categories', optionalAuth, async (req, res) => {
   try {
     const { type } = req.query;
 
@@ -243,7 +224,7 @@ router.get('/categories', authenticate, async (req, res) => {
  * GET /api/opportunities/stats
  * Get opportunity statistics
  */
-router.get('/stats', authenticate, async (req, res) => {
+router.get('/stats', optionalAuth, async (req, res) => {
   try {
     const [stats] = await db.query(`
       SELECT
@@ -288,7 +269,7 @@ router.get('/stats', authenticate, async (req, res) => {
  * GET /api/opportunities/:id
  * Get single opportunity detail
  */
-router.get('/:id', authenticate, async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -373,7 +354,8 @@ router.post('/', authenticate, upload.single('logo'), async (req, res) => {
       start_date,
       deadline,
       categories,
-      tags
+      tags,
+      attachments
     } = req.body;
 
     // Validate required fields
@@ -398,8 +380,8 @@ router.post('/', authenticate, upload.single('logo'), async (req, res) => {
         submission_method, eligibility_criteria, required_documents,
         market_category, quantity, unit_price,
         start_date, deadline,
-        tags, submitted_by, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+        tags, attachments, submitted_by, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
     `, [
       opportunity_type, title_fr, title_en || null, description_fr || null, description_en || null,
       organization_name || null, organization_logo, contact_name || null, contact_email || null, contact_phone || null, website_url || null,
@@ -410,7 +392,7 @@ router.post('/', authenticate, upload.single('logo'), async (req, res) => {
       submission_method || null, eligibility_criteria || null, required_documents ? JSON.stringify(required_documents) : null,
       market_category || null, quantity || null, unit_price || null,
       start_date || null, deadline || null,
-      tags ? JSON.stringify(tags) : null, req.user.id
+      tags ? JSON.stringify(tags) : null, attachments || null, req.user.id
     ]);
 
     const opportunityId = result.insertId;
@@ -624,7 +606,7 @@ router.put('/:id', authenticate, async (req, res) => {
       'organization_name', 'contact_name', 'contact_email', 'contact_phone',
       'country', 'region', 'city', 'address', 'is_remote',
       'job_type', 'experience_required', 'salary_min', 'salary_max',
-      'deadline', 'is_featured', 'is_urgent', 'status'
+      'deadline', 'is_featured', 'is_urgent', 'status', 'attachments'
     ];
 
     const updates = [];

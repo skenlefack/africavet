@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { api, getToken } from '../../../services/api';
+import { api, getToken, API_BASE_URL } from '../../../services/api';
 import { Editor } from '@tinymce/tinymce-react';
 import 'tinymce/tinymce';
 import 'tinymce/models/dom';
@@ -54,6 +54,10 @@ const OpportunityEditor = () => {
     const [saving, setSaving] = useState(false);
     const [toast, setToast] = useState(null);
     const [activeLang, setActiveLang] = useState('fr');
+
+    const [files, setFiles] = useState([]);
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef(null);
 
     const [form, setForm] = useState({
         opportunity_type: 'job',
@@ -138,6 +142,60 @@ const OpportunityEditor = () => {
         setForm(prev => ({ ...prev, [key]: value }));
     };
 
+    const handleFileUpload = async (e) => {
+        const selectedFiles = Array.from(e.target.files);
+        if (selectedFiles.length === 0) return;
+
+        setUploading(true);
+        for (const file of selectedFiles) {
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                const res = await fetch(`${API_BASE_URL}/upload/document`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData,
+                });
+                const data = await res.json();
+                if (data.success) {
+                    setFiles(prev => [...prev, {
+                        url: data.data.url,
+                        name: data.data.originalName,
+                        size: data.data.size,
+                        type: data.data.type,
+                    }]);
+                } else {
+                    setToast({ type: 'error', message: `Erreur: ${file.name}` });
+                }
+            } catch {
+                setToast({ type: 'error', message: `Erreur upload: ${file.name}` });
+            }
+        }
+        setUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const removeFile = (index) => {
+        setFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const formatFileSize = (bytes) => {
+        if (bytes < 1024) return bytes + ' o';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' Ko';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' Mo';
+    };
+
+    const getFileIcon = (type) => {
+        switch (type) {
+            case 'pdf': return 'fa-file-pdf text-danger';
+            case 'word': return 'fa-file-word text-primary';
+            case 'excel': return 'fa-file-excel text-success';
+            case 'powerpoint': return 'fa-file-powerpoint text-warning';
+            case 'video': return 'fa-file-video text-info';
+            default: return 'fa-file text-secondary';
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.title_fr.trim()) {
@@ -149,6 +207,7 @@ const OpportunityEditor = () => {
 
         const data = {
             ...form,
+            attachments: files.length > 0 ? JSON.stringify(files) : null,
             description_fr: editorRefFr.current ? editorRefFr.current.getContent() : form.description_fr,
             description_en: editorRefEn.current ? editorRefEn.current.getContent() : form.description_en,
             is_remote: form.is_remote ? 1 : 0,
@@ -216,7 +275,7 @@ const OpportunityEditor = () => {
             </div>
 
             <form onSubmit={handleSubmit}>
-                <div className="row">
+                <div className="row align-items-start">
                     <div className="col-lg-8">
                         {/* Type & Title */}
                         <div className="card border-0 shadow-sm mb-4">
@@ -420,7 +479,7 @@ const OpportunityEditor = () => {
                     </div>
 
                     {/* Sidebar */}
-                    <div className="col-lg-4">
+                    <div className="col-lg-4" style={{ position: 'sticky', top: '5rem', alignSelf: 'flex-start' }}>
                         {/* Publish */}
                         <div className="card border-0 shadow-sm mb-4">
                             <div className="card-header bg-white border-0">
@@ -456,16 +515,76 @@ const OpportunityEditor = () => {
                                         <i className="fas fa-bolt text-danger me-1"></i> Urgent
                                     </label>
                                 </div>
-                                <button type="submit" className="btn w-100" disabled={saving}
-                                    style={{ background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)', color: 'white' }}>
-                                    {saving ? (
-                                        <><span className="spinner-border spinner-border-sm me-2"></span>Enregistrement...</>
-                                    ) : (
-                                        <><i className={`fas ${isEditing ? 'fa-save' : 'fa-plus-circle'} me-2`}></i>{isEditing ? 'Enregistrer' : 'Créer'}</>
-                                    )}
-                                </button>
                             </div>
                         </div>
+
+                        {/* Fichiers joints */}
+                        <div className="card border-0 shadow-sm mb-4">
+                            <div className="card-header bg-white border-0">
+                                <h6 className="mb-0"><i className="fas fa-paperclip text-primary me-2"></i>Fichiers joints</h6>
+                            </div>
+                            <div className="card-body">
+                                <div
+                                    onClick={() => fileInputRef.current?.click()}
+                                    style={{
+                                        border: '2px dashed #dee2e6',
+                                        borderRadius: '8px',
+                                        padding: '16px',
+                                        textAlign: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'border-color 0.2s',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.borderColor = '#7ac142'}
+                                    onMouseLeave={e => e.currentTarget.style.borderColor = '#dee2e6'}
+                                >
+                                    {uploading ? (
+                                        <><span className="spinner-border spinner-border-sm me-2"></span>Upload en cours...</>
+                                    ) : (
+                                        <>
+                                            <i className="fas fa-cloud-upload-alt fa-2x text-muted mb-2 d-block"></i>
+                                            <small className="text-muted">Cliquez pour ajouter des fichiers<br />PDF, Word, Excel, Images (max 50 Mo)</small>
+                                        </>
+                                    )}
+                                </div>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    multiple
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png"
+                                    onChange={handleFileUpload}
+                                    style={{ display: 'none' }}
+                                />
+
+                                {files.length > 0 && (
+                                    <div className="mt-3">
+                                        {files.map((file, index) => (
+                                            <div key={index} className="d-flex align-items-center justify-content-between py-2 px-2 mb-1" style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                                                <div className="d-flex align-items-center" style={{ minWidth: 0 }}>
+                                                    <i className={`fas ${getFileIcon(file.type)} me-2`}></i>
+                                                    <div style={{ minWidth: 0 }}>
+                                                        <div style={{ fontSize: '0.85rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={file.name}>{file.name}</div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#6c757d' }}>{formatFileSize(file.size)}</div>
+                                                    </div>
+                                                </div>
+                                                <button type="button" className="btn btn-sm text-danger p-0 ms-2" onClick={() => removeFile(index)} title="Supprimer">
+                                                    <i className="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Bouton soumettre */}
+                        <button type="submit" className="btn w-100 mb-4" disabled={saving}
+                            style={{ background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)', color: 'white' }}>
+                            {saving ? (
+                                <><span className="spinner-border spinner-border-sm me-2"></span>Enregistrement...</>
+                            ) : (
+                                <><i className={`fas ${isEditing ? 'fa-save' : 'fa-plus-circle'} me-2`}></i>{isEditing ? 'Enregistrer' : 'Créer'}</>
+                            )}
+                        </button>
                     </div>
                 </div>
             </form>

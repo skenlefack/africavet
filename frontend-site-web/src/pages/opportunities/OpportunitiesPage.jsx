@@ -8,17 +8,16 @@ import OpportunityCard from '../../component/opportunities/OpportunityCard';
 
 const TYPE_TABS = [
   { value: '', label: 'Tous', icon: 'th-large' },
-  { value: 'emploi', label: 'Emplois', icon: 'briefcase' },
-  { value: 'appel_offre', label: "Appels d'offres", icon: 'gavel' },
-  { value: 'marche', label: 'March\u00e9s', icon: 'handshake-o' },
-  { value: 'bourse', label: 'Bourses', icon: 'graduation-cap' },
+  { value: 'job', label: 'Emplois', icon: 'briefcase' },
+  { value: 'tender', label: "Appels d'offres", icon: 'gavel' },
+  { value: 'market', label: 'Marchés', icon: 'handshake-o' },
 ];
 
 const OpportunitiesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [opportunities, setOpportunities] = useState([]);
-  const [stats, setStats] = useState({ total: 0, emploi: 0, appel_offre: 0, marche: 0, bourse: 0 });
+  const [stats, setStats] = useState({ total: 0, job: 0, tender: 0, market: 0 });
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
 
@@ -32,7 +31,14 @@ const OpportunitiesPage = () => {
     const loadStats = async () => {
       const res = await opportunitiesApi.getStats();
       if (res.success && res.data) {
-        setStats(res.data);
+        const byType = {};
+        (res.data.by_type || []).forEach(s => { byType[s.opportunity_type] = s.total; });
+        setStats({
+          total: res.data.totals?.total || 0,
+          job: byType.job || 0,
+          tender: byType.tender || 0,
+          market: byType.market || 0,
+        });
       }
     };
     loadStats();
@@ -123,20 +129,20 @@ const OpportunitiesPage = () => {
             </div>
             <div className="col-6 col-md-3">
               <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '10px', padding: '15px', textAlign: 'center', backdropFilter: 'blur(10px)' }}>
-                <div style={{ fontSize: '28px', fontWeight: '700' }}>{stats.emploi || 0}</div>
+                <div style={{ fontSize: '28px', fontWeight: '700' }}>{stats.job || 0}</div>
                 <div style={{ fontSize: '13px', opacity: 0.9 }}><FontAwesome name="briefcase" /> Emplois</div>
               </div>
             </div>
             <div className="col-6 col-md-3">
               <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '10px', padding: '15px', textAlign: 'center', backdropFilter: 'blur(10px)' }}>
-                <div style={{ fontSize: '28px', fontWeight: '700' }}>{stats.appel_offre || 0}</div>
+                <div style={{ fontSize: '28px', fontWeight: '700' }}>{stats.tender || 0}</div>
                 <div style={{ fontSize: '13px', opacity: 0.9 }}><FontAwesome name="gavel" /> Appels d'offres</div>
               </div>
             </div>
             <div className="col-6 col-md-3">
               <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '10px', padding: '15px', textAlign: 'center', backdropFilter: 'blur(10px)' }}>
-                <div style={{ fontSize: '28px', fontWeight: '700' }}>{(stats.marche || 0) + (stats.bourse || 0)}</div>
-                <div style={{ fontSize: '13px', opacity: 0.9 }}><FontAwesome name="graduation-cap" /> March\u00e9s & Bourses</div>
+                <div style={{ fontSize: '28px', fontWeight: '700' }}>{stats.market || 0}</div>
+                <div style={{ fontSize: '13px', opacity: 0.9 }}><FontAwesome name="handshake-o" /> Marchés</div>
               </div>
             </div>
           </div>

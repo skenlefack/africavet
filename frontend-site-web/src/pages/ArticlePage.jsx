@@ -219,6 +219,9 @@ const ArticlePage = () => {
                 {post.featured_image && (
                   <div className="article-featured-image">
                     <img src={getImageUrl(post.featured_image)} alt={post.title_fr || post.title} />
+                    {post.image_caption && (
+                      <figcaption className="article-image-caption">{post.image_caption}</figcaption>
+                    )}
                   </div>
                 )}
 

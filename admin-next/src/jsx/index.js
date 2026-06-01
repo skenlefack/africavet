@@ -88,6 +88,7 @@ import DocumentCategoryEditor from "./pages/Documents/DocumentCategoryEditor";
 import AlertsDashboard from "./pages/Alerts/AlertsDashboard";
 import AlertsList from "./pages/Alerts/AlertsList";
 import AlertView from "./pages/Alerts/AlertView";
+import AlertEditor from "./pages/Alerts/AlertEditor";
 
 /// Pages - Opportunities
 import OpportunitiesDashboard from "./pages/Opportunities/OpportunitiesDashboard";
@@ -242,6 +243,8 @@ const Markup = () => {
                     {/* Alerts */}
                     <Route path="/alerts" element={<AlertsDashboard />} />
                     <Route path="/alerts/list" element={<AlertsList />} />
+                    <Route path="/alerts/new" element={<AlertEditor />} />
+                    <Route path="/alerts/edit/:id" element={<AlertEditor />} />
                     <Route path="/alerts/view/:id" element={<AlertView />} />
 
                     {/* Opportunities */}

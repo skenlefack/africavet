@@ -62,6 +62,7 @@ const PostEditor = () => {
         excerpt_en: '',
         category_ids: [],
         featured_image: '',
+        image_caption: '',
         status: 'draft',
         meta_title_fr: '',
         meta_title_en: '',
@@ -111,6 +112,7 @@ const PostEditor = () => {
                 excerpt_en: res.data.excerpt_en || '',
                 category_ids: categoryIds,
                 featured_image: res.data.featured_image || '',
+                image_caption: res.data.image_caption || '',
                 status: res.data.status || 'draft',
                 meta_title_fr: res.data.meta_title_fr || '',
                 meta_title_en: res.data.meta_title_en || '',
@@ -653,6 +655,18 @@ const PostEditor = () => {
                                     value={formData.featured_image}
                                     onChange={handleChange}
                                     placeholder="https://..."
+                                    style={{ borderRadius: '6px' }}
+                                />
+                                <label className="form-label small text-muted mb-2 mt-3">
+                                    <i className="fas fa-pen-fancy me-1" style={{ color: '#7ac142' }}></i>Légende de l'image
+                                </label>
+                                <input
+                                    type="text"
+                                    className="form-control form-control-sm border-0 bg-light"
+                                    name="image_caption"
+                                    value={formData.image_caption}
+                                    onChange={handleChange}
+                                    placeholder="Ex: Photo © AFP / Un troupeau dans le Sahel"
                                     style={{ borderRadius: '6px' }}
                                 />
                                 <div className="mt-3 p-3 rounded" style={{ background: 'rgba(122,193,66,0.08)' }}>

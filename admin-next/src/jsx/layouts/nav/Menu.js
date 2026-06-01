@@ -157,6 +157,10 @@ export const MenuList = [
                 to: 'alerts',
             },
             {
+                title: 'Nouvelle alerte',
+                to: 'alerts/new',
+            },
+            {
                 title: 'Toutes les alertes',
                 to: 'alerts/list',
             },
