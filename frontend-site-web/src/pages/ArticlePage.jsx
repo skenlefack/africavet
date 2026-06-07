@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { postsApi, getImageUrl as resolveImageUrl } from "../services/api";
+import { postsApi, getImageUrl as resolveImageUrl, resolveContentUrls } from "../services/api";
 import { useApp } from "../context/AppContext";
 import Sidebar from "../component/Sidebar";
 import FontAwesome from "../component/uiStyle/FontAwesome";
@@ -235,7 +235,7 @@ const ArticlePage = () => {
                 {/* Content */}
                 <div
                   className="article-body"
-                  dangerouslySetInnerHTML={{ __html: post.content_fr || post.content }}
+                  dangerouslySetInnerHTML={{ __html: resolveContentUrls(post.content_fr || post.content) }}
                 />
 
                 {/* Tags */}

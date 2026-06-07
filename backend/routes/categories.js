@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
   try {
     const [categories] = await db.query(`
       SELECT c.*,
-        (SELECT COUNT(*) FROM posts WHERE category_id = c.id AND status = 'published') as post_count,
+        (SELECT COUNT(DISTINCT p.id) FROM posts p INNER JOIN post_categories pc ON p.id = pc.post_id WHERE pc.category_id = c.id AND p.status = 'published') as post_count,
         (SELECT name FROM categories WHERE id = c.parent_id) as parent_name
       FROM categories c
       ORDER BY c.sort_order ASC, c.name ASC
@@ -47,7 +47,7 @@ router.get('/tree', async (req, res) => {
   try {
     const [categories] = await db.query(`
       SELECT c.*,
-        (SELECT COUNT(*) FROM posts WHERE category_id = c.id AND status = 'published') as post_count
+        (SELECT COUNT(DISTINCT p.id) FROM posts p INNER JOIN post_categories pc ON p.id = pc.post_id WHERE pc.category_id = c.id AND p.status = 'published') as post_count
       FROM categories c
       WHERE c.status = 'active'
       ORDER BY c.sort_order ASC, c.name ASC
@@ -67,7 +67,7 @@ router.get('/:id', async (req, res) => {
   try {
     const [categories] = await db.query(`
       SELECT c.*,
-        (SELECT COUNT(*) FROM posts WHERE category_id = c.id AND status = 'published') as post_count,
+        (SELECT COUNT(DISTINCT p.id) FROM posts p INNER JOIN post_categories pc ON p.id = pc.post_id WHERE pc.category_id = c.id AND p.status = 'published') as post_count,
         (SELECT name FROM categories WHERE id = c.parent_id) as parent_name
       FROM categories c
       WHERE c.id = ?
@@ -80,7 +80,7 @@ router.get('/:id', async (req, res) => {
     // Get children
     const [children] = await db.query(`
       SELECT c.*,
-        (SELECT COUNT(*) FROM posts WHERE category_id = c.id AND status = 'published') as post_count
+        (SELECT COUNT(DISTINCT p.id) FROM posts p INNER JOIN post_categories pc ON p.id = pc.post_id WHERE pc.category_id = c.id AND p.status = 'published') as post_count
       FROM categories c
       WHERE c.parent_id = ?
       ORDER BY c.sort_order ASC
@@ -102,7 +102,7 @@ router.get('/slug/:slug', async (req, res) => {
   try {
     const [categories] = await db.query(`
       SELECT c.*, 
-        (SELECT COUNT(*) FROM posts WHERE category_id = c.id) as post_count
+        (SELECT COUNT(DISTINCT p.id) FROM posts p INNER JOIN post_categories pc ON p.id = pc.post_id WHERE pc.category_id = c.id) as post_count
       FROM categories c
       WHERE c.slug = ? AND c.status = 'active'
     `, [req.params.slug]);

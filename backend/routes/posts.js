@@ -62,8 +62,7 @@ router.get('/', optionalAuth, async (req, res) => {
     }
 
     if (category) {
-      whereConditions.push('(c.slug = ? OR c.id = ?)');
-      params.push(category, category);
+      whereConditions.push('(pc_filter.category_id IS NOT NULL)');
     }
 
     if (author) {
@@ -83,13 +82,21 @@ router.get('/', optionalAuth, async (req, res) => {
 
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
 
+    // Build category filter join
+    const categoryJoin = category
+      ? `INNER JOIN post_categories pc_filter ON p.id = pc_filter.post_id
+         INNER JOIN categories c_filter ON pc_filter.category_id = c_filter.id AND (c_filter.slug = ? OR c_filter.id = ?)`
+      : '';
+    const categoryParams = category ? [category, category] : [];
+
     // Get total count
     const [countResult] = await db.query(
       `SELECT COUNT(DISTINCT p.id) as total FROM posts p
        LEFT JOIN categories c ON p.category_id = c.id
        LEFT JOIN users u ON p.author_id = u.id
+       ${categoryJoin}
        ${whereClause}`,
-      params
+      [...categoryParams, ...params]
     );
 
     const total = countResult[0].total;
@@ -100,21 +107,44 @@ router.get('/', optionalAuth, async (req, res) => {
     const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
     const [posts] = await db.query(
-      `SELECT p.*, 
-              c.name as category_name, c.slug as category_slug,
-              u.username as author_username, u.first_name as author_first_name, 
+      `SELECT DISTINCT p.*,
+              u.username as author_username, u.first_name as author_first_name,
               u.last_name as author_last_name, u.avatar as author_avatar
        FROM posts p
        LEFT JOIN categories c ON p.category_id = c.id
        LEFT JOIN users u ON p.author_id = u.id
+       ${categoryJoin}
        ${whereClause}
        ORDER BY p.${sortField} ${sortOrder}
        LIMIT ? OFFSET ?`,
-      [...params, parseInt(limit), parseInt(offset)]
+      [...categoryParams, ...params, parseInt(limit), parseInt(offset)]
     );
 
-    // Get tags for each post
+    // Get categories and tags for each post
     for (let post of posts) {
+      // Get categories from post_categories junction table
+      try {
+        const [postCategories] = await db.query(
+          `SELECT c.id, c.name, c.name_fr, c.name_en, c.slug, c.color
+           FROM categories c
+           INNER JOIN post_categories pc ON c.id = pc.category_id
+           WHERE pc.post_id = ?`,
+          [post.id]
+        );
+        post.categories = postCategories;
+        // Keep category_name for backward compatibility (first category)
+        if (postCategories.length > 0) {
+          post.category_name = postCategories[0].name;
+          post.category_slug = postCategories[0].slug;
+        } else {
+          post.category_name = null;
+          post.category_slug = null;
+        }
+      } catch (e) {
+        post.categories = [];
+        post.category_name = null;
+      }
+
       const [tags] = await db.query(
         `SELECT t.* FROM tags t
          JOIN post_tags pt ON t.id = pt.tag_id
@@ -184,15 +214,23 @@ router.get('/:idOrSlug', optionalAuth, async (req, res) => {
     );
     post.tags = tags;
 
-    // Get additional category IDs (many-to-many)
+    // Get categories (many-to-many)
     try {
       const [postCategories] = await db.query(
-        'SELECT category_id FROM post_categories WHERE post_id = ?',
+        `SELECT c.id, c.name, c.name_fr, c.name_en, c.slug, c.color
+         FROM categories c
+         INNER JOIN post_categories pc ON c.id = pc.category_id
+         WHERE pc.post_id = ?`,
         [post.id]
       );
-      post.category_ids = postCategories.map(pc => pc.category_id);
+      post.categories = postCategories;
+      post.category_ids = postCategories.map(pc => pc.id);
+      if (postCategories.length > 0) {
+        post.category_name = postCategories[0].name;
+        post.category_slug = postCategories[0].slug;
+      }
     } catch (e) {
-      // post_categories table may not exist yet
+      post.categories = [];
       post.category_ids = post.category_id ? [post.category_id] : [];
     }
 
@@ -282,6 +320,10 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), async (req, res) 
     if (catIds.length > 0) {
       for (const catId of catIds) {
         await db.query('INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)', [result.insertId, catId]);
+      }
+      // Sync posts.category_id with first category for backward compatibility
+      if (!finalCategoryId && catIds[0]) {
+        await db.query('UPDATE posts SET category_id = ? WHERE id = ?', [catIds[0], result.insertId]);
       }
     }
 
@@ -410,6 +452,9 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), async (req, res
       for (const catId of category_ids) {
         await db.query('INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)', [id, catId]);
       }
+      // Sync posts.category_id with first category for backward compatibility
+      const primaryCatId = category_ids.length > 0 ? category_ids[0] : null;
+      await db.query('UPDATE posts SET category_id = ? WHERE id = ?', [primaryCatId, id]);
     }
 
     const [updated] = await db.query('SELECT * FROM posts WHERE id = ?', [id]);

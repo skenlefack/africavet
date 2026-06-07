@@ -33,7 +33,7 @@ const CategoriesWidget = () => {
   const { categories, loading } = useApp();
 
   // Filtrer les catégories avec des articles
-  const activeCategories = categories.filter(c => c.post_count > 0).slice(0, 8);
+  const activeCategories = categories.filter(c => c.post_count > 0);
 
   // Obtenir l'icône et la couleur pour une catégorie (utilise les défauts FA4 compatibles)
   const getCategoryStyle = (cat) => {

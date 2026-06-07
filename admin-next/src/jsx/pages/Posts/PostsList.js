@@ -282,16 +282,34 @@ const PostsList = () => {
                                                 </div>
                                             </td>
                                             <td>
-                                                <span
-                                                    className="badge"
-                                                    style={{
-                                                        background: '#0d948815',
-                                                        color: '#0d9488',
-                                                        fontWeight: '500'
-                                                    }}
-                                                >
-                                                    {post.category_name || 'Sans catégorie'}
-                                                </span>
+                                                {post.categories && post.categories.length > 0 ? (
+                                                    <div className="d-flex flex-wrap gap-1">
+                                                        {post.categories.map(cat => (
+                                                            <span
+                                                                key={cat.id}
+                                                                className="badge"
+                                                                style={{
+                                                                    background: cat.color ? `${cat.color}15` : '#0d948815',
+                                                                    color: cat.color || '#0d9488',
+                                                                    fontWeight: '500'
+                                                                }}
+                                                            >
+                                                                {cat.name_fr || cat.name}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <span
+                                                        className="badge"
+                                                        style={{
+                                                            background: '#6b728015',
+                                                            color: '#6b7280',
+                                                            fontWeight: '500'
+                                                        }}
+                                                    >
+                                                        Sans catégorie
+                                                    </span>
+                                                )}
                                             </td>
                                             <td>
                                                 <span className={`badge ${

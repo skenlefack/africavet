@@ -9,6 +9,7 @@ import LoadingSpinner from "./component/shared/LoadingSpinner";
 // Existing pages
 import HomePage from "./pages/HomePage";
 import CategoryPage from "./pages/CategoryPage";
+import CategoriesListPage from "./pages/CategoriesListPage";
 import ArticlePage from "./pages/ArticlePage";
 import InscriptionPage from "./pages/InscriptionPage";
 import ConnexionPage from "./pages/ConnexionPage";
@@ -85,6 +86,7 @@ const router = createBrowserRouter([
     children: [
       // Existing
       { index: true, element: <HomePage /> },
+      { path: "categories", element: <CategoriesListPage /> },
       { path: "categorie/:slug", element: <CategoryPage /> },
       { path: "article/:slug", element: <ArticlePage /> },
       { path: "about", element: <About /> },

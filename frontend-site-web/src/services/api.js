@@ -9,6 +9,13 @@ export const getImageUrl = (path, fallback = null) => {
   return `${BACKEND_URL}${path}`;
 };
 
+// Resolve relative /uploads/ URLs in HTML content to absolute URLs
+export const resolveContentUrls = (html) => {
+  if (!html) return html;
+  // Replace src="/uploads/..." with absolute backend URL
+  return html.replace(/src="\/uploads\//g, `src="${BACKEND_URL}/uploads/`);
+};
+
 // Helper function for API calls
 const apiCall = async (endpoint, options = {}) => {
   try {
