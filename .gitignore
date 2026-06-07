@@ -54,6 +54,23 @@ package-lock.json
 deploy/.env.production
 deploy/AfricaVet-Server-Key
 deploy/images/
+deploy/*.tar
+deploy/*.tar.gz
+deploy/*.txt
+
+# Build/deploy tarballs
+*.tar
+*.tar.gz
+
+# Uploads (user-generated content)
+backend/uploads/ads/
+backend/uploads/wordpress-images.tar
+
+# PSD / design files
+*.psd
+
+# SSH output
+ssh_out.txt
 
 # Old/legacy files
 CLAUDE_DEV_NOTES.md
