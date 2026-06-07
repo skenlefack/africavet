@@ -94,7 +94,7 @@ async function sendAlertEmail(subscriber, alert) {
         <div class="container">
           <div class="header">
             <h1 style="margin: 0;">VET Alert</h1>
-            <p style="margin: 5px 0 0 0; opacity: 0.9;">AfricaVet Veterinary Alert System</p>
+            <p style="margin: 5px 0 0 0; opacity: 0.9;">AfricaVET Veterinary Alert System</p>
           </div>
 
           <div class="content">
@@ -140,7 +140,7 @@ async function sendAlertEmail(subscriber, alert) {
                 Unsubscribe
               </a>
             </p>
-            <p style="margin-top: 10px;">&copy; ${new Date().getFullYear()} AfricaVet. All rights reserved.</p>
+            <p style="margin-top: 10px;">&copy; ${new Date().getFullYear()} AfricaVET. All rights reserved.</p>
           </div>
         </div>
       </body>

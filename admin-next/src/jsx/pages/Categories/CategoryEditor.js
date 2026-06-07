@@ -27,7 +27,7 @@ const CategoryEditor = () => {
     // Couleurs prédéfinies pour les catégories
     const presetColors = [
         { value: '#1091FF', label: 'Bleu' },
-        { value: '#00AB6C', label: 'Vert AfricaVet' },
+        { value: '#00AB6C', label: 'Vert AfricaVET' },
         { value: '#8B4513', label: 'Marron' },
         { value: '#1E90FF', label: 'Bleu vif' },
         { value: '#228B22', label: 'Vert forêt' },

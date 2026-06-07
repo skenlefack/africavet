@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const posts = [
   {
     photo: most21,
-    author: "AfricaVet",
+    author: "AfricaVET",
     category: "Technology",
     title: "Copa America: Luis Suarez from devastated US",
     description:
@@ -14,7 +14,7 @@ const posts = [
   },
   {
     photo: most21,
-    author: "AfricaVet",
+    author: "AfricaVET",
     category: "Technology",
     title: "Copa America: Luis Suarez from devastated US",
     description:
@@ -22,7 +22,7 @@ const posts = [
   },
   {
     photo: most21,
-    author: "AfricaVet",
+    author: "AfricaVET",
     category: "Technology",
     title: "Copa America: Luis Suarez from devastated US",
     description:
@@ -30,7 +30,7 @@ const posts = [
   },
   {
     photo: most21,
-    author: "AfricaVet",
+    author: "AfricaVET",
     category: "Technology",
     title: "Copa America: Luis Suarez from devastated US",
     description:

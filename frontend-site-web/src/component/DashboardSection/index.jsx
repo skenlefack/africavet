@@ -59,7 +59,7 @@ const DashboardSection = () => {
         <div className="dashboard-header">
           <div className="header-content">
             <span className="header-badge">
-              <FontAwesome name="th-large" /> Services AfricaVet
+              <FontAwesome name="th-large" /> Services AfricaVET
             </span>
             <h2>Votre Écosystème <span>Professionnel</span></h2>
             <p>Accédez à tous les outils et ressources pour les professionnels de la santé animale en Afrique</p>

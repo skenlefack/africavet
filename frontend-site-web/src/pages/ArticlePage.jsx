@@ -38,7 +38,7 @@ const ArticlePage = () => {
     setLoading(false);
   };
 
-  const getImageUrl = (path) => resolveImageUrl(path, 'https://via.placeholder.com/800x400/f0f0f0/999999?text=AfricaVet');
+  const getImageUrl = (path) => resolveImageUrl(path, 'https://via.placeholder.com/800x400/f0f0f0/999999?text=AfricaVET');
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -190,7 +190,7 @@ const ArticlePage = () => {
                   )}
                 </div>
                 <span className="author-name">
-                  {post.author_first_name ? `${post.author_first_name} ${post.author_last_name || ''}` : 'AfricaVet'}
+                  {post.author_first_name ? `${post.author_first_name} ${post.author_last_name || ''}` : 'AfricaVET'}
                 </span>
               </div>
               <div className="meta-item">

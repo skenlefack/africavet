@@ -106,7 +106,7 @@ class BlogComment extends Component {
                   </div>
                   <div className="row">
                     <div className="col-sm-6">
-                      <Link to="/">AfricaVet</Link>
+                      <Link to="/">AfricaVET</Link>
                     </div>
                     <div className="col-sm-6">
                       <div className="replay text-right">
@@ -134,7 +134,7 @@ class BlogComment extends Component {
                   </div>
                   <div className="row">
                     <div className="col-sm-6">
-                      <Link to="/">AfricaVet</Link>
+                      <Link to="/">AfricaVET</Link>
                     </div>
                     <div className="col-sm-6">
                       <div className="replay text-right">
@@ -162,7 +162,7 @@ class BlogComment extends Component {
                   </div>
                   <div className="row">
                     <div className="col-sm-6">
-                      <Link to="/">AfricaVet</Link>
+                      <Link to="/">AfricaVET</Link>
                     </div>
                     <div className="col-sm-6">
                       <div className="replay text-right">
@@ -190,7 +190,7 @@ class BlogComment extends Component {
                   </div>
                   <div className="row">
                     <div className="col-sm-6">
-                      <Link to="/">AfricaVet</Link>
+                      <Link to="/">AfricaVET</Link>
                     </div>
                     <div className="col-sm-6">
                       <div className="replay text-right">

@@ -188,7 +188,7 @@ const AnnuairePage = () => {
                 }}
               >
                 <FontAwesome name="address-book" style={{ marginRight: '12px' }} />
-                Annuaire AfricaVet
+                Annuaire AfricaVET
               </h1>
               <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '17px', marginBottom: '30px' }}>
                 Trouvez des experts veterinaires, des organisations et des fournisseurs

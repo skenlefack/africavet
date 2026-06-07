@@ -13,7 +13,7 @@ test('renders without crashing', () => {
     const { container } = render(
         <Provider store={store}>
             <BrowserRouter>
-                <div data-testid="app-wrapper">AfricaVet Admin</div>
+                <div data-testid="app-wrapper">AfricaVET Admin</div>
             </BrowserRouter>
         </Provider>
     );
@@ -24,7 +24,7 @@ test('renders login page when not authenticated', () => {
     render(
         <Provider store={store}>
             <BrowserRouter>
-                <div data-testid="app-wrapper">AfricaVet Admin</div>
+                <div data-testid="app-wrapper">AfricaVET Admin</div>
             </BrowserRouter>
         </Provider>
     );

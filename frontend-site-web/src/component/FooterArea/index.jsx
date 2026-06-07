@@ -18,23 +18,20 @@ const FooterArea = ({ className }) => {
             {/* Brand Section */}
             <div className="footer-brand">
               <Link to="/" className="footer-logo">
-                <img src={africavetLogo} alt="AfricaVet" />
+                <img src={africavetLogo} alt="AfricaVET" style={{ height: '50px', background: '#fff', padding: '6px 12px', borderRadius: '10px' }} />
               </Link>
               <p className="footer-tagline">
                 Le portail de référence de la médecine vétérinaire en Afrique
               </p>
               <div className="footer-social">
-                <a href="https://facebook.com/africavet" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <a href="https://www.facebook.com/africavetwebportail/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                   <FontAwesome name="facebook-f" />
                 </a>
-                <a href="https://twitter.com/africavet" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                <a href="https://x.com/africavet" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
                   <FontAwesome name="twitter" />
                 </a>
-                <a href="https://linkedin.com/company/africavet" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                  <FontAwesome name="linkedin" />
-                </a>
-                <a href="https://youtube.com/africavet" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-                  <FontAwesome name="youtube-play" />
+                <a href="https://whatsapp.com/channel/0029Vb7GhhAKrWR4oDYbAS3U" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                  <FontAwesome name="whatsapp" />
                 </a>
               </div>
             </div>
@@ -86,7 +83,7 @@ const FooterArea = ({ className }) => {
       <div className="footer-bottom">
         <div className="container">
           <div className="footer-bottom-content">
-            <p>© {currentYear} AfricaVet. Tous droits réservés.</p>
+            <p>© {currentYear} AfricaVET. Tous droits réservés.</p>
             <div className="footer-legal">
               <Link to="/mentions-legales">Mentions légales</Link>
               <span>•</span>

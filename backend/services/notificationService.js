@@ -98,8 +98,8 @@ const sendOpportunityMatchEmail = async (user, opportunity, matchScore) => {
     const frontendUrl = process.env.PUBLIC_FRONTEND_URL || 'http://localhost:3003';
 
     const subject = lang === 'fr'
-      ? `Nouvelle opportunité correspondant à votre profil - AfricaVet`
-      : `New opportunity matching your profile - AfricaVet`;
+      ? `Nouvelle opportunité correspondant à votre profil - AfricaVET`
+      : `New opportunity matching your profile - AfricaVET`;
 
     const html = `
       <!DOCTYPE html>
@@ -107,7 +107,7 @@ const sendOpportunityMatchEmail = async (user, opportunity, matchScore) => {
       <body style="font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
         <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
           <div style="background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-            <h1 style="color: white; margin: 0;">AfricaVet</h1>
+            <h1 style="color: white; margin: 0;">AfricaVET</h1>
           </div>
           <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px;">
             <h2 style="color: #263238;">${lang === 'fr' ? 'Nouvelle opportunité pour vous !' : 'New opportunity for you!'}</h2>
@@ -127,7 +127,7 @@ const sendOpportunityMatchEmail = async (user, opportunity, matchScore) => {
 
     if (process.env.SMTP_HOST) {
       await transporter.sendMail({
-        from: `"AfricaVet" <${process.env.SMTP_FROM || 'noreply@africavet.com'}>`,
+        from: `"AfricaVET" <${process.env.SMTP_FROM || 'noreply@africavet.com'}>`,
         to: user.email,
         subject,
         html
@@ -149,8 +149,8 @@ const sendVetAlertUserEmail = async (user, alert) => {
     const frontendUrl = process.env.PUBLIC_FRONTEND_URL || 'http://localhost:3003';
 
     const subject = lang === 'fr'
-      ? `Alerte vétérinaire dans votre région - AfricaVet`
-      : `Veterinary alert in your area - AfricaVet`;
+      ? `Alerte vétérinaire dans votre région - AfricaVET`
+      : `Veterinary alert in your area - AfricaVET`;
 
     console.log(`[DEV] Vet alert email to ${user.email} for alert ${alert.id} - ${subject}`);
   } catch (error) {

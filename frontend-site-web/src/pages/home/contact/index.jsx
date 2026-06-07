@@ -91,7 +91,7 @@ const Contact = () => {
                 <h1>Contactez-nous</h1>
                 <p>
                   Vous avez une question, une suggestion ou souhaitez collaborer
-                  avec AfricaVet ? Notre équipe est à votre écoute.
+                  avec AfricaVET ? Notre équipe est à votre écoute.
                 </p>
               </div>
 

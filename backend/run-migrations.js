@@ -70,7 +70,7 @@ const MIGRATIONS = [
 
 async function runMigrations() {
   console.log('='.repeat(50));
-  console.log('AfricaVet CMS - Migration Runner');
+  console.log('AfricaVET CMS - Migration Runner');
   console.log('='.repeat(50));
   console.log(`Database: ${DB_CONFIG.database}@${DB_CONFIG.host}`);
   console.log('');

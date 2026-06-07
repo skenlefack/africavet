@@ -52,7 +52,7 @@ const PillarsSection = () => {
           <div className="pillars-grid">
             <div className="pillars-header">
               <div className="pillars-badge"><FontAwesome name="star" /> Nos Services</div>
-              <h2>Les 5 Piliers <span>AfricaVet</span></h2>
+              <h2>Les 5 Piliers <span>AfricaVET</span></h2>
               <p>Votre écosystème complet pour la santé animale en Afrique</p>
             </div>
             <div className="pillars-cards">
@@ -125,7 +125,7 @@ const PillarsSection = () => {
               <FontAwesome name="user-circle" />
             </div>
             <div className="auth-bar-text">
-              <strong>Rejoignez AfricaVet</strong>
+              <strong>Rejoignez AfricaVET</strong>
               <span>Formations gratuites · Alertes sanitaires · Offres d'emploi</span>
             </div>
           </div>

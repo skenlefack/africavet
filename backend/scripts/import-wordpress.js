@@ -1,5 +1,5 @@
 /**
- * WordPress to AfricaVet CMS Import Script
+ * WordPress to AfricaVET CMS Import Script
  *
  * Usage: node scripts/import-wordpress.js ../africavetportaildelamedecinevtrinaireenafrique.WordPress.2026-02-13.xml
  */
@@ -128,7 +128,7 @@ async function downloadImage(url, destFolder) {
 // Main import function
 async function importWordPress(xmlFile) {
     console.log('========================================');
-    console.log('WordPress to AfricaVet Import');
+    console.log('WordPress to AfricaVET Import');
     console.log('========================================\n');
 
     // Read XML file

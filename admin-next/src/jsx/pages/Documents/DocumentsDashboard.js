@@ -122,7 +122,7 @@ const DocumentsDashboard = () => {
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 className="mb-1" style={{ fontWeight: '700' }}>Gestionnaire de Documents</h2>
-                    <p className="text-muted mb-0">Bibliotheque documentaire AfricaVet</p>
+                    <p className="text-muted mb-0">Bibliotheque documentaire AfricaVET</p>
                 </div>
                 <Link
                     to="/documents/new"

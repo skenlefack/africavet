@@ -94,7 +94,7 @@ const InscriptionPage = () => {
         <div className="inscription-wrapper">
           <div className="inscription-features">
             <div className="features-header">
-              <h1>Rejoignez <span>AfricaVet</span></h1>
+              <h1>Rejoignez <span>AfricaVET</span></h1>
               <p>La plateforme de référence pour les professionnels de la santé animale en Afrique</p>
             </div>
             <div className="features-list">

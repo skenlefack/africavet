@@ -4,7 +4,7 @@ import { useApp } from "../../context/AppContext";
 import ScrollTopButton from "../ScrollTopButton";
 import SearchModal from "../SearchModal";
 
-// AfricaVet Logo
+// AfricaVET Logo
 import africavetLogo from "../../assets/img/africavet-logo.png";
 
 const MainLayout = () => {
@@ -31,17 +31,14 @@ const MainLayout = () => {
             </div>
             <div className="col-md-6 text-end">
               <div className="social-links">
-                <a href="https://facebook.com/africavet" target="_blank" rel="noopener noreferrer" className="text-white me-3">
+                <a href="https://www.facebook.com/africavetwebportail/" target="_blank" rel="noopener noreferrer" className="text-white me-3">
                   <i className="fab fa-facebook-f"></i>
                 </a>
-                <a href="https://twitter.com/africavet" target="_blank" rel="noopener noreferrer" className="text-white me-3">
+                <a href="https://x.com/africavet" target="_blank" rel="noopener noreferrer" className="text-white me-3">
                   <i className="fab fa-twitter"></i>
                 </a>
-                <a href="https://linkedin.com/company/africavet" target="_blank" rel="noopener noreferrer" className="text-white me-3">
-                  <i className="fab fa-linkedin-in"></i>
-                </a>
-                <a href="https://youtube.com/africavet" target="_blank" rel="noopener noreferrer" className="text-white">
-                  <i className="fab fa-youtube"></i>
+                <a href="https://whatsapp.com/channel/0029Vb7GhhAKrWR4oDYbAS3U" target="_blank" rel="noopener noreferrer" className="text-white">
+                  <i className="fab fa-whatsapp"></i>
                 </a>
               </div>
             </div>
@@ -55,7 +52,7 @@ const MainLayout = () => {
           <nav className="navbar navbar-expand-lg navbar-light py-2">
             {/* Logo */}
             <Link to="/" className="navbar-brand d-flex align-items-center">
-              <img src={africavetLogo} alt="AfricaVet" style={{ height: '55px', maxWidth: '180px' }} />
+              <img src={africavetLogo} alt="AfricaVET" style={{ height: '55px', maxWidth: '180px' }} />
             </Link>
 
             {/* Mobile Toggle */}
@@ -147,23 +144,20 @@ const MainLayout = () => {
               {/* Brand Section */}
               <div className="footer-brand">
                 <Link to="/" className="footer-logo">
-                  <img src={africavetLogo} alt="AfricaVet" />
+                  <img src={africavetLogo} alt="AfricaVET" style={{ height: '50px', background: '#fff', padding: '6px 12px', borderRadius: '10px' }} />
                 </Link>
                 <p className="footer-tagline">
                   Le portail de référence de la médecine vétérinaire en Afrique
                 </p>
                 <div className="footer-social">
-                  <a href="https://facebook.com/africavet" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                  <a href="https://www.facebook.com/africavetwebportail/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                     <i className="fab fa-facebook-f"></i>
                   </a>
-                  <a href="https://twitter.com/africavet" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                  <a href="https://x.com/africavet" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
                     <i className="fab fa-twitter"></i>
                   </a>
-                  <a href="https://linkedin.com/company/africavet" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                    <i className="fab fa-linkedin-in"></i>
-                  </a>
-                  <a href="https://youtube.com/africavet" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-                    <i className="fab fa-youtube"></i>
+                  <a href="https://whatsapp.com/channel/0029Vb7GhhAKrWR4oDYbAS3U" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                    <i className="fab fa-whatsapp"></i>
                   </a>
                 </div>
               </div>
@@ -215,7 +209,7 @@ const MainLayout = () => {
         <div className="footer-bottom">
           <div className="container">
             <div className="footer-bottom-content">
-              <p>© {currentYear} AfricaVet. Tous droits réservés.</p>
+              <p>© {currentYear} AfricaVET. Tous droits réservés.</p>
               <div className="footer-legal">
                 <Link to="/mentions-legales">Mentions légales</Link>
                 <span>•</span>

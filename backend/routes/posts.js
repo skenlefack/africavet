@@ -215,7 +215,7 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), async (req, res) 
   try {
     const {
       title, title_fr, title_en, content, content_fr, content_en,
-      excerpt, excerpt_fr, excerpt_en, featured_image, image_caption, category_id, type = 'post',
+      excerpt, excerpt_fr, excerpt_en, featured_image, image_caption, category_id, category_ids, type = 'post',
       status = 'draft', visibility = 'public', password, featured = false,
       allow_comments = true, meta_title, meta_title_fr, meta_title_en,
       meta_description, meta_description_fr, meta_description_en, meta_keywords,
@@ -277,6 +277,14 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), async (req, res) 
       }
     }
 
+    // Add categories (junction table)
+    const catIds = category_ids || (finalCategoryId ? [finalCategoryId] : []);
+    if (catIds.length > 0) {
+      for (const catId of catIds) {
+        await db.query('INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)', [result.insertId, catId]);
+      }
+    }
+
     const [newPost] = await db.query('SELECT * FROM posts WHERE id = ?', [result.insertId]);
 
     // Log activity
@@ -287,8 +295,8 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), async (req, res) 
 
     res.status(201).json({ success: true, message: 'Post created', data: newPost[0] });
   } catch (error) {
-    console.error('Create post error:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Create post error:', error.message, error.sql || '');
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 });
 
@@ -312,7 +320,7 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), async (req, res
 
     const {
       title, title_fr, title_en, content, content_fr, content_en,
-      excerpt, excerpt_fr, excerpt_en, featured_image, image_caption, category_id, type,
+      excerpt, excerpt_fr, excerpt_en, featured_image, image_caption, category_id, category_ids, type,
       status, visibility, password, featured, allow_comments,
       meta_title, meta_title_fr, meta_title_en,
       meta_description, meta_description_fr, meta_description_en,
@@ -393,6 +401,14 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), async (req, res
       await db.query('DELETE FROM post_tags WHERE post_id = ?', [id]);
       for (const tagId of tags) {
         await db.query('INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)', [id, tagId]);
+      }
+    }
+
+    // Update categories (junction table)
+    if (category_ids !== undefined) {
+      await db.query('DELETE FROM post_categories WHERE post_id = ?', [id]);
+      for (const catId of category_ids) {
+        await db.query('INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)', [id, catId]);
       }
     }
 

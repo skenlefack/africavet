@@ -1,6 +1,6 @@
 -- Migration: Create Document Categories Table
 -- Date: 2026-03-28
--- Description: Categories hierarchiques pour le gestionnaire de documents de l'Annuaire AfricaVet
+-- Description: Categories hierarchiques pour le gestionnaire de documents de l'Annuaire AfricaVET
 
 -- =====================================================
 -- Table: document_categories

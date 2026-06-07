@@ -50,7 +50,7 @@ const FooterMoreNews = () => {
       <div className="border_white_bottom" />
       <div className="space-40" />
       <div className="footer_contact">
-        <h3 className="widget-title2">AfricaVet news services</h3>
+        <h3 className="widget-title2">AfricaVET news services</h3>
         <div className="single_fcontact">
           <div className="fcicon">
             <img src={mobile} alt="mobile" />
@@ -67,7 +67,7 @@ const FooterMoreNews = () => {
           <div className="fcicon">
             <img src={envelope} alt="evelope" />
           </div>
-          <Link to="/">Contact AfricaVet news</Link>
+          <Link to="/">Contact AfricaVET news</Link>
         </div>
       </div>
     </div>

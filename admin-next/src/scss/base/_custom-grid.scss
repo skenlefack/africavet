@@ -1,5 +1,10 @@
 $grid-columns: 12;
 
+// Prevent columns from stretching cards to equal height
+.row {
+    align-items: flex-start;
+}
+
 
 @mixin make-col($size, $columns: $grid-columns) {
     flex: 0 0 percentage($size / $columns);

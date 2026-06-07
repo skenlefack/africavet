@@ -39,7 +39,7 @@ async function createAdmin() {
             await connection.query(
                 `INSERT INTO users (username, email, password, first_name, last_name, role, status, is_active, email_verified)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                ['admin', email, hashedPassword, 'Admin', 'AfricaVet', 'admin', 'active', 1, 1]
+                ['admin', email, hashedPassword, 'Admin', 'AfricaVET', 'admin', 'active', 1, 1]
             );
             console.log('Admin user created successfully!');
         }

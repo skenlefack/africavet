@@ -358,7 +358,7 @@ const emailTemplates = {
 
             <hr style="border: none; border-top: 1px solid #E0E0E0; margin: 30px 0;">
             <p style="color: #9E9E9E; font-size: 12px; text-align: center;">
-              AfricaVet - Système COHRM
+              AfricaVET - Système COHRM
             </p>
           </div>
         </div>
@@ -470,7 +470,7 @@ async function sendEmail(to, template, data) {
 
   try {
     const result = await transporter.sendMail({
-      from: `"COHRM - AfricaVet" <${process.env.SMTP_FROM || 'noreply@africavet.com'}>`,
+      from: `"COHRM - AfricaVET" <${process.env.SMTP_FROM || 'noreply@africavet.com'}>`,
       to: to,
       subject: emailContent.subject,
       html: emailContent.html

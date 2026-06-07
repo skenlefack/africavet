@@ -19,7 +19,7 @@ const weightedPick = (items) => {
   return items[items.length - 1];
 };
 
-// Countries with realistic weights (African countries dominant for AfricaVet)
+// Countries with realistic weights (African countries dominant for AfricaVET)
 const countriesData = [
   // Africa - 65% of traffic
   { code: 'CM', name: 'Cameroun', continent: 'Afrique', weight: 18 },
@@ -96,7 +96,7 @@ const osData = [
 
 // Pages
 const pagesData = [
-  { url: '/', title: 'Accueil - AfricaVet', type: 'home', weight: 20 },
+  { url: '/', title: 'Accueil - AfricaVET', type: 'home', weight: 20 },
   { url: '/articles/sante-animale-afrique', title: 'Sante animale en Afrique', type: 'article', weight: 8 },
   { url: '/articles/vaccination-bovine', title: 'Vaccination bovine - Guide complet', type: 'article', weight: 7 },
   { url: '/articles/maladies-aviaires', title: 'Maladies aviaires courantes', type: 'article', weight: 6 },
@@ -112,7 +112,7 @@ const pagesData = [
   { url: '/annuaire/cliniques', title: 'Annuaire - Cliniques', type: 'annuaire', weight: 3 },
   { url: '/categories/sante-animale', title: 'Categorie: Sante animale', type: 'category', weight: 4 },
   { url: '/categories/elevage', title: 'Categorie: Elevage', type: 'category', weight: 3 },
-  { url: '/a-propos', title: 'A propos d\'AfricaVet', type: 'page', weight: 3 },
+  { url: '/a-propos', title: 'A propos d\'AfricaVET', type: 'page', weight: 3 },
   { url: '/contact', title: 'Contact', type: 'page', weight: 2 },
   { url: '/newsletter', title: 'Newsletter', type: 'page', weight: 2 },
 ];

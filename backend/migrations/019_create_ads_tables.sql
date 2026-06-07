@@ -150,7 +150,7 @@ ON DUPLICATE KEY UPDATE name = VALUES(name);
 -- Donnees initiales: Fournisseurs
 -- =====================================================
 INSERT INTO ad_providers (name, slug, type, description, is_active, config) VALUES
-('Publicite Personnalisee', 'custom', 'custom', 'Images et liens geres directement sur AfricaVet', 1, '{}'),
+('Publicite Personnalisee', 'custom', 'custom', 'Images et liens geres directement sur AfricaVET', 1, '{}'),
 ('Google AdSense', 'google-adsense', 'adsense', 'Annonces Google AdSense automatiques', 1, '{"publisher_id": ""}'),
 ('Google Ad Manager', 'google-ad-manager', 'ad_manager', 'Google Ad Manager (DFP)', 0, '{"network_code": ""}'),
 ('Reseau Tiers', 'third-party', 'network', 'Code HTML/JS de reseaux publicitaires tiers', 1, '{}')
@@ -165,15 +165,15 @@ INSERT INTO advertisements (
     status, priority, weight,
     advertiser_name
 ) VALUES (
-    'Banniere Exemple AfricaVet',
+    'Banniere Exemple AfricaVET',
     (SELECT id FROM ad_placements WHERE slug = 'header-banner'),
     (SELECT id FROM ad_providers WHERE slug = 'custom'),
     'image',
     '/uploads/ads/exemple-banner.jpg',
     'https://africavet.com',
-    'AfricaVet - Votre partenaire veterinaire',
+    'AfricaVET - Votre partenaire veterinaire',
     'draft',
     5,
     100,
-    'AfricaVet'
+    'AfricaVET'
 );

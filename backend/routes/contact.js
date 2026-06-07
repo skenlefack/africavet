@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
     try {
       await sendContactEmail(
         'contact@africavet.com',
-        `[Contact AfricaVet] ${subject}`,
+        `[Contact AfricaVET] ${subject}`,
         `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); padding: 20px; border-radius: 8px 8px 0 0;">
               <h2 style="color: #fff; margin: 0;">Nouveau message de contact</h2>
@@ -83,10 +83,10 @@ router.post('/', async (req, res) => {
     try {
       await sendContactEmail(
         email,
-        'Confirmation - Votre message a bien été reçu | AfricaVet',
+        'Confirmation - Votre message a bien été reçu | AfricaVET',
         `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); padding: 20px; border-radius: 8px 8px 0 0;">
-              <h2 style="color: #fff; margin: 0;">AfricaVet</h2>
+              <h2 style="color: #fff; margin: 0;">AfricaVET</h2>
             </div>
             <div style="padding: 25px; background: #fff; border: 1px solid #e9ecef;">
               <p>Bonjour <strong>${name}</strong>,</p>
@@ -97,7 +97,7 @@ router.post('/', async (req, res) => {
               <p style="color: #6c757d; font-size: 13px;">${message.replace(/\n/g, '<br>')}</p>
             </div>
             <div style="padding: 15px; background: #f8f9fa; border-radius: 0 0 8px 8px; text-align: center; color: #6c757d; font-size: 12px;">
-              AfricaVet - La plateforme vétérinaire panafricaine
+              AfricaVET - La plateforme vétérinaire panafricaine
             </div>
           </div>`
       );

@@ -13,7 +13,7 @@ const LogoArea = ({ className, dark }) => {
           <div className="col-lg-3 col-md-4 align-self-center">
             <div className="logo" style={{ maxWidth: '180px' }}>
               <Link to="/">
-                <img src={dark ? logoDark : logo} alt="AfricaVet" style={{ height: 'auto', maxHeight: '60px' }} />
+                <img src={dark ? logoDark : logo} alt="AfricaVET" style={{ height: 'auto', maxHeight: '60px' }} />
               </Link>
             </div>
           </div>

@@ -1,5 +1,5 @@
 /**
- * Seed script to create sample articles for AfricaVet
+ * Seed script to create sample articles for AfricaVET
  * Run with: node scripts/seed-posts.js
  */
 
@@ -121,7 +121,7 @@ async function seedPosts() {
         slug: 'interview-dr-fatou-sow-medecine-veterinaire-afrique',
         excerpt_fr: 'Rencontre avec le Dr Fatou Sow, pionnière de la médecine vétérinaire en Afrique de l\'Ouest et présidente de l\'Association des Vétérinaires Africains.',
         excerpt_en: 'Meeting with Dr Fatou Sow, pioneer of veterinary medicine in West Africa.',
-        content_fr: '<h2>Parcours d\'une pionnière</h2><p><strong>AfricaVet :</strong> Dr Sow, vous êtes la première femme à diriger l\'Association des Vétérinaires Africains. Quel regard portez-vous sur l\'évolution de la profession ?</p><p><strong>Dr Sow :</strong> La profession vétérinaire en Afrique a considérablement évolué ces 20 dernières années. Nous sommes passés d\'une approche purement curative à une vision intégrée de la santé. Le concept One Health est devenu central dans notre pratique.</p><p><strong>AfricaVet :</strong> Quels sont les principaux défis ?</p><p><strong>Dr Sow :</strong> Le premier défi reste la formation. Nous avons besoin de plus de vétérinaires, mieux formés et mieux répartis sur le territoire. Le second défi est technologique : l\'accès aux outils de diagnostic modernes reste limité dans de nombreuses zones rurales.</p><p><strong>AfricaVet :</strong> Quel message pour les jeunes qui veulent devenir vétérinaires en Afrique ?</p><p><strong>Dr Sow :</strong> C\'est un métier passionnant avec un impact direct sur la sécurité alimentaire et la santé publique. L\'Afrique a besoin de vous !</p>',
+        content_fr: '<h2>Parcours d\'une pionnière</h2><p><strong>AfricaVET :</strong> Dr Sow, vous êtes la première femme à diriger l\'Association des Vétérinaires Africains. Quel regard portez-vous sur l\'évolution de la profession ?</p><p><strong>Dr Sow :</strong> La profession vétérinaire en Afrique a considérablement évolué ces 20 dernières années. Nous sommes passés d\'une approche purement curative à une vision intégrée de la santé. Le concept One Health est devenu central dans notre pratique.</p><p><strong>AfricaVET :</strong> Quels sont les principaux défis ?</p><p><strong>Dr Sow :</strong> Le premier défi reste la formation. Nous avons besoin de plus de vétérinaires, mieux formés et mieux répartis sur le territoire. Le second défi est technologique : l\'accès aux outils de diagnostic modernes reste limité dans de nombreuses zones rurales.</p><p><strong>AfricaVET :</strong> Quel message pour les jeunes qui veulent devenir vétérinaires en Afrique ?</p><p><strong>Dr Sow :</strong> C\'est un métier passionnant avec un impact direct sur la sécurité alimentaire et la santé publique. L\'Afrique a besoin de vous !</p>',
         content_en: '<h2>A Pioneer\'s Journey</h2><p>Interview with Dr Fatou Sow, first woman to lead the African Veterinary Association.</p>',
         category: 'interview',
         type: 'news'
@@ -152,10 +152,10 @@ async function seedPosts() {
         title_fr: 'Formation en ligne : nouveau cours sur la biosécurité en élevage',
         title_en: 'Online Training: New Course on Biosecurity in Livestock',
         slug: 'formation-biosecurite-elevage',
-        excerpt_fr: 'AfricaVet lance un nouveau cours en ligne gratuit sur les principes de biosécurité appliqués à l\'élevage en Afrique.',
-        excerpt_en: 'AfricaVet launches a new free online course on biosecurity principles applied to livestock in Africa.',
-        content_fr: '<h2>Un cours accessible à tous</h2><p>AfricaVet, en partenariat avec l\'École Inter-États des Sciences et Médecine Vétérinaires de Dakar (EISMV), lance un nouveau cours en ligne gratuit sur la biosécurité en élevage.</p><h3>Programme du cours</h3><ol><li><strong>Module 1</strong> : Principes fondamentaux de la biosécurité</li><li><strong>Module 2</strong> : Évaluation des risques en élevage</li><li><strong>Module 3</strong> : Mesures de biosécurité par type d\'élevage</li><li><strong>Module 4</strong> : Plan de biosécurité : élaboration et mise en œuvre</li><li><strong>Module 5</strong> : Études de cas africains</li></ol><p>Le cours est disponible en français et en anglais, avec une certification gratuite à la clé.</p>',
-        content_en: '<h2>A Course Accessible to All</h2><p>AfricaVet, in partnership with EISMV Dakar, launches a new free online course on biosecurity in livestock.</p>',
+        excerpt_fr: 'AfricaVET lance un nouveau cours en ligne gratuit sur les principes de biosécurité appliqués à l\'élevage en Afrique.',
+        excerpt_en: 'AfricaVET launches a new free online course on biosecurity principles applied to livestock in Africa.',
+        content_fr: '<h2>Un cours accessible à tous</h2><p>AfricaVET, en partenariat avec l\'École Inter-États des Sciences et Médecine Vétérinaires de Dakar (EISMV), lance un nouveau cours en ligne gratuit sur la biosécurité en élevage.</p><h3>Programme du cours</h3><ol><li><strong>Module 1</strong> : Principes fondamentaux de la biosécurité</li><li><strong>Module 2</strong> : Évaluation des risques en élevage</li><li><strong>Module 3</strong> : Mesures de biosécurité par type d\'élevage</li><li><strong>Module 4</strong> : Plan de biosécurité : élaboration et mise en œuvre</li><li><strong>Module 5</strong> : Études de cas africains</li></ol><p>Le cours est disponible en français et en anglais, avec une certification gratuite à la clé.</p>',
+        content_en: '<h2>A Course Accessible to All</h2><p>AfricaVET, in partnership with EISMV Dakar, launches a new free online course on biosecurity in livestock.</p>',
         category: 'news',
         type: 'article'
       }

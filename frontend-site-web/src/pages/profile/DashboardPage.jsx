@@ -119,7 +119,7 @@ const DashboardPage = () => {
             </div>
             <div className="welcome-text">
               <h1>Bienvenue, {user.first_name || "Utilisateur"} !</h1>
-              <p>Voici un apercu de votre activite sur AfricaVet</p>
+              <p>Voici un apercu de votre activite sur AfricaVET</p>
             </div>
           </div>
           <div className="welcome-actions">

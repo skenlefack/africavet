@@ -1,11 +1,11 @@
-// Variables AfricaVet - Couleurs claires
+// Variables AfricaVET - Couleurs claires
 $primary-color: #3b82f6;
 $green-color: #22c55e;
 $teal-color: #14b8a6;
 $blue-color: #06b6d4;
 
 .footer-modern {
-  // Dégradé bleu-vert AfricaVet - Tons plus sombres
+  // Dégradé bleu-vert AfricaVET - Tons plus sombres
   background: linear-gradient(135deg,
     #166534 0%,      // Vert foncé
     #047857 25%,     // Vert émeraude foncé
@@ -56,6 +56,9 @@ $blue-color: #06b6d4;
 
     img {
       height: 50px;
+      background: #fff;
+      padding: 6px 12px;
+      border-radius: 10px;
     }
   }
 

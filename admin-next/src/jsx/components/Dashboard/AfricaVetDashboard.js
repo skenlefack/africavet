@@ -138,7 +138,7 @@ function AfricaVetDashboard() {
                                 </div>
                                 <div>
                                     <h2 className="mb-1" style={{ fontWeight: '700' }}>
-                                        Bienvenue sur AfricaVet
+                                        Bienvenue sur AfricaVET
                                     </h2>
                                     <p className="mb-0" style={{ opacity: 0.9 }}>
                                         Panneau d'administration - Gérez votre plateforme vétérinaire panafricaine

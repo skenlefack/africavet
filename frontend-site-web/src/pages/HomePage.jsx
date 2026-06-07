@@ -24,7 +24,7 @@ function HomePage() {
       {/* Gallery + Recent Posts */}
       <PostGallery className="fifth_bg" />
 
-      {/* Les 5 Piliers AfricaVet */}
+      {/* Les 5 Piliers AfricaVET */}
       <PillarsSection />
 
       {/* Featured News Carousel */}
@@ -243,7 +243,7 @@ function HomePage() {
 
       <div className="space-30" />
 
-      {/* Dashboard Section - Services AfricaVet */}
+      {/* Dashboard Section - Services AfricaVET */}
       <DashboardSection />
 
       {/* Vétérinaires Section */}

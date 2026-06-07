@@ -1,4 +1,4 @@
--- AfricaVet CMS Database Schema
+-- AfricaVET CMS Database Schema
 -- MySQL 8.0+
 
 CREATE DATABASE IF NOT EXISTS africavet_cms CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -174,11 +174,11 @@ CREATE TABLE activity_log (
 
 -- Insert default admin user (password: admin123)
 INSERT INTO users (username, email, password, first_name, last_name, role, status)
-VALUES ('admin', 'admin@africavet.com', '$2b$10$rQZ9QfWxqxYqYqYqYqYqYuYqYqYqYqYqYqYqYqYqYqYqYqYqYqYqY', 'Admin', 'AfricaVet', 'admin', 'active');
+VALUES ('admin', 'admin@africavet.com', '$2b$10$rQZ9QfWxqxYqYqYqYqYqYuYqYqYqYqYqYqYqYqYqYqYqYqYqYqYqY', 'Admin', 'AfricaVET', 'admin', 'active');
 
 -- Insert default settings
 INSERT INTO settings (setting_key, setting_value, setting_group) VALUES
-('site_name', 'AfricaVet', 'general'),
+('site_name', 'AfricaVET', 'general'),
 ('site_description', 'Plateforme Vétérinaire Africaine - African Veterinary Platform', 'general'),
 ('site_logo', '/images/africavet-logo.png', 'general'),
 ('site_favicon', '/images/africavet-favicon.ico', 'general'),

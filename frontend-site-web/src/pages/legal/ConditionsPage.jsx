@@ -18,11 +18,11 @@ const ConditionsPage = () => {
                 <h2>1. Objet</h2>
                 <p>
                   Les présentes Conditions Générales d'Utilisation (ci-après « CGU ») ont pour objet de définir
-                  les modalités et conditions d'accès et d'utilisation de la plateforme AfricaVet, accessible à
+                  les modalités et conditions d'accès et d'utilisation de la plateforme AfricaVET, accessible à
                   l'adresse <strong>www.africavet.com</strong> (ci-après « la Plateforme »).
                 </p>
                 <p>
-                  AfricaVet est une plateforme numérique panafricaine dédiée aux professionnels de la santé
+                  AfricaVET est une plateforme numérique panafricaine dédiée aux professionnels de la santé
                   animale, proposant des services d'information, de formation en ligne (e-learning), d'annuaire
                   professionnel, de bibliothèque documentaire, d'alertes vétérinaires et d'opportunités
                   professionnelles.
@@ -70,7 +70,7 @@ const ConditionsPage = () => {
                   activité réalisée sous son compte.
                 </p>
                 <p>
-                  AfricaVet se réserve le droit de suspendre ou supprimer tout compte en cas de violation des
+                  AfricaVET se réserve le droit de suspendre ou supprimer tout compte en cas de violation des
                   présentes CGU ou d'utilisation frauduleuse de la Plateforme.
                 </p>
 
@@ -98,12 +98,12 @@ const ConditionsPage = () => {
                 <p>
                   L'ensemble des éléments de la Plateforme (textes, images, vidéos, graphismes, logo, icônes,
                   logiciels, bases de données, cours de formation) sont protégés par le droit de la propriété
-                  intellectuelle et sont la propriété exclusive d'AfricaVet ou de ses partenaires.
+                  intellectuelle et sont la propriété exclusive d'AfricaVET ou de ses partenaires.
                 </p>
                 <p>
                   Toute reproduction, représentation, modification, publication ou adaptation de tout ou partie
                   des éléments de la Plateforme, quel que soit le moyen ou le procédé utilisé, est interdite
-                  sans l'autorisation écrite préalable d'AfricaVet.
+                  sans l'autorisation écrite préalable d'AfricaVET.
                 </p>
 
                 <h2>7. Formation en ligne (E-learning)</h2>
@@ -113,7 +113,7 @@ const ConditionsPage = () => {
                   participation du Membre et ne sauraient se substituer à des diplômes officiels.
                 </p>
                 <p>
-                  AfricaVet s'efforce de garantir la qualité et l'exactitude des contenus pédagogiques, mais ne
+                  AfricaVET s'efforce de garantir la qualité et l'exactitude des contenus pédagogiques, mais ne
                   saurait être tenue responsable des décisions prises sur la base de ces formations.
                 </p>
 
@@ -121,41 +121,41 @@ const ConditionsPage = () => {
                 <p>
                   L'annuaire panafricain recense des professionnels, experts, organisations et fournisseurs du
                   secteur vétérinaire en Afrique. Les informations publiées sont fournies par les professionnels
-                  eux-mêmes ou collectées auprès de sources publiques. AfricaVet ne garantit pas l'exactitude
+                  eux-mêmes ou collectées auprès de sources publiques. AfricaVET ne garantit pas l'exactitude
                   ou l'exhaustivité de ces informations.
                 </p>
 
                 <h2>9. Responsabilité</h2>
-                <h3>9.1 Responsabilité d'AfricaVet</h3>
+                <h3>9.1 Responsabilité d'AfricaVET</h3>
                 <p>
-                  AfricaVet s'efforce d'assurer l'accessibilité et le bon fonctionnement de la Plateforme
-                  24h/24, 7j/7. Toutefois, AfricaVet ne saurait être tenue responsable des interruptions de
+                  AfricaVET s'efforce d'assurer l'accessibilité et le bon fonctionnement de la Plateforme
+                  24h/24, 7j/7. Toutefois, AfricaVET ne saurait être tenue responsable des interruptions de
                   service, qu'elles soient dues à des opérations de maintenance, des pannes techniques ou des
                   cas de force majeure.
                 </p>
                 <p>
                   Les informations et contenus publiés sur la Plateforme sont fournis à titre informatif et
-                  éducatif. Ils ne constituent en aucun cas un avis vétérinaire professionnel. AfricaVet décline
+                  éducatif. Ils ne constituent en aucun cas un avis vétérinaire professionnel. AfricaVET décline
                   toute responsabilité en cas de dommages directs ou indirects résultant de l'utilisation des
                   informations disponibles sur la Plateforme.
                 </p>
                 <h3>9.2 Responsabilité de l'Utilisateur</h3>
                 <p>
                   L'Utilisateur est seul responsable de l'utilisation qu'il fait de la Plateforme et des contenus
-                  qu'il publie. Il garantit AfricaVet contre toute réclamation de tiers liée à son utilisation
+                  qu'il publie. Il garantit AfricaVET contre toute réclamation de tiers liée à son utilisation
                   de la Plateforme.
                 </p>
 
                 <h2>10. Liens hypertextes</h2>
                 <p>
-                  La Plateforme peut contenir des liens vers des sites tiers. AfricaVet n'exerce aucun contrôle
+                  La Plateforme peut contenir des liens vers des sites tiers. AfricaVET n'exerce aucun contrôle
                   sur ces sites et décline toute responsabilité quant à leur contenu ou leurs pratiques en matière
                   de protection des données personnelles.
                 </p>
 
                 <h2>11. Modification des CGU</h2>
                 <p>
-                  AfricaVet se réserve le droit de modifier les présentes CGU à tout moment. Les modifications
+                  AfricaVET se réserve le droit de modifier les présentes CGU à tout moment. Les modifications
                   prennent effet dès leur publication sur la Plateforme. L'Utilisateur sera informé des
                   modifications substantielles par e-mail ou notification sur la Plateforme. La poursuite de
                   l'utilisation de la Plateforme après modification vaut acceptation des nouvelles CGU.
@@ -163,7 +163,7 @@ const ConditionsPage = () => {
 
                 <h2>12. Droit applicable et juridiction</h2>
                 <p>
-                  Les présentes CGU sont régies par le droit applicable dans le pays du siège social d'AfricaVet.
+                  Les présentes CGU sont régies par le droit applicable dans le pays du siège social d'AfricaVET.
                   En cas de litige, les parties s'engagent à rechercher une solution amiable. À défaut d'accord
                   amiable, les tribunaux compétents seront saisis.
                 </p>

@@ -149,7 +149,7 @@ function Login(props) {
                         }}>
                             <img
                                 src="/favicon-africavet.png"
-                                alt="AfricaVet"
+                                alt="AfricaVET"
                                 style={{ width: '60%', height: '60%', objectFit: 'contain' }}
                                 onError={(e) => {
                                     e.target.style.display = 'none';

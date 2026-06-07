@@ -36,14 +36,14 @@ function HomeTwoAbout() {
                   </div>
                 </div>
                 <div className="author_content">
-                  <Link to="/">AfricaVet</Link>
+                  <Link to="/">AfricaVET</Link>
                   <ul className="inline">
                     <li>News Writer</li>
                     <li>Since: April 25, 2020</li>
                   </ul>
                 </div>
                 <p>
-                  AfricaVet is an investigative reporter for AfricaVet, based
+                  AfricaVET is an investigative reporter for AfricaVET, based
                   in Bangladesh. He started at The Times in 1999 covering Mayor
                   Rudolph W. Giuliani and then the Sept. 11, 2001, attacks.
                 </p>

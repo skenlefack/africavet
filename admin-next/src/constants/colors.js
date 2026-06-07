@@ -16,7 +16,7 @@ export const colors = {
   error: '#ef4444',
   cyan: '#06b6d4',
   indigo: '#4f46e5',
-  // AfricaVet specific
+  // AfricaVET specific
   africavetGreen: '#7ac142',
   africavetBlue: '#354e84',
   gradientStart: '#7ac142',

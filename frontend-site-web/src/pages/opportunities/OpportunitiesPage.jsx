@@ -67,7 +67,6 @@ const OpportunitiesPage = () => {
   const updateParams = useCallback((newParams) => {
     const current = Object.fromEntries(searchParams.entries());
     const updated = { ...current, ...newParams };
-    // Remove empty values
     Object.keys(updated).forEach(key => {
       if (!updated[key]) delete updated[key];
     });
@@ -109,14 +108,14 @@ const OpportunitiesPage = () => {
               <FontAwesome name="home" /> Accueil
             </Link>
             <span style={{ margin: '0 8px', opacity: 0.6 }}><FontAwesome name="angle-right" /></span>
-            <span>Opportunit\u00e9s</span>
+            <span>Opportunités</span>
           </nav>
 
           <h1 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '10px' }}>
-            <FontAwesome name="briefcase" /> Opportunit\u00e9s
+            <FontAwesome name="briefcase" /> Opportunités
           </h1>
           <p style={{ fontSize: '16px', opacity: 0.9, marginBottom: '25px' }}>
-            D\u00e9couvrez les derni\u00e8res offres d'emploi, appels d'offres, march\u00e9s et bourses dans le domaine v\u00e9t\u00e9rinaire en Afrique.
+            Découvrez les dernières offres d'emploi, appels d'offres, marchés et bourses dans le domaine vétérinaire en Afrique.
           </p>
 
           {/* Stats Bar */}
@@ -180,7 +179,7 @@ const OpportunitiesPage = () => {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Rechercher une opportunit\u00e9..."
+                  placeholder="Rechercher une opportunité..."
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   style={{ border: '1px solid #ddd' }}
@@ -195,21 +194,21 @@ const OpportunitiesPage = () => {
                 style={{ border: '1px solid #ddd' }}
               >
                 <option value="">Tous les pays</option>
-                <option value="Senegal">S\u00e9n\u00e9gal</option>
-                <option value="Cote d'Ivoire">C\u00f4te d'Ivoire</option>
+                <option value="Senegal">Sénégal</option>
+                <option value="Cote d'Ivoire">Côte d'Ivoire</option>
                 <option value="Mali">Mali</option>
                 <option value="Burkina Faso">Burkina Faso</option>
                 <option value="Niger">Niger</option>
                 <option value="Cameroun">Cameroun</option>
                 <option value="Tchad">Tchad</option>
-                <option value="Guinee">Guin\u00e9e</option>
+                <option value="Guinee">Guinée</option>
                 <option value="Togo">Togo</option>
-                <option value="Benin">B\u00e9nin</option>
+                <option value="Benin">Bénin</option>
                 <option value="RDC">RDC</option>
                 <option value="Madagascar">Madagascar</option>
                 <option value="Maroc">Maroc</option>
                 <option value="Tunisie">Tunisie</option>
-                <option value="Algerie">Alg\u00e9rie</option>
+                <option value="Algerie">Algérie</option>
                 <option value="International">International</option>
               </select>
             </div>
@@ -218,7 +217,7 @@ const OpportunitiesPage = () => {
           {/* Results count */}
           {!loading && (
             <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>
-              <strong>{pagination.total || opportunities.length}</strong> opportunit\u00e9(s) trouv\u00e9e(s)
+              <strong>{pagination.total || opportunities.length}</strong> opportunité(s) trouvée(s)
               {activeType && <span> dans <strong>{TYPE_TABS.find(t => t.value === activeType)?.label}</strong></span>}
               {countryFilter && <span> en <strong>{countryFilter}</strong></span>}
             </p>
@@ -226,21 +225,21 @@ const OpportunitiesPage = () => {
 
           {/* Content */}
           {loading ? (
-            <LoadingSpinner text="Chargement des opportunit\u00e9s..." />
+            <LoadingSpinner text="Chargement des opportunités..." />
           ) : opportunities.length === 0 ? (
             <div className="text-center" style={{ padding: '60px 20px' }}>
               <div style={{ fontSize: '60px', color: '#ddd', marginBottom: '20px' }}>
                 <FontAwesome name="search" />
               </div>
-              <h3 style={{ color: '#666', marginBottom: '10px' }}>Aucune opportunit\u00e9 trouv\u00e9e</h3>
+              <h3 style={{ color: '#666', marginBottom: '10px' }}>Aucune opportunité trouvée</h3>
               <p style={{ color: '#999' }}>
-                Essayez de modifier vos crit\u00e8res de recherche ou de consulter une autre cat\u00e9gorie.
+                Essayez de modifier vos critères de recherche ou de consulter une autre catégorie.
               </p>
               <button
                 className="btn btn-outline-primary mt-3"
                 onClick={() => setSearchParams({})}
               >
-                <FontAwesome name="refresh" /> R\u00e9initialiser les filtres
+                <FontAwesome name="refresh" /> Réinitialiser les filtres
               </button>
             </div>
           ) : (

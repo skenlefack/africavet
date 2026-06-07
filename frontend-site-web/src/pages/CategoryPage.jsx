@@ -40,7 +40,7 @@ const CategoryPage = () => {
     setLoading(false);
   };
 
-  const getImageUrl = (path) => resolveImageUrl(path, 'https://via.placeholder.com/400x300/f0f0f0/999999?text=AfricaVet');
+  const getImageUrl = (path) => resolveImageUrl(path, 'https://via.placeholder.com/400x300/f0f0f0/999999?text=AfricaVET');
 
   const formatDate = (dateString) => {
     if (!dateString) return '';

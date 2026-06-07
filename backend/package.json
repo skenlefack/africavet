@@ -1,7 +1,7 @@
 {
   "name": "africavet-cms-backend",
   "version": "1.0.0",
-  "description": "AfricaVet CMS Backend API",
+  "description": "AfricaVET CMS Backend API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

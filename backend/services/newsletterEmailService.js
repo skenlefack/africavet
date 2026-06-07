@@ -1,6 +1,6 @@
 /**
  * NEWSLETTER EMAIL SERVICE
- * AfricaVet CMS
+ * AfricaVET CMS
  *
  * Service for sending newsletter emails:
  * - Email sending with SMTP
@@ -183,7 +183,7 @@ const processTrackingLinks = async (html, newsletterId, subscriberId, baseUrl) =
 const templates = {
   confirmation: {
     fr: (confirmUrl, firstName) => ({
-      subject: 'Confirmez votre inscription - AfricaVet',
+      subject: 'Confirmez votre inscription - AfricaVET',
       html: `
         <!DOCTYPE html>
         <html>
@@ -194,7 +194,7 @@ const templates = {
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
             <div style="background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVet</h1>
+              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
               <h2 style="color: #263238; margin-top: 0;">Bonjour ${firstName || 'cher abonne'},</h2>
@@ -223,7 +223,7 @@ const templates = {
       `
     }),
     en: (confirmUrl, firstName) => ({
-      subject: 'Confirm your subscription - AfricaVet',
+      subject: 'Confirm your subscription - AfricaVET',
       html: `
         <!DOCTYPE html>
         <html>
@@ -234,7 +234,7 @@ const templates = {
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
             <div style="background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVet</h1>
+              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
               <h2 style="color: #263238; margin-top: 0;">Hello ${firstName || 'dear subscriber'},</h2>
@@ -266,7 +266,7 @@ const templates = {
 
   welcome: {
     fr: (firstName, unsubscribeUrl) => ({
-      subject: 'Bienvenue dans la newsletter AfricaVet!',
+      subject: 'Bienvenue dans la newsletter AfricaVET!',
       html: `
         <!DOCTYPE html>
         <html>
@@ -277,18 +277,18 @@ const templates = {
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
             <div style="background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVet</h1>
+              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
               <h2 style="color: #263238; margin-top: 0;">Bienvenue ${firstName || ''}!</h2>
               <p style="color: #607D8B; line-height: 1.6;">
-                Votre inscription a notre newsletter est confirmee. Vous recevrez desormais nos actualites sur l'approche AfricaVet au Cameroun.
+                Votre inscription a notre newsletter est confirmee. Vous recevrez desormais nos actualites sur l'approche AfricaVET au Cameroun.
               </p>
               <p style="color: #607D8B; line-height: 1.6;">
                 Restez connecte pour:
               </p>
               <ul style="color: #607D8B; line-height: 1.8;">
-                <li>Les dernieres actualites AfricaVet</li>
+                <li>Les dernieres actualites AfricaVET</li>
                 <li>Les rapports et publications</li>
                 <li>Les evenements et formations</li>
                 <li>Les alertes sanitaires</li>
@@ -304,7 +304,7 @@ const templates = {
       `
     }),
     en: (firstName, unsubscribeUrl) => ({
-      subject: 'Welcome to the AfricaVet newsletter!',
+      subject: 'Welcome to the AfricaVET newsletter!',
       html: `
         <!DOCTYPE html>
         <html>
@@ -315,18 +315,18 @@ const templates = {
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
             <div style="background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVet</h1>
+              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
               <h2 style="color: #263238; margin-top: 0;">Welcome ${firstName || ''}!</h2>
               <p style="color: #607D8B; line-height: 1.6;">
-                Your subscription to our newsletter is confirmed. You will now receive our news on the AfricaVet approach in Cameroon.
+                Your subscription to our newsletter is confirmed. You will now receive our news on the AfricaVET approach in Cameroon.
               </p>
               <p style="color: #607D8B; line-height: 1.6;">
                 Stay connected for:
               </p>
               <ul style="color: #607D8B; line-height: 1.8;">
-                <li>Latest AfricaVet news</li>
+                <li>Latest AfricaVET news</li>
                 <li>Reports and publications</li>
                 <li>Events and training</li>
                 <li>Health alerts</li>
@@ -362,7 +362,7 @@ const sendConfirmationEmail = async (subscriber) => {
 
     const transport = await getTransporter();
     await transport.sendMail({
-      from: `"${settings.sender_name || 'AfricaVet'}" <${settings.sender_email || process.env.SMTP_FROM || 'newsletter@africavet.com'}>`,
+      from: `"${settings.sender_name || 'AfricaVET'}" <${settings.sender_email || process.env.SMTP_FROM || 'newsletter@africavet.com'}>`,
       replyTo: settings.reply_to || 'contact@africavet.com',
       to: subscriber.email,
       subject,
@@ -391,7 +391,7 @@ const sendWelcomeEmail = async (subscriber) => {
 
     const transport = await getTransporter();
     await transport.sendMail({
-      from: `"${settings.sender_name || 'AfricaVet'}" <${settings.sender_email || process.env.SMTP_FROM || 'newsletter@africavet.com'}>`,
+      from: `"${settings.sender_name || 'AfricaVET'}" <${settings.sender_email || process.env.SMTP_FROM || 'newsletter@africavet.com'}>`,
       replyTo: settings.reply_to || 'contact@africavet.com',
       to: subscriber.email,
       subject,
@@ -448,7 +448,7 @@ const sendNewsletter = async (newsletter, subscriber) => {
 
     // Prepare email options
     const mailOptions = {
-      from: `"${settings.sender_name || 'AfricaVet'}" <${settings.sender_email || process.env.SMTP_FROM || 'newsletter@africavet.com'}>`,
+      from: `"${settings.sender_name || 'AfricaVET'}" <${settings.sender_email || process.env.SMTP_FROM || 'newsletter@africavet.com'}>`,
       replyTo: settings.reply_to || 'contact@africavet.com',
       to: subscriber.email,
       subject,

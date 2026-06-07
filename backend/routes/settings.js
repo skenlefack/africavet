@@ -103,9 +103,9 @@ router.post('/smtp/test', auth, authorize('admin'), async (req, res) => {
     // Send a real test email to the admin
     const adminEmail = req.user.email || from;
     await transporter.sendMail({
-      from: `"AfricaVet Test" <${from || user}>`,
+      from: `"AfricaVET Test" <${from || user}>`,
       to: adminEmail,
-      subject: 'AfricaVet - Test SMTP',
+      subject: 'AfricaVET - Test SMTP',
       html: '<p>SMTP configuration is working correctly.</p><p>Configuration SMTP fonctionnelle.</p>'
     });
 

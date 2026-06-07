@@ -50,7 +50,7 @@ const NewsLetter = ({ className, input_white, titleClass }) => {
           <FontAwesome name="envelope-open" />
           <div className="newsletter-pulse" />
         </div>
-        <h3 className={`newsletter-title ${titleClass || ""}`}>Newsletter AfricaVet</h3>
+        <h3 className={`newsletter-title ${titleClass || ""}`}>Newsletter AfricaVET</h3>
         <p className="newsletter-desc">
           Recevez les dernières actualités vétérinaires et opportunités directement dans votre boîte mail.
         </p>

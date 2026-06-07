@@ -1,6 +1,6 @@
 -- Migration: Create Documents Table
 -- Date: 2026-03-28
--- Description: Table principale des documents du gestionnaire documentaire AfricaVet
+-- Description: Table principale des documents du gestionnaire documentaire AfricaVET
 
 -- =====================================================
 -- Table: documents

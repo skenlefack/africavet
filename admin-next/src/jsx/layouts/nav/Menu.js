@@ -95,7 +95,7 @@ export const MenuList = [
         ],
     },
 
-    // AfricaVet Specific
+    // AfricaVET Specific
     {
         title: 'AFRICAVET',
         classsChange: 'menu-title'

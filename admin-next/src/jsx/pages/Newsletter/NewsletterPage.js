@@ -694,7 +694,7 @@ const NewsletterPage = () => {
                                 <div className="col-md-4">
                                     <label className="form-label">Nom expéditeur</label>
                                     <input type="text" className="form-control" value={settings.from_name}
-                                        onChange={(e) => setSettings(p => ({ ...p, from_name: e.target.value }))} placeholder="AfricaVet" />
+                                        onChange={(e) => setSettings(p => ({ ...p, from_name: e.target.value }))} placeholder="AfricaVET" />
                                 </div>
                                 <div className="col-md-4">
                                     <label className="form-label">Email expéditeur</label>

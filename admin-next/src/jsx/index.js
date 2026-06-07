@@ -11,7 +11,7 @@ import Nav from "./layouts/nav";
 import Footer from "./layouts/Footer";
 import ScrollToTop from "./layouts/ScrollToTop";
 
-/// AfricaVet Dashboard
+/// AfricaVET Dashboard
 import AfricaVetDashboard from "./components/Dashboard/AfricaVetDashboard";
 
 /// Pages - Content Management

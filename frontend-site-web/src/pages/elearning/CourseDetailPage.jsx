@@ -300,7 +300,7 @@ const CourseDetailPage = () => {
                       : 'F'}
                   </div>
                   <div className="instructor-info">
-                    <h4>{course.instructor_name || 'Formateur AfricaVet'}</h4>
+                    <h4>{course.instructor_name || 'Formateur AfricaVET'}</h4>
                     {course.instructor_title && (
                       <p className="instructor-title">{course.instructor_title}</p>
                     )}

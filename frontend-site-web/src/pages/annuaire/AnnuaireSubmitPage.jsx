@@ -248,7 +248,7 @@ const AnnuaireSubmitPage = () => {
             S'inscrire dans l'annuaire
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '16px', margin: 0 }}>
-            Remplissez le formulaire ci-dessous pour figurer dans l'annuaire AfricaVet
+            Remplissez le formulaire ci-dessous pour figurer dans l'annuaire AfricaVET
           </p>
         </div>
       </div>

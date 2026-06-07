@@ -75,7 +75,7 @@ const getTransporter = async () => {
 const templates = {
   verifyEmail: {
     fr: (verificationUrl, userName) => ({
-      subject: 'Vérifiez votre adresse email - AfricaVet',
+      subject: 'Vérifiez votre adresse email - AfricaVET',
       html: `
         <!DOCTYPE html>
         <html>
@@ -86,12 +86,12 @@ const templates = {
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
             <div style="background: linear-gradient(135deg, #2196F3 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVet</h1>
+              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
               <h2 style="color: #263238; margin-top: 0;">Bienvenue ${userName} !</h2>
               <p style="color: #607D8B; line-height: 1.6;">
-                Merci de vous être inscrit sur AfricaVet. Pour activer votre compte et accéder à toutes nos ressources, veuillez vérifier votre adresse email.
+                Merci de vous être inscrit sur AfricaVET. Pour activer votre compte et accéder à toutes nos ressources, veuillez vérifier votre adresse email.
               </p>
               <div style="text-align: center; margin: 30px 0;">
                 <a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #2196F3 0%, #00BCD4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
@@ -115,7 +115,7 @@ const templates = {
       `
     }),
     en: (verificationUrl, userName) => ({
-      subject: 'Verify your email address - AfricaVet',
+      subject: 'Verify your email address - AfricaVET',
       html: `
         <!DOCTYPE html>
         <html>
@@ -126,12 +126,12 @@ const templates = {
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
             <div style="background: linear-gradient(135deg, #2196F3 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVet</h1>
+              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
               <h2 style="color: #263238; margin-top: 0;">Welcome ${userName}!</h2>
               <p style="color: #607D8B; line-height: 1.6;">
-                Thank you for registering on AfricaVet. To activate your account and access all our resources, please verify your email address.
+                Thank you for registering on AfricaVET. To activate your account and access all our resources, please verify your email address.
               </p>
               <div style="text-align: center; margin: 30px 0;">
                 <a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #2196F3 0%, #00BCD4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
@@ -157,7 +157,7 @@ const templates = {
   },
   accountActivated: {
     fr: (userName) => ({
-      subject: 'Votre compte a été activé - AfricaVet',
+      subject: 'Votre compte a été activé - AfricaVET',
       html: `
         <!DOCTYPE html>
         <html>
@@ -168,13 +168,13 @@ const templates = {
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
             <div style="background: linear-gradient(135deg, #4CAF50 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVet</h1>
+              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
               <h2 style="color: #263238; margin-top: 0;">Compte activé avec succès !</h2>
               <p style="color: #607D8B; line-height: 1.6;">
                 Bonjour ${userName},<br><br>
-                Votre compte a été vérifié et activé avec succès. Vous pouvez maintenant vous connecter et accéder à toutes les ressources de la plateforme AfricaVet.
+                Votre compte a été vérifié et activé avec succès. Vous pouvez maintenant vous connecter et accéder à toutes les ressources de la plateforme AfricaVET.
               </p>
               <div style="text-align: center; margin: 30px 0;">
                 <a href="${process.env.FRONTEND_URL || 'http://localhost:3002'}/fr/auth/login" style="display: inline-block; background: linear-gradient(135deg, #4CAF50 0%, #00BCD4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
@@ -188,7 +188,7 @@ const templates = {
       `
     }),
     en: (userName) => ({
-      subject: 'Your account has been activated - AfricaVet',
+      subject: 'Your account has been activated - AfricaVET',
       html: `
         <!DOCTYPE html>
         <html>
@@ -199,13 +199,13 @@ const templates = {
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
             <div style="background: linear-gradient(135deg, #4CAF50 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVet</h1>
+              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
               <h2 style="color: #263238; margin-top: 0;">Account successfully activated!</h2>
               <p style="color: #607D8B; line-height: 1.6;">
                 Hello ${userName},<br><br>
-                Your account has been verified and activated successfully. You can now log in and access all the resources on the AfricaVet platform.
+                Your account has been verified and activated successfully. You can now log in and access all the resources on the AfricaVET platform.
               </p>
               <div style="text-align: center; margin: 30px 0;">
                 <a href="${process.env.FRONTEND_URL || 'http://localhost:3002'}/en/auth/login" style="display: inline-block; background: linear-gradient(135deg, #4CAF50 0%, #00BCD4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
@@ -238,7 +238,7 @@ const sendVerificationEmail = async (email, userName, token, lang = 'fr') => {
   try {
     const { transporter, from } = await getTransporter();
     await transporter.sendMail({
-      from: `"AfricaVet" <${from}>`,
+      from: `"AfricaVET" <${from}>`,
       to: email,
       subject,
       html
@@ -258,7 +258,7 @@ const sendAccountActivatedEmail = async (email, userName, lang = 'fr') => {
   try {
     const { transporter, from } = await getTransporter();
     await transporter.sendMail({
-      from: `"AfricaVet" <${from}>`,
+      from: `"AfricaVET" <${from}>`,
       to: email,
       subject,
       html

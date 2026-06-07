@@ -1,5 +1,5 @@
 /**
- * Import WordPress posts into AfricaVet CMS
+ * Import WordPress posts into AfricaVET CMS
  * Fetches posts from WP REST API published after the last synced date
  */
 
@@ -30,7 +30,7 @@ let wpCategoryMap = {};
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : http;
-    client.get(url, { headers: { 'User-Agent': 'AfricaVet-Importer/1.0' } }, (res) => {
+    client.get(url, { headers: { 'User-Agent': 'AfricaVET-Importer/1.0' } }, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
@@ -50,7 +50,7 @@ function fetchJSON(url) {
 function downloadFile(url, destPath) {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : http;
-    client.get(url, { headers: { 'User-Agent': 'AfricaVet-Importer/1.0' } }, (res) => {
+    client.get(url, { headers: { 'User-Agent': 'AfricaVET-Importer/1.0' } }, (res) => {
       if (res.statusCode === 301 || res.statusCode === 302) {
         return downloadFile(res.headers.location, destPath).then(resolve).catch(reject);
       }

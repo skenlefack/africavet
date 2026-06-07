@@ -35,7 +35,7 @@ const NavHader = () => {
           }}>
             <img
               src="/favicon-africavet.png"
-              alt="AfricaVet"
+              alt="AfricaVET"
               style={{ width: '28px', height: '28px', objectFit: 'contain' }}
               onError={(e) => { e.target.style.display = 'none'; }}
             />
@@ -45,7 +45,7 @@ const NavHader = () => {
             fontWeight: '700',
             color: 'white'
           }}>
-            AfricaVet
+            AfricaVET
           </span>
       </Link>
 

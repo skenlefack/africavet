@@ -16,7 +16,7 @@ const ConfidentialitePage = () => {
                 <p className="legal-updated">Dernière mise à jour : 29 mars 2026</p>
 
                 <p>
-                  AfricaVet accorde une importance particulière à la protection de vos données personnelles.
+                  AfricaVET accorde une importance particulière à la protection de vos données personnelles.
                   La présente Politique de Confidentialité a pour objet de vous informer sur la manière dont
                   nous collectons, utilisons, stockons et protégeons vos données lorsque vous utilisez notre
                   plateforme accessible à l'adresse <strong>www.africavet.com</strong>.
@@ -24,8 +24,8 @@ const ConfidentialitePage = () => {
 
                 <h2>1. Responsable du traitement</h2>
                 <p>
-                  Le responsable du traitement des données personnelles collectées sur la Plateforme AfricaVet
-                  est la société exploitante d'AfricaVet, joignable à l'adresse : <strong>contact@africavet.com</strong>.
+                  Le responsable du traitement des données personnelles collectées sur la Plateforme AfricaVET
+                  est la société exploitante d'AfricaVET, joignable à l'adresse : <strong>contact@africavet.com</strong>.
                 </p>
 
                 <h2>2. Données collectées</h2>
@@ -76,12 +76,12 @@ const ConfidentialitePage = () => {
                 <h2>5. Destinataires des données</h2>
                 <p>Vos données personnelles peuvent être communiquées à :</p>
                 <ul>
-                  <li>L'équipe interne d'AfricaVet, dans le cadre de la gestion de la Plateforme</li>
+                  <li>L'équipe interne d'AfricaVET, dans le cadre de la gestion de la Plateforme</li>
                   <li>Les prestataires techniques (hébergement, maintenance) dans la stricte mesure nécessaire</li>
                   <li>Les employeurs potentiels, uniquement pour les candidatures que vous soumettez volontairement via le module Opportunités</li>
                 </ul>
                 <p>
-                  AfricaVet ne vend, ne loue et ne cède en aucun cas vos données personnelles à des tiers
+                  AfricaVET ne vend, ne loue et ne cède en aucun cas vos données personnelles à des tiers
                   à des fins commerciales.
                 </p>
 
@@ -97,7 +97,7 @@ const ConfidentialitePage = () => {
 
                 <h2>7. Sécurité des données</h2>
                 <p>
-                  AfricaVet met en oeuvre des mesures techniques et organisationnelles appropriées pour protéger
+                  AfricaVET met en oeuvre des mesures techniques et organisationnelles appropriées pour protéger
                   vos données personnelles contre tout accès non autorisé, modification, divulgation ou
                   destruction. Ces mesures incluent notamment :
                 </p>
@@ -143,7 +143,7 @@ const ConfidentialitePage = () => {
 
                 <h2>10. Newsletter</h2>
                 <p>
-                  En vous abonnant à la newsletter AfricaVet, vous consentez à recevoir des communications
+                  En vous abonnant à la newsletter AfricaVET, vous consentez à recevoir des communications
                   relatives à l'actualité vétérinaire, aux nouvelles formations et aux opportunités professionnelles.
                   Vous pouvez vous désabonner à tout moment en cliquant sur le lien de désinscription présent
                   dans chaque e-mail ou en vous rendant sur votre <Link to="/profil">page de profil</Link>.
@@ -152,13 +152,13 @@ const ConfidentialitePage = () => {
                 <h2>11. Transfert de données</h2>
                 <p>
                   Vos données sont hébergées sur des serveurs sécurisés. En cas de transfert de données en dehors
-                  de votre pays de résidence, AfricaVet s'assure que des garanties appropriées sont mises en
+                  de votre pays de résidence, AfricaVET s'assure que des garanties appropriées sont mises en
                   place conformément à la réglementation applicable.
                 </p>
 
                 <h2>12. Modification de la politique</h2>
                 <p>
-                  AfricaVet se réserve le droit de modifier la présente Politique de Confidentialité à tout moment.
+                  AfricaVET se réserve le droit de modifier la présente Politique de Confidentialité à tout moment.
                   Toute modification sera publiée sur cette page avec une date de mise à jour. Nous vous informerons
                   des modifications substantielles par e-mail ou notification sur la Plateforme.
                 </p>

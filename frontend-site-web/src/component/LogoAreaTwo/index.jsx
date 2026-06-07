@@ -16,7 +16,7 @@ const LogoAreaTwo = () => {
           <div className="col-lg-3 align-self-center">
             <div className="logo">
               <Link to="/">
-                <img src={logo} alt="AfricaVet" style={{ maxHeight: '70px', height: 'auto' }} />
+                <img src={logo} alt="AfricaVET" style={{ maxHeight: '70px', height: 'auto' }} />
               </Link>
             </div>
           </div>

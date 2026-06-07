@@ -23,18 +23,18 @@ const FooterAreaTwo = () => {
             <div className="single_footer3 mb30">
               <div className="logo">
                 <Link to="/">
-                  <img src={logo} alt="AfricaVet" style={{ maxHeight: '60px', height: 'auto' }} />
+                  <img src={logo} alt="AfricaVET" style={{ maxHeight: '60px', height: 'auto' }} />
                 </Link>
                 <div className="space-20" />
               </div>
               <p>
-                <span>AfricaVet</span> vitae elementum ros. Pellentesquees Leo
+                <span>AfricaVET</span> vitae elementum ros. Pellentesquees Leo
                 sed mi ullamcorper tristique mauris varius. congue enim in arcu
                 maximus feugiat vitae ut quam finibus risus molestie viverra.
               </p>
             </div>
             <div className="footer_contact">
-              <h3 className="widget-title2">AfricaVet news services</h3>
+              <h3 className="widget-title2">AfricaVET news services</h3>
               <div className="single_fcontact">
                 <div className="fcicon">
                   <img src={phone_black} alt="phone_black" />
@@ -51,7 +51,7 @@ const FooterAreaTwo = () => {
                 <div className="fcicon">
                   <img src={envelope_black} alt="envelope_black" />
                 </div>
-                <Link to="/">Contact AfricaVet news</Link>
+                <Link to="/">Contact AfricaVET news</Link>
               </div>
             </div>
             <div className="space-30" />
@@ -164,7 +164,7 @@ const FooterAreaTwo = () => {
               <div className="space-15" />
               <div className="row">
                 <div className="col-lg-6">
-                  <h3 className="widget-title">AfricaVet app download</h3>
+                  <h3 className="widget-title">AfricaVET app download</h3>
                   <p>Free sign & download, iOS & Android app</p>
                 </div>
                 <div className="col-lg-6">

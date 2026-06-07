@@ -17,7 +17,7 @@ const adminUser = {
   email: 'admin@africavet.com',
   password: 'Admin@2024',  // Ce mot de passe sera hashé
   first_name: 'Admin',
-  last_name: 'AfricaVet',
+  last_name: 'AfricaVET',
   role: 'admin',
   status: 'active'
 };

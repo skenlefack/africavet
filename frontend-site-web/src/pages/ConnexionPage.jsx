@@ -56,10 +56,10 @@ const ConnexionPage = () => {
             <div className="branding-content">
               <div className="logo-area">
                 <div className="logo-icon"><FontAwesome name="paw" /></div>
-                <h1>AfricaVet</h1>
+                <h1>AfricaVET</h1>
               </div>
               <h2>Bienvenue !</h2>
-              <p>Connectez-vous pour accéder à votre espace personnel et profiter de tous les avantages de la communauté AfricaVet.</p>
+              <p>Connectez-vous pour accéder à votre espace personnel et profiter de tous les avantages de la communauté AfricaVET.</p>
               <div className="branding-features">
                 <div className="feature"><FontAwesome name="newspaper-o" /><span>Actualités personnalisées</span></div>
                 <div className="feature"><FontAwesome name="bookmark" /><span>Articles sauvegardés</span></div>

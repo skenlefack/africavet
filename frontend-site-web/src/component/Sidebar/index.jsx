@@ -56,11 +56,9 @@ const Sidebar = ({ categorySlug = null }) => {
   };
 
   const socialLinks = [
-    { name: 'facebook', icon: 'facebook', url: 'https://facebook.com/africavet', color: '#1877f2', followers: '25K' },
-    { name: 'twitter', icon: 'twitter', url: 'https://twitter.com/africavet', color: '#1da1f2', followers: '12K' },
-    { name: 'youtube', icon: 'youtube-play', url: 'https://youtube.com/africavet', color: '#ff0000', followers: '8K' },
-    { name: 'linkedin', icon: 'linkedin', url: 'https://linkedin.com/company/africavet', color: '#0077b5', followers: '5K' },
-    { name: 'instagram', icon: 'instagram', url: 'https://instagram.com/africavet', color: '#e4405f', followers: '15K' },
+    { name: 'facebook', icon: 'facebook', url: 'https://www.facebook.com/africavetwebportail/', color: '#1877f2', followers: '12K+' },
+    { name: 'twitter', icon: 'twitter', url: 'https://x.com/africavet', color: '#1da1f2', followers: '8K+' },
+    { name: 'whatsapp', icon: 'whatsapp', url: 'https://whatsapp.com/channel/0029Vb7GhhAKrWR4oDYbAS3U', color: '#25D366', followers: '5K+' },
   ];
 
   return (

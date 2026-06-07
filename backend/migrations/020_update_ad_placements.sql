@@ -7,7 +7,7 @@
 -- =====================================================
 UPDATE ad_placements
 SET width = 650, height = 85,
-    location = 'Bannière à côté du logo AfricaVet (650x85px)'
+    location = 'Bannière à côté du logo AfricaVET (650x85px)'
 WHERE slug = 'header-banner';
 
 -- =====================================================

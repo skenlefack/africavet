@@ -75,24 +75,19 @@ const TopBar = ({ className, dark }) => {
                 <div className={`social1 ${dark ? "white" : ""}`}>
                   <ul className="inline">
                     <li>
-                      <Link to="#">
-                        <FontAwesome name="twitter" />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="#">
+                      <a href="https://www.facebook.com/africavetwebportail/" target="_blank" rel="noopener noreferrer">
                         <FontAwesome name="facebook-f" />
-                      </Link>
+                      </a>
                     </li>
                     <li>
-                      <Link to="#">
-                        <FontAwesome name="youtube-play" />
-                      </Link>
+                      <a href="https://x.com/africavet" target="_blank" rel="noopener noreferrer">
+                        <FontAwesome name="twitter" />
+                      </a>
                     </li>
                     <li>
-                      <Link to="#">
-                        <FontAwesome name="instagram" />
-                      </Link>
+                      <a href="https://whatsapp.com/channel/0029Vb7GhhAKrWR4oDYbAS3U" target="_blank" rel="noopener noreferrer">
+                        <FontAwesome name="whatsapp" />
+                      </a>
                     </li>
                   </ul>
                 </div>
