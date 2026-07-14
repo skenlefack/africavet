@@ -1,327 +1,302 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { axiosInstance } from '../../../services/AuthService';
+import WorldMap from 'react-svg-worldmap';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
-// Icons
-const icons = {
-    posts: '📝',
-    users: '👥',
-    categories: '📁',
-    media: '🖼️',
-    pages: '📄',
-    annuaire: '🗺️',
-    elearning: '🎓',
-    clinics: '🏥',
-    labs: '🔬',
-    pharmacies: '💊',
+const countryToCode = {
+    'cameroun': 'cm', 'cameroon': 'cm', 'senegal': 'sn', 'sénégal': 'sn',
+    'cote d\'ivoire': 'ci', 'côte d\'ivoire': 'ci', 'mali': 'ml',
+    'burkina faso': 'bf', 'niger': 'ne', 'tchad': 'td', 'chad': 'td',
+    'gabon': 'ga', 'congo': 'cg', 'rdc': 'cd', 'rd congo': 'cd',
+    'nigeria': 'ng', 'togo': 'tg', 'benin': 'bj', 'bénin': 'bj',
+    'guinée': 'gn', 'guinea': 'gn', 'ghana': 'gh',
+    'maroc': 'ma', 'morocco': 'ma', 'tunisie': 'tn', 'algérie': 'dz',
+    'egypte': 'eg', 'afrique du sud': 'za', 'kenya': 'ke',
+    'tanzanie': 'tz', 'ouganda': 'ug', 'rwanda': 'rw', 'burundi': 'bi',
+    'ethiopie': 'et', 'djibouti': 'dj', 'soudan': 'sd', 'angola': 'ao',
+    'mozambique': 'mz', 'zambie': 'zm', 'zimbabwe': 'zw', 'malawi': 'mw',
+    'madagascar': 'mg', 'centrafrique': 'cf', 'sierra leone': 'sl',
+    'france': 'fr', 'belgique': 'be', 'suisse': 'ch', 'canada': 'ca', 'usa': 'us',
 };
 
-const StatCard = ({ title, value, icon, color, link }) => (
-    <Link to={link} className="col-xl-3 col-lg-4 col-md-6 col-sm-6" style={{ textDecoration: 'none' }}>
-        <div className="card" style={{ borderLeft: `4px solid ${color}`, cursor: 'pointer' }}>
-            <div className="card-body">
-                <div className="d-flex align-items-center">
-                    <div
-                        className="me-3 d-flex align-items-center justify-content-center"
-                        style={{
-                            width: '52px',
-                            height: '52px',
-                            borderRadius: '14px',
-                            background: `${color}20`,
-                            fontSize: '24px'
-                        }}
-                    >
-                        {icon}
-                    </div>
-                    <div>
-                        <h2 className="mb-0" style={{ color: color, fontWeight: '800' }}>{value}</h2>
-                        <span className="text-muted" style={{ fontSize: '13px' }}>{title}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </Link>
-);
-
-const QuickAction = ({ title, description, icon, color, link }) => (
-    <Link to={link} className="col-xl-4 col-lg-6" style={{ textDecoration: 'none' }}>
-        <div className="card h-100" style={{ cursor: 'pointer', transition: 'all 0.2s' }}>
-            <div className="card-body d-flex align-items-center">
-                <div
-                    className="me-3 d-flex align-items-center justify-content-center"
-                    style={{
-                        width: '60px',
-                        height: '60px',
-                        borderRadius: '16px',
-                        background: `linear-gradient(135deg, ${color} 0%, ${color}99 100%)`,
-                        fontSize: '28px'
-                    }}
-                >
-                    {icon}
-                </div>
-                <div>
-                    <h5 className="mb-1" style={{ fontWeight: '600' }}>{title}</h5>
-                    <p className="mb-0 text-muted" style={{ fontSize: '13px' }}>{description}</p>
-                </div>
-            </div>
-        </div>
-    </Link>
-);
+const COLORS = ['#7ac142', '#354e84', '#E67E22', '#E74C3C', '#9B59B6', '#3498DB', '#1ABC9C', '#F39C12'];
 
 function AfricaVetDashboard() {
-    const [stats, setStats] = useState({
-        posts: 0,
-        users: 0,
-        categories: 0,
-        media: 0,
-        pages: 0,
-        organizations: 0,
-        courses: 0,
-    });
+    const [stats, setStats] = useState(null);
     const [recentPosts, setRecentPosts] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchStats();
-        fetchRecentPosts();
+        axiosInstance.get('/dashboard/stats').then(r => { if (r.data.success) setStats(r.data.data); }).catch(console.error).finally(() => setLoading(false));
+        axiosInstance.get('/posts?limit=5&sort=created_at&order=DESC').then(r => { if (r.data.success) setRecentPosts(r.data.data || []); }).catch(console.error);
     }, []);
 
-    const fetchStats = async () => {
-        try {
-            const response = await axiosInstance.get('/stats');
-            if (response.data.success) {
-                setStats(response.data.data);
-            }
-        } catch (error) {
-            console.error('Error fetching stats:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    if (loading) return <div style={{ textAlign: 'center', padding: '60px 0' }}><div className="spinner-border text-primary" /></div>;
 
-    const fetchRecentPosts = async () => {
-        try {
-            const response = await axiosInstance.get('/posts?limit=5&sort=-created_at');
-            if (response.data.success) {
-                setRecentPosts(response.data.data || []);
-            }
-        } catch (error) {
-            console.error('Error fetching recent posts:', error);
-        }
-    };
+    const mapData = (stats?.usersByCountry || []).map(item => {
+        const code = countryToCode[(item.country || '').toLowerCase().trim()];
+        return code ? { country: code, value: item.count } : null;
+    }).filter(Boolean);
+
+    const statusData = [
+        { name: 'Publiés', value: Number(stats?.posts?.published) || 0, color: '#27AE60' },
+        { name: 'Brouillons', value: Number(stats?.posts?.drafts) || 0, color: '#F39C12' },
+    ].filter(d => d.value > 0);
+
+    const categoryData = (stats?.topCategories || []).map((cat, i) => ({
+        name: (cat.name || '').substring(0, 14),
+        articles: cat.count,
+        fill: cat.color || COLORS[i % COLORS.length],
+    }));
+
+    const statCards = [
+        { title: 'Articles', value: stats?.posts?.total || 0, sub: `${stats?.posts?.published || 0} publiés`, icon: 'fa-newspaper', color: '#27AE60', link: '/posts' },
+        { title: 'Utilisateurs', value: stats?.users?.total || 0, sub: `${stats?.users?.active || 0} actifs`, icon: 'fa-users', color: '#3498DB', link: '/users' },
+        { title: 'Catégories', value: stats?.categories?.total || 0, sub: 'actives', icon: 'fa-folder-open', color: '#E67E22', link: '/categories' },
+        { title: 'Médias', value: stats?.media?.total || 0, sub: `${stats?.media?.total_size_mb || 0} MB`, icon: 'fa-photo-video', color: '#9B59B6', link: '/media' },
+        { title: 'Newsletter', value: stats?.newsletter?.total || 0, sub: 'abonnés', icon: 'fa-envelope', color: '#E74C3C', link: '/newsletter' },
+        { title: 'Commentaires', value: stats?.comments?.total || 0, sub: `${stats?.comments?.pending || 0} en attente`, icon: 'fa-comments', color: '#1ABC9C', link: '/posts' },
+    ];
+
+    // All layout via inline styles to avoid template CSS conflicts
+    const card = { background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', overflow: 'hidden' };
+    const cardHeader = { padding: '14px 20px', borderBottom: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' };
+    const cardBody = { padding: '20px' };
 
     return (
-        <>
-            {/* Header */}
-            <div className="row mb-4">
-                <div className="col-12">
-                    <div
-                        className="card"
-                        style={{
-                            background: 'linear-gradient(135deg, #7ac142 0%, #4a7a5a 50%, #354e84 100%)',
-                            border: 'none',
-                            borderRadius: '16px'
-                        }}
-                    >
-                        <div className="card-body py-4">
-                            <div className="d-flex align-items-center text-white">
-                                <div
-                                    className="me-4 d-flex align-items-center justify-content-center"
-                                    style={{
-                                        width: '60px',
-                                        height: '60px',
-                                        borderRadius: '50%',
-                                        background: 'rgba(255,255,255,0.2)'
-                                    }}
-                                >
-                                    <span style={{ fontSize: '28px' }}>🐾</span>
-                                </div>
-                                <div>
-                                    <h2 className="mb-1" style={{ fontWeight: '700' }}>
-                                        Bienvenue sur AfricaVET
-                                    </h2>
-                                    <p className="mb-0" style={{ opacity: 0.9 }}>
-                                        Panneau d'administration - Gérez votre plateforme vétérinaire panafricaine
-                                    </p>
+        <div>
+            {/* Banner */}
+            <div style={{
+                background: 'linear-gradient(135deg, #7ac142 0%, #4a7a5a 50%, #354e84 100%)',
+                borderRadius: '14px', padding: '24px 28px', marginBottom: '24px',
+                display: 'flex', alignItems: 'center', gap: '16px', color: '#fff'
+            }}>
+                <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <i className="fas fa-paw" style={{ fontSize: '24px' }}></i>
+                </div>
+                <div>
+                    <h3 style={{ margin: 0, fontWeight: '700', fontSize: '1.3rem' }}>Bienvenue sur AfricaVET</h3>
+                    <p style={{ margin: 0, opacity: 0.85, fontSize: '0.88rem' }}>Panneau d'administration</p>
+                </div>
+            </div>
+
+            {/* Stats Grid - 6 cards, 3 per row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
+                {statCards.map((s, i) => (
+                    <Link key={i} to={s.link} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <div style={{ ...card, borderLeft: `4px solid ${s.color}`, display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 18px', cursor: 'pointer', transition: 'box-shadow 0.2s' }}
+                            onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'}
+                            onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}>
+                            <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: `${s.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <i className={`fas ${s.icon}`} style={{ color: s.color, fontSize: '18px' }}></i>
+                            </div>
+                            <div>
+                                <div style={{ fontSize: '1.6rem', fontWeight: '800', color: s.color, lineHeight: 1 }}>{s.value}</div>
+                                <div style={{ fontSize: '0.82rem', color: '#333', fontWeight: '600', marginTop: '2px' }}>
+                                    {s.title} <span style={{ fontWeight: '400', color: '#999', fontSize: '0.75rem' }}>· {s.sub}</span>
                                 </div>
                             </div>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+
+            {/* Map (left) + Charts (right) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: '16px', marginBottom: '24px' }}>
+                {/* Map */}
+                <div style={card}>
+                    <div style={cardHeader}>
+                        <h5 style={{ margin: 0, fontSize: '1rem', fontWeight: '600' }}>
+                            <i className="fas fa-globe-africa me-2" style={{ color: '#7ac142' }}></i>Répartition géographique
+                        </h5>
+                        <span style={{ background: '#354e84', color: '#fff', padding: '3px 10px', borderRadius: '12px', fontSize: '0.7rem' }}>{mapData.length} pays</span>
+                    </div>
+                    <div style={{ ...cardBody, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '380px', justifyContent: 'center' }}>
+                        {mapData.length > 0 ? (
+                            <>
+                                <WorldMap
+                                    color="#7ac142"
+                                    valueSuffix=" utilisateurs"
+                                    size="lg"
+                                    data={mapData}
+                                    backgroundColor="transparent"
+                                    borderColor="#d1d5db"
+                                    tooltipBgColor="#354e84"
+                                    tooltipTextColor="#fff"
+                                    richInteraction
+                                />
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '12px', justifyContent: 'center' }}>
+                                    {(stats?.usersByCountry || []).map((item, i) => (
+                                        <span key={i} style={{ background: '#f0fdf4', color: '#166534', fontSize: '0.72rem', padding: '3px 8px', borderRadius: '6px', fontWeight: '500' }}>
+                                            {item.country}: {item.count}
+                                        </span>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <div style={{ textAlign: 'center', color: '#9ca3af' }}>
+                                <i className="fas fa-globe-africa" style={{ fontSize: '56px', opacity: 0.2 }}></i>
+                                <p style={{ marginTop: '12px' }}>Données en cours de collecte</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Charts */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {/* Donut - Articles par statut */}
+                    <div style={card}>
+                        <div style={cardHeader}>
+                            <h5 style={{ margin: 0, fontSize: '1rem', fontWeight: '600' }}>
+                                <i className="fas fa-chart-pie me-2" style={{ color: '#F39C12' }}></i>Articles par statut
+                            </h5>
+                        </div>
+                        <div style={{ padding: '10px 16px', height: '190px' }}>
+                            {statusData.length > 0 ? (
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie data={statusData} dataKey="value" nameKey="name" cx="50%" cy="45%"
+                                            outerRadius={60} innerRadius={35} paddingAngle={4}>
+                                            {statusData.map((e, i) => <Cell key={i} fill={e.color} />)}
+                                        </Pie>
+                                        <Tooltip formatter={v => `${v} articles`} />
+                                        <Legend verticalAlign="bottom" iconType="circle" iconSize={8}
+                                            formatter={(val, entry) => <span style={{ color: '#555', fontSize: '0.78rem' }}>{val}: {entry.payload.value}</span>} />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            ) : <p style={{ textAlign: 'center', color: '#999', paddingTop: '40px' }}>Aucune donnée</p>}
+                        </div>
+                    </div>
+
+                    {/* Bars - Top catégories */}
+                    <div style={{ ...card, flex: 1 }}>
+                        <div style={cardHeader}>
+                            <h5 style={{ margin: 0, fontSize: '1rem', fontWeight: '600' }}>
+                                <i className="fas fa-tags me-2" style={{ color: '#354e84' }}></i>Top catégories
+                            </h5>
+                        </div>
+                        <div style={{ padding: '10px 8px', height: '230px' }}>
+                            {categoryData.length > 0 ? (
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={categoryData} layout="vertical" margin={{ left: 5, right: 20, top: 5, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                                        <XAxis type="number" tick={{ fontSize: 11 }} />
+                                        <YAxis type="category" dataKey="name" width={105} tick={{ fontSize: 11 }} />
+                                        <Tooltip formatter={v => `${v} articles`} />
+                                        <Bar dataKey="articles" radius={[0, 6, 6, 0]}>
+                                            {categoryData.map((e, i) => <Cell key={i} fill={e.fill} />)}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            ) : <p style={{ textAlign: 'center', color: '#999', paddingTop: '40px' }}>Aucune donnée</p>}
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Stats Cards */}
-            <div className="row">
-                <StatCard
-                    title="Articles"
-                    value={loading ? '...' : stats.posts?.total || 0}
-                    icon={icons.posts}
-                    color="#27AE60"
-                    link="/posts"
-                />
-                <StatCard
-                    title="Utilisateurs"
-                    value={loading ? '...' : stats.users?.total || 0}
-                    icon={icons.users}
-                    color="#3498DB"
-                    link="/users"
-                />
-                <StatCard
-                    title="Catégories"
-                    value={loading ? '...' : stats.categories?.total || 0}
-                    icon={icons.categories}
-                    color="#E67E22"
-                    link="/categories"
-                />
-                <StatCard
-                    title="Médias"
-                    value={loading ? '...' : stats.media?.total || 0}
-                    icon={icons.media}
-                    color="#9B59B6"
-                    link="/media"
-                />
-            </div>
-
-            {/* Quick Actions */}
-            <div className="row mt-2">
-                <div className="col-12">
-                    <h4 className="mb-3" style={{ fontWeight: '600' }}>Actions rapides</h4>
-                </div>
-                <QuickAction
-                    title="Nouvel article"
-                    description="Créer et publier un article"
-                    icon="✍️"
-                    color="#27AE60"
-                    link="/posts/new"
-                />
-                <QuickAction
-                    title="Annuaire Panafricain"
-                    description="Gérer les établissements vétérinaires"
-                    icon="🗺️"
-                    color="#0d9488"
-                    link="/annuaire"
-                />
-                <QuickAction
-                    title="E-Learning"
-                    description="Gérer les cours et formations"
-                    icon="🎓"
-                    color="#3498DB"
-                    link="/elearning"
-                />
-            </div>
-
-            {/* Recent Posts & Stats */}
-            <div className="row mt-4">
+            {/* Recent Posts + Quick Actions */}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px' }}>
                 {/* Recent Posts */}
-                <div className="col-xl-8 col-lg-7">
-                    <div className="card h-100">
-                        <div className="card-header d-flex justify-content-between align-items-center">
-                            <h4 className="card-title mb-0">Articles récents</h4>
-                            <Link to="/posts" className="btn btn-primary btn-sm">Voir tout</Link>
-                        </div>
-                        <div className="card-body p-0">
-                            <div className="table-responsive">
-                                <table className="table table-hover mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Titre</th>
-                                            <th>Catégorie</th>
-                                            <th>Statut</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {recentPosts.length > 0 ? (
-                                            recentPosts.map((post) => (
-                                                <tr key={post.id}>
-                                                    <td>
-                                                        <Link to={`/posts/${post.id}`} className="text-dark fw-semibold">
-                                                            {post.title?.substring(0, 40)}...
-                                                        </Link>
-                                                    </td>
-                                                    <td>
-                                                        <span className="badge" style={{ background: '#0d948820', color: '#0d9488' }}>
-                                                            {post.category_name || 'Sans catégorie'}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <span className={`badge ${post.status === 'published' ? 'bg-success' : 'bg-warning'}`}>
-                                                            {post.status === 'published' ? 'Publié' : 'Brouillon'}
-                                                        </span>
-                                                    </td>
-                                                    <td className="text-muted" style={{ fontSize: '13px' }}>
-                                                        {new Date(post.created_at).toLocaleDateString('fr-FR')}
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan="4" className="text-center text-muted py-4">
-                                                    Aucun article récent
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div style={card}>
+                    <div style={cardHeader}>
+                        <h5 style={{ margin: 0, fontSize: '1rem', fontWeight: '600' }}>
+                            <i className="fas fa-clock me-2" style={{ color: '#3498DB' }}></i>Articles récents
+                        </h5>
+                        <Link to="/posts" style={{ background: '#354e84', color: '#fff', padding: '5px 14px', borderRadius: '6px', fontSize: '0.78rem', textDecoration: 'none' }}>Voir tout</Link>
+                    </div>
+                    <div style={{ padding: 0 }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr style={{ background: '#f8fafc' }}>
+                                    <th style={{ padding: '10px 16px', fontSize: '0.78rem', fontWeight: '600', color: '#666', textAlign: 'left' }}>Titre</th>
+                                    <th style={{ padding: '10px 12px', fontSize: '0.78rem', fontWeight: '600', color: '#666', textAlign: 'left' }}>Catégories</th>
+                                    <th style={{ padding: '10px 12px', fontSize: '0.78rem', fontWeight: '600', color: '#666', textAlign: 'left' }}>Statut</th>
+                                    <th style={{ padding: '10px 16px', fontSize: '0.78rem', fontWeight: '600', color: '#666', textAlign: 'left' }}>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {recentPosts.length > 0 ? recentPosts.map(post => (
+                                    <tr key={post.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                                        <td style={{ padding: '10px 16px' }}>
+                                            <Link to={`/posts/${post.id}`} style={{ color: '#1f2937', fontWeight: '600', fontSize: '0.83rem', textDecoration: 'none' }}>
+                                                {(post.title_fr || post.title || '').substring(0, 45)}{(post.title_fr || post.title || '').length > 45 ? '...' : ''}
+                                            </Link>
+                                        </td>
+                                        <td style={{ padding: '10px 12px' }}>
+                                            {post.categories?.length > 0 ? post.categories.slice(0, 2).map(cat => (
+                                                <span key={cat.id} style={{
+                                                    display: 'inline-block', background: cat.color ? `${cat.color}20` : '#e5e7eb',
+                                                    color: cat.color || '#6b7280', fontSize: '0.68rem', padding: '2px 7px',
+                                                    borderRadius: '4px', marginRight: '4px', fontWeight: '500'
+                                                }}>{cat.name_fr || cat.name}</span>
+                                            )) : <span style={{ color: '#ccc' }}>—</span>}
+                                        </td>
+                                        <td style={{ padding: '10px 12px' }}>
+                                            <span style={{
+                                                display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '600',
+                                                background: post.status === 'published' ? '#dcfce7' : '#fef3c7',
+                                                color: post.status === 'published' ? '#166534' : '#92400e'
+                                            }}>{post.status === 'published' ? 'Publié' : 'Brouillon'}</span>
+                                        </td>
+                                        <td style={{ padding: '10px 16px', color: '#9ca3af', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                                            {new Date(post.created_at).toLocaleDateString('fr-FR')}
+                                        </td>
+                                    </tr>
+                                )) : (
+                                    <tr><td colSpan="4" style={{ padding: '30px', textAlign: 'center', color: '#999' }}>Aucun article</td></tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                {/* Annuaire Stats */}
-                <div className="col-xl-4 col-lg-5">
-                    <div className="card h-100">
-                        <div className="card-header">
-                            <h4 className="card-title mb-0">Annuaire Panafricain</h4>
-                        </div>
-                        <div className="card-body">
-                            <div className="d-flex align-items-center mb-3 p-3" style={{ background: '#f8fafc', borderRadius: '12px' }}>
-                                <span style={{ fontSize: '24px', marginRight: '12px' }}>🏥</span>
-                                <div className="flex-grow-1">
-                                    <h6 className="mb-0">Cliniques & Hôpitaux</h6>
+                {/* Quick Actions */}
+                <div style={card}>
+                    <div style={cardHeader}>
+                        <h5 style={{ margin: 0, fontSize: '1rem', fontWeight: '600' }}>
+                            <i className="fas fa-bolt me-2" style={{ color: '#F39C12' }}></i>Actions rapides
+                        </h5>
+                    </div>
+                    <div style={{ padding: '12px 16px' }}>
+                        {[
+                            { title: 'Nouvel article', icon: 'fa-pen', color: '#27AE60', link: '/posts/new' },
+                            { title: 'Annuaire', icon: 'fa-map-marked-alt', color: '#0d9488', link: '/annuaire' },
+                            { title: 'E-Learning', icon: 'fa-graduation-cap', color: '#3498DB', link: '/elearning' },
+                            { title: 'Newsletter', icon: 'fa-paper-plane', color: '#E74C3C', link: '/newsletter' },
+                            { title: 'Alertes Vétérinaires', icon: 'fa-exclamation-triangle', color: '#F39C12', link: '/vet-alerts' },
+                            { title: 'Paramètres', icon: 'fa-cog', color: '#6b7280', link: '/settings' },
+                        ].map((a, i) => (
+                            <Link key={i} to={a.link} style={{
+                                display: 'flex', alignItems: 'center', gap: '12px',
+                                padding: '10px 12px', marginBottom: '6px', borderRadius: '8px',
+                                background: '#f8fafc', textDecoration: 'none', color: '#1f2937', transition: 'background 0.15s'
+                            }}
+                                onMouseEnter={e => e.currentTarget.style.background = `${a.color}10`}
+                                onMouseLeave={e => e.currentTarget.style.background = '#f8fafc'}>
+                                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${a.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <i className={`fas ${a.icon}`} style={{ color: a.color, fontSize: '13px' }}></i>
                                 </div>
-                                <span className="badge" style={{ background: '#27AE6020', color: '#27AE60' }}>
-                                    {stats.organizations?.clinics || 0}
-                                </span>
-                            </div>
-                            <div className="d-flex align-items-center mb-3 p-3" style={{ background: '#f8fafc', borderRadius: '12px' }}>
-                                <span style={{ fontSize: '24px', marginRight: '12px' }}>🔬</span>
-                                <div className="flex-grow-1">
-                                    <h6 className="mb-0">Laboratoires</h6>
-                                </div>
-                                <span className="badge" style={{ background: '#3498DB20', color: '#3498DB' }}>
-                                    {stats.organizations?.labs || 0}
-                                </span>
-                            </div>
-                            <div className="d-flex align-items-center mb-3 p-3" style={{ background: '#f8fafc', borderRadius: '12px' }}>
-                                <span style={{ fontSize: '24px', marginRight: '12px' }}>💊</span>
-                                <div className="flex-grow-1">
-                                    <h6 className="mb-0">Pharmacies</h6>
-                                </div>
-                                <span className="badge" style={{ background: '#9B59B620', color: '#9B59B6' }}>
-                                    {stats.organizations?.pharmacies || 0}
-                                </span>
-                            </div>
-                            <div className="d-flex align-items-center p-3" style={{ background: '#f8fafc', borderRadius: '12px' }}>
-                                <span style={{ fontSize: '24px', marginRight: '12px' }}>🎓</span>
-                                <div className="flex-grow-1">
-                                    <h6 className="mb-0">Écoles & Formation</h6>
-                                </div>
-                                <span className="badge" style={{ background: '#F39C1220', color: '#F39C12' }}>
-                                    {stats.organizations?.schools || 0}
-                                </span>
-                            </div>
-                            <Link to="/annuaire" className="btn btn-primary w-100 mt-3" style={{
-                                background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)',
-                                border: 'none'
-                            }}>
-                                Gérer l'annuaire
+                                <span style={{ fontWeight: '600', fontSize: '0.85rem', flex: 1 }}>{a.title}</span>
+                                <i className="fas fa-chevron-right" style={{ color: '#d1d5db', fontSize: '10px' }}></i>
                             </Link>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>
-        </>
+
+            {/* Responsive override for mobile */}
+            <style>{`
+                @media (max-width: 992px) {
+                    div[style*="gridTemplateColumns: repeat(3"] { grid-template-columns: repeat(2, 1fr) !important; }
+                    div[style*="gridTemplateColumns: 7fr"] { grid-template-columns: 1fr !important; }
+                    div[style*="gridTemplateColumns: 2fr"] { grid-template-columns: 1fr !important; }
+                }
+                @media (max-width: 576px) {
+                    div[style*="gridTemplateColumns: repeat("] { grid-template-columns: 1fr !important; }
+                }
+            `}</style>
+        </div>
     );
 }
 

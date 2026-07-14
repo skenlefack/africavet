@@ -20,10 +20,17 @@ const SettingsPage = () => {
         meta_keywords: '',
         // Social
         facebook_url: '',
+        facebook_followers: '',
         twitter_url: '',
+        twitter_followers: '',
         linkedin_url: '',
+        linkedin_followers: '',
         youtube_url: '',
+        youtube_followers: '',
         instagram_url: '',
+        instagram_followers: '',
+        whatsapp_url: '',
+        whatsapp_followers: '',
         // Contact
         contact_email: '',
         contact_phone: '',
@@ -300,61 +307,45 @@ const SettingsPage = () => {
                                         <h5 className="mb-0">Reseaux sociaux</h5>
                                     </div>
                                     <div className="card-body">
-                                        <div className="mb-3">
-                                            <label className="form-label"><i className="fab fa-facebook me-2"></i>Facebook</label>
-                                            <input
-                                                type="url"
-                                                className="form-control"
-                                                name="facebook_url"
-                                                value={settings.facebook_url}
-                                                onChange={handleChange}
-                                                placeholder="https://facebook.com/..."
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label className="form-label"><i className="fab fa-twitter me-2"></i>Twitter</label>
-                                            <input
-                                                type="url"
-                                                className="form-control"
-                                                name="twitter_url"
-                                                value={settings.twitter_url}
-                                                onChange={handleChange}
-                                                placeholder="https://twitter.com/..."
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label className="form-label"><i className="fab fa-linkedin me-2"></i>LinkedIn</label>
-                                            <input
-                                                type="url"
-                                                className="form-control"
-                                                name="linkedin_url"
-                                                value={settings.linkedin_url}
-                                                onChange={handleChange}
-                                                placeholder="https://linkedin.com/..."
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label className="form-label"><i className="fab fa-youtube me-2"></i>YouTube</label>
-                                            <input
-                                                type="url"
-                                                className="form-control"
-                                                name="youtube_url"
-                                                value={settings.youtube_url}
-                                                onChange={handleChange}
-                                                placeholder="https://youtube.com/..."
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label className="form-label"><i className="fab fa-instagram me-2"></i>Instagram</label>
-                                            <input
-                                                type="url"
-                                                className="form-control"
-                                                name="instagram_url"
-                                                value={settings.instagram_url}
-                                                onChange={handleChange}
-                                                placeholder="https://instagram.com/..."
-                                            />
-                                        </div>
+                                        <p className="text-muted mb-4">Configurez les liens et le nombre d'abonnes de vos reseaux sociaux. Les compteurs s'affichent dans le widget "Suivez-nous" du site.</p>
+                                        {[
+                                            { key: 'facebook', icon: 'fab fa-facebook', label: 'Facebook', color: '#1877f2', placeholder: 'https://facebook.com/...' },
+                                            { key: 'twitter', icon: 'fab fa-twitter', label: 'Twitter / X', color: '#1da1f2', placeholder: 'https://x.com/...' },
+                                            { key: 'whatsapp', icon: 'fab fa-whatsapp', label: 'WhatsApp', color: '#25D366', placeholder: 'https://whatsapp.com/channel/...' },
+                                            { key: 'linkedin', icon: 'fab fa-linkedin', label: 'LinkedIn', color: '#0A66C2', placeholder: 'https://linkedin.com/...' },
+                                            { key: 'youtube', icon: 'fab fa-youtube', label: 'YouTube', color: '#FF0000', placeholder: 'https://youtube.com/...' },
+                                            { key: 'instagram', icon: 'fab fa-instagram', label: 'Instagram', color: '#E4405F', placeholder: 'https://instagram.com/...' },
+                                        ].map(social => (
+                                            <div key={social.key} className="mb-4 p-3 rounded" style={{ border: '1px solid #e5e7eb', background: '#fafafa' }}>
+                                                <label className="form-label fw-semibold" style={{ color: social.color }}>
+                                                    <i className={`${social.icon} me-2`}></i>{social.label}
+                                                </label>
+                                                <div className="row g-2">
+                                                    <div className="col-md-8">
+                                                        <input
+                                                            type="url"
+                                                            className="form-control"
+                                                            name={`${social.key}_url`}
+                                                            value={settings[`${social.key}_url`] || ''}
+                                                            onChange={handleChange}
+                                                            placeholder={social.placeholder}
+                                                        />
+                                                        <small className="text-muted">Lien de la page</small>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            name={`${social.key}_followers`}
+                                                            value={settings[`${social.key}_followers`] || ''}
+                                                            onChange={handleChange}
+                                                            placeholder="ex: 12K+"
+                                                        />
+                                                        <small className="text-muted">Nombre d'abonnes</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             )}

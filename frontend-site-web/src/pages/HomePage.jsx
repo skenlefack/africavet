@@ -78,7 +78,7 @@ function HomePage() {
               categoryName="Santé Animale"
               categoryIcon="heartbeat"
               layout="cards"
-              limit={6}
+              limit={8}
             />
             {/* Encadré publicitaire après Santé Animale - 728x90px (Leaderboard) */}
             {/* Position: content-sante-animale - Géré dans le gestionnaire de publicités */}

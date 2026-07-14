@@ -40,7 +40,53 @@ router.get('/stats', auth, authorize('admin', 'editor'), async (req, res) => {
     const [mediaStats] = await db.query('SELECT COUNT(*) as total, SUM(size) as total_size FROM media');
 
     // Categories count
-    const [categoriesCount] = await db.query('SELECT COUNT(*) as total FROM categories');
+    const [categoriesStats] = await db.query('SELECT COUNT(*) as total FROM categories WHERE status = "active"');
+
+    // Organizations stats
+    let orgStats = { total: 0, clinics: 0, labs: 0, pharmacies: 0, schools: 0 };
+    try {
+      const [orgData] = await db.query(`
+        SELECT COUNT(*) as total,
+          SUM(CASE WHEN type = 'clinic' OR type = 'hospital' THEN 1 ELSE 0 END) as clinics,
+          SUM(CASE WHEN type = 'laboratory' THEN 1 ELSE 0 END) as labs,
+          SUM(CASE WHEN type = 'pharmacy' THEN 1 ELSE 0 END) as pharmacies,
+          SUM(CASE WHEN type = 'school' OR type = 'university' THEN 1 ELSE 0 END) as schools
+        FROM organizations
+      `);
+      orgStats = orgData[0] || orgStats;
+    } catch (e) { /* table may not exist */ }
+
+    // Top categories by post count (for pie chart)
+    let topCategories = [];
+    try {
+      const [catData] = await db.query(`
+        SELECT c.name_fr as name, c.color, COUNT(pc.post_id) as count
+        FROM categories c
+        INNER JOIN post_categories pc ON c.id = pc.category_id
+        INNER JOIN posts p ON pc.post_id = p.id AND p.status = 'published'
+        GROUP BY c.id ORDER BY count DESC LIMIT 8
+      `);
+      topCategories = catData;
+    } catch (e) { /* fallback */ }
+
+    // Users by country (for map)
+    let usersByCountry = [];
+    try {
+      const [countryData] = await db.query(`
+        SELECT country, COUNT(*) as count
+        FROM users
+        WHERE country IS NOT NULL AND country != ''
+        GROUP BY country ORDER BY count DESC
+      `);
+      usersByCountry = countryData;
+    } catch (e) { /* table may not have country */ }
+
+    // Newsletter subscribers
+    let newsletter = { total: 0 };
+    try {
+      const [nlData] = await db.query("SELECT COUNT(*) as total FROM newsletter_subscribers WHERE status = 'subscribed'");
+      newsletter = nlData[0] || newsletter;
+    } catch (e) { /* table may not exist */ }
 
     res.json({
       success: true,
@@ -49,7 +95,11 @@ router.get('/stats', auth, authorize('admin', 'editor'), async (req, res) => {
         users: usersStats[0],
         comments: commentsStats[0],
         media: { ...mediaStats[0], total_size_mb: Math.round((mediaStats[0].total_size || 0) / 1024 / 1024 * 100) / 100 },
-        categories: categoriesCount[0].total
+        categories: categoriesStats[0],
+        organizations: orgStats,
+        topCategories,
+        usersByCountry,
+        newsletter,
       }
     });
   } catch (error) {

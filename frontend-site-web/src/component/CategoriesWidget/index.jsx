@@ -32,8 +32,11 @@ const categoryDefaults = {
 const CategoriesWidget = () => {
   const { categories, loading } = useApp();
 
-  // Filtrer les catégories avec des articles
-  const activeCategories = categories.filter(c => c.post_count > 0);
+  // Top 10 catégories les plus populaires (par nombre d'articles)
+  const activeCategories = [...categories]
+    .filter(c => c.post_count > 0)
+    .sort((a, b) => b.post_count - a.post_count)
+    .slice(0, 10);
 
   // Obtenir l'icône et la couleur pour une catégorie (utilise les défauts FA4 compatibles)
   const getCategoryStyle = (cat) => {

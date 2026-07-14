@@ -254,10 +254,10 @@ const CampaignEditor = () => {
 
     // TinyMCE configuration
     const editorConfig = {
-        height: 420,
-        min_height: 380,
-        max_height: 600,
-        autoresize_bottom_margin: 10,
+        height: 'auto',
+        min_height: 300,
+        autoresize_bottom_margin: 20,
+        autoresize_overflow_padding: 10,
         menubar: false,
         plugins: [
             'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
@@ -392,11 +392,11 @@ const CampaignEditor = () => {
                     </div>
                 </div>
 
-                <div className="row">
+                <div className="row" style={{ alignItems: 'flex-start' }}>
                     {/* Main Content */}
                     <div className="col-lg-8">
                         {/* Subject */}
-                        <div className="card mb-4">
+                        <div className="card mb-4" style={{ height: 'auto' }}>
                             <div className="card-header d-flex justify-content-between align-items-center">
                                 <h5 className="mb-0"><i className="fas fa-heading me-2" style={{ color: '#354e84' }}></i>Sujet</h5>
                                 <div className="btn-group btn-group-sm">
@@ -420,7 +420,7 @@ const CampaignEditor = () => {
                         </div>
 
                         {/* Content */}
-                        <div className="card mb-4">
+                        <div className="card mb-4" style={{ height: 'auto' }}>
                             <div className="card-header d-flex justify-content-between align-items-center">
                                 <h5 className="mb-0"><i className="fas fa-file-code me-2" style={{ color: '#7ac142' }}></i>Contenu ({activeLang.toUpperCase()})</h5>
                                 <div className="d-flex gap-2">
@@ -453,7 +453,7 @@ const CampaignEditor = () => {
                         </div>
 
                         {/* Insert Article */}
-                        <div className="card mb-4">
+                        <div className="card mb-4" style={{ height: 'auto' }}>
                             <div className="card-header">
                                 <h5 className="mb-0"><i className="fas fa-newspaper me-2" style={{ color: '#E67E22' }}></i>Insérer un article</h5>
                             </div>
@@ -474,7 +474,7 @@ const CampaignEditor = () => {
                         </div>
 
                         {/* Attachments */}
-                        <div className="card mb-4">
+                        <div className="card mb-4" style={{ height: 'auto' }}>
                             <div className="card-header d-flex justify-content-between align-items-center">
                                 <h5 className="mb-0"><i className="fas fa-paperclip me-2"></i>Pièces jointes</h5>
                                 <label className="btn btn-sm btn-outline-primary mb-0" style={{ cursor: 'pointer' }}>
@@ -506,7 +506,7 @@ const CampaignEditor = () => {
                     {/* Sidebar */}
                     <div className="col-lg-4">
                         {/* Status */}
-                        <div className="card mb-4">
+                        <div className="card mb-4" style={{ height: 'auto' }}>
                             <div className="card-header py-2">
                                 <h6 className="mb-0"><i className="fas fa-info-circle me-2"></i>Statut</h6>
                             </div>
@@ -518,7 +518,7 @@ const CampaignEditor = () => {
                         </div>
 
                         {/* Recipients */}
-                        <div className="card mb-4">
+                        <div className="card mb-4" style={{ height: 'auto' }}>
                             <div className="card-header py-2">
                                 <h6 className="mb-0"><i className="fas fa-users me-2"></i>Destinataires</h6>
                             </div>
@@ -557,7 +557,7 @@ const CampaignEditor = () => {
 
                         {/* Schedule */}
                         {isEditing && form.status === 'draft' && (
-                            <div className="card mb-4">
+                            <div className="card mb-4" style={{ height: 'auto' }}>
                                 <div className="card-header py-2">
                                     <h6 className="mb-0"><i className="fas fa-clock me-2"></i>Programmation</h6>
                                 </div>
@@ -574,7 +574,7 @@ const CampaignEditor = () => {
 
                         {/* Test Send */}
                         {isEditing && form.status === 'draft' && (
-                            <div className="card mb-4">
+                            <div className="card mb-4" style={{ height: 'auto' }}>
                                 <div className="card-header py-2">
                                     <h6 className="mb-0"><i className="fas fa-flask me-2"></i>Envoi test</h6>
                                 </div>
@@ -591,7 +591,7 @@ const CampaignEditor = () => {
                         )}
 
                         {/* Preview */}
-                        <div className="card">
+                        <div className="card" style={{ height: 'auto' }}>
                             <div className="card-header py-2">
                                 <h6 className="mb-0"><i className="fas fa-eye me-2"></i>Aperçu</h6>
                             </div>

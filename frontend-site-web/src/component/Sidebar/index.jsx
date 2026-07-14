@@ -11,7 +11,7 @@ import adImg1 from "../../assets/img/ad/ad-1.png";
 import adImg2 from "../../assets/img/ad/ad-2.jpg";
 
 const Sidebar = ({ categorySlug = null }) => {
-  const { categories, getCategoryColor } = useApp();
+  const { categories, getCategoryColor, settings } = useApp();
   const [mostViewed, setMostViewed] = useState([]);
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,10 +56,10 @@ const Sidebar = ({ categorySlug = null }) => {
   };
 
   const socialLinks = [
-    { name: 'facebook', icon: 'facebook', url: 'https://www.facebook.com/africavetwebportail/', color: '#1877f2', followers: '12K+' },
-    { name: 'twitter', icon: 'twitter', url: 'https://x.com/africavet', color: '#1da1f2', followers: '8K+' },
-    { name: 'whatsapp', icon: 'whatsapp', url: 'https://whatsapp.com/channel/0029Vb7GhhAKrWR4oDYbAS3U', color: '#25D366', followers: '5K+' },
-  ];
+    { name: 'facebook', icon: 'facebook', url: settings.facebook_url || 'https://www.facebook.com/africavetwebportail/', color: '#1877f2', followers: settings.facebook_followers || '0', label: 'Fans' },
+    { name: 'twitter', icon: 'twitter', url: settings.twitter_url || 'https://x.com/africavet', color: '#1da1f2', followers: settings.twitter_followers || '0', label: 'Followers' },
+    { name: 'whatsapp', icon: 'whatsapp', url: settings.whatsapp_url || 'https://whatsapp.com/channel/0029Vb7GhhAKrWR4oDYbAS3U', color: '#25D366', followers: settings.whatsapp_followers || '0', label: 'Abonnes' },
+  ].filter(s => s.url);
 
   return (
     <aside className="modern-sidebar">
@@ -90,7 +90,7 @@ const Sidebar = ({ categorySlug = null }) => {
             >
               <FontAwesome name={social.icon} />
               <span className="social-count">{social.followers}</span>
-              <span className="social-label">Fans</span>
+              <span className="social-label">{social.label}</span>
             </a>
           ))}
         </div>
@@ -114,9 +114,14 @@ const Sidebar = ({ categorySlug = null }) => {
               ))}
             </div>
           ) : mostViewed.length > 0 ? (
-            mostViewed.map((post, index) => (
+            mostViewed.map((post) => (
               <div key={post.id} className="post-item">
-                <span className="post-number">{String(index + 1).padStart(2, '0')}</span>
+                <Link to={`/article/${post.slug}`} className="post-thumb">
+                  <img
+                    src={resolveImageUrl(post.featured_image, adImg2)}
+                    alt={post.title_fr || post.title}
+                  />
+                </Link>
                 <div className="post-content">
                   <h4 className="post-title">
                     <Link to={`/article/${post.slug}`}>
