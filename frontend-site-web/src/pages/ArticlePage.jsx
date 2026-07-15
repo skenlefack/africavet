@@ -4,6 +4,7 @@ import { postsApi, getImageUrl as resolveImageUrl, resolveContentUrls } from "..
 import { useApp } from "../context/AppContext";
 import Sidebar from "../component/Sidebar";
 import FontAwesome from "../component/uiStyle/FontAwesome";
+import SEO from "../component/SEO";
 import "./ArticlePage.scss";
 
 const ArticlePage = () => {
@@ -128,8 +129,43 @@ const ArticlePage = () => {
     );
   }
 
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": post.title_fr || post.title,
+    "description": post.excerpt_fr || post.excerpt || '',
+    "image": post.featured_image ? resolveImageUrl(post.featured_image) : undefined,
+    "datePublished": post.published_at || post.created_at,
+    "dateModified": post.updated_at || post.created_at,
+    "author": {
+      "@type": "Person",
+      "name": post.author_first_name ? `${post.author_first_name} ${post.author_last_name || ''}`.trim() : "AfricaVET"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "AfricaVET",
+      "logo": { "@type": "ImageObject", "url": "https://www.africavet.com/favicon.png" }
+    },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": `https://www.africavet.com/article/${post.slug}` }
+  };
+
   return (
     <div className="article-page">
+      <SEO
+        title={post.title_fr || post.title}
+        description={post.excerpt_fr || post.excerpt}
+        image={post.featured_image}
+        url={`/article/${post.slug}`}
+        type="article"
+        article={{
+          publishedTime: post.published_at || post.created_at,
+          modifiedTime: post.updated_at,
+          author: post.author_first_name ? `${post.author_first_name} ${post.author_last_name || ''}`.trim() : "AfricaVET",
+          category: post.category_name,
+          tags: post.tags?.map(t => t.name) || []
+        }}
+        jsonLd={articleJsonLd}
+      />
       {/* Hero Banner */}
       <section className="article-banner-wrapper">
         <div className="container">

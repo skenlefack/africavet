@@ -162,6 +162,20 @@ router.get('/', optionalAuth, async (req, res) => {
 
     const [opportunities] = await db.query(query, params);
 
+    // Add closing_soon flag for opportunities expiring within 7 days
+    const now = new Date();
+    const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    for (const opp of opportunities) {
+      if (opp.deadline) {
+        const deadline = new Date(opp.deadline);
+        opp.closing_soon = deadline > now && deadline <= sevenDaysFromNow;
+        opp.days_remaining = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+      } else {
+        opp.closing_soon = false;
+        opp.days_remaining = null;
+      }
+    }
+
     // Get total count - build same WHERE conditions
     let countQuery = `SELECT COUNT(*) as total FROM opportunities o WHERE ${statusFilter}`;
     const countParams = [];

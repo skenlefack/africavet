@@ -5,6 +5,7 @@ import FontAwesome from '../../component/uiStyle/FontAwesome';
 import LoadingSpinner from '../../component/shared/LoadingSpinner';
 import Pagination from '../../component/shared/Pagination';
 import OpportunityCard from '../../component/opportunities/OpportunityCard';
+import SEO from '../../component/SEO';
 
 const TYPE_TABS = [
   { value: '', label: 'Tous', icon: 'th-large' },
@@ -93,6 +94,11 @@ const OpportunitiesPage = () => {
 
   return (
     <div className="opportunities-page">
+      <SEO
+        title="Opportunités - Emplois, Appels d'offres et Marchés"
+        description="Découvrez les dernières offres d'emploi, appels d'offres, marchés et bourses dans le domaine vétérinaire en Afrique."
+        url="/opportunites"
+      />
       {/* Hero Section */}
       <section
         style={{

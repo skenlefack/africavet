@@ -70,18 +70,21 @@ const OpportunityEditor = () => {
         contact_email: '',
         contact_phone: '',
         website_url: '',
-        country: 'Cameroun',
+        application_url: '',
+        source_url: '',
+        tender_reference: '',
+        country: '',
         region: '',
         city: '',
         address: '',
         is_remote: false,
-        job_type: 'full_time',
+        job_type: '',
         experience_required: '',
         education_required: '',
         salary_min: '',
         salary_max: '',
-        salary_currency: 'XAF',
-        salary_period: 'month',
+        salary_currency: '',
+        salary_period: '',
         deadline: '',
         status: 'pending',
         is_featured: false,
@@ -115,18 +118,21 @@ const OpportunityEditor = () => {
                 contact_email: d.contact_email || '',
                 contact_phone: d.contact_phone || '',
                 website_url: d.website_url || '',
-                country: d.country || 'Cameroun',
+                application_url: d.application_url || '',
+                source_url: d.source_url || '',
+                tender_reference: d.tender_reference || '',
+                country: d.country || '',
                 region: d.region || '',
                 city: d.city || '',
                 address: d.address || '',
                 is_remote: !!d.is_remote,
-                job_type: d.job_type || 'full_time',
+                job_type: d.job_type || '',
                 experience_required: d.experience_required || '',
                 education_required: d.education_required || '',
                 salary_min: d.salary_min || '',
                 salary_max: d.salary_max || '',
-                salary_currency: d.salary_currency || 'XAF',
-                salary_period: d.salary_period || 'month',
+                salary_currency: d.salary_currency || '',
+                salary_period: d.salary_period || '',
                 deadline: d.deadline ? d.deadline.split('T')[0] : '',
                 status: d.status || 'pending',
                 is_featured: !!d.is_featured,
@@ -362,9 +368,30 @@ const OpportunityEditor = () => {
                                             onChange={e => handleChange('contact_phone', e.target.value)} />
                                     </div>
                                     <div className="col-md-4">
-                                        <label className="form-label">Site web</label>
+                                        <label className="form-label">Site web de l'organisation</label>
                                         <input type="url" className="form-control" value={form.website_url}
-                                            onChange={e => handleChange('website_url', e.target.value)} />
+                                            onChange={e => handleChange('website_url', e.target.value)}
+                                            placeholder="https://www.organisation.org" />
+                                    </div>
+                                </div>
+                                <div className="row g-3 mt-1">
+                                    <div className="col-md-4">
+                                        <label className="form-label">Référence officielle</label>
+                                        <input type="text" className="form-control" value={form.tender_reference}
+                                            onChange={e => handleChange('tender_reference', e.target.value)}
+                                            placeholder="Ex: VA/2026/001" />
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label className="form-label"><i className="fas fa-external-link-alt me-1"></i>Lien source officielle</label>
+                                        <input type="url" className="form-control" value={form.source_url}
+                                            onChange={e => handleChange('source_url', e.target.value)}
+                                            placeholder="https://recrutement.org/offre-123" />
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label className="form-label"><i className="fas fa-paper-plane me-1"></i>Lien direct de candidature</label>
+                                        <input type="url" className="form-control" value={form.application_url}
+                                            onChange={e => handleChange('application_url', e.target.value)}
+                                            placeholder="https://recrutement.org/postuler" />
                                     </div>
                                 </div>
                             </div>
@@ -423,9 +450,11 @@ const OpportunityEditor = () => {
                                             <label className="form-label">Type de contrat</label>
                                             <select className="form-select" value={form.job_type}
                                                 onChange={e => handleChange('job_type', e.target.value)}>
+                                                <option value="">— Choisir —</option>
                                                 <option value="full_time">Temps plein</option>
                                                 <option value="part_time">Temps partiel</option>
                                                 <option value="contract">Contrat</option>
+                                                <option value="consultancy">Consultance</option>
                                                 <option value="internship">Stage</option>
                                                 <option value="volunteer">Bénévolat</option>
                                                 <option value="freelance">Freelance</option>
@@ -455,21 +484,28 @@ const OpportunityEditor = () => {
                                             <label className="form-label">Devise</label>
                                             <select className="form-select" value={form.salary_currency}
                                                 onChange={e => handleChange('salary_currency', e.target.value)}>
+                                                <option value="">— Devise —</option>
                                                 <option value="XAF">XAF</option>
                                                 <option value="XOF">XOF</option>
                                                 <option value="EUR">EUR</option>
                                                 <option value="USD">USD</option>
+                                                <option value="GBP">GBP</option>
+                                                <option value="CHF">CHF</option>
+                                                <option value="KES">KES (Shilling kenyan)</option>
+                                                <option value="ZAR">ZAR (Rand)</option>
+                                                <option value="NGN">NGN (Naira)</option>
                                             </select>
                                         </div>
                                         <div className="col-md-3">
                                             <label className="form-label">Période</label>
                                             <select className="form-select" value={form.salary_period}
                                                 onChange={e => handleChange('salary_period', e.target.value)}>
+                                                <option value="">— Période —</option>
                                                 <option value="hour">Heure</option>
                                                 <option value="day">Jour</option>
                                                 <option value="month">Mois</option>
                                                 <option value="year">An</option>
-                                                <option value="project">Projet</option>
+                                                <option value="project">Projet / Mission</option>
                                             </select>
                                         </div>
                                     </div>

@@ -14,10 +14,28 @@ import DashboardSection from "../component/DashboardSection";
 import AdBanner from "../component/AdBanner";
 
 import { Link } from "react-router-dom";
+import SEO from "../component/SEO";
 
 function HomePage() {
   return (
     <>
+      <SEO
+        title={null}
+        description="Le portail panafricain de la santé animale et de la médecine vétérinaire. Actualités, analyses, opportunités et ressources sur la santé animale, le One Health, les zoonoses, l'élevage, la faune sauvage, la pêche et l'aquaculture en Afrique."
+        url="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "AfricaVET",
+          "url": "https://www.africavet.com",
+          "description": "Le portail panafricain de la santé animale et de la médecine vétérinaire en Afrique",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://www.africavet.com/recherche?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }}
+      />
       {/* Espace après le menu */}
       <div className="space-20" />
 

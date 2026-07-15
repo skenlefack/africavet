@@ -4,6 +4,7 @@ import { postsApi, getImageUrl as resolveImageUrl } from "../services/api";
 import { useApp } from "../context/AppContext";
 import Sidebar from "../component/Sidebar";
 import FontAwesome from "../component/uiStyle/FontAwesome";
+import SEO from "../component/SEO";
 import "./CategoryPage.scss";
 
 const CategoryPage = () => {
@@ -78,8 +79,15 @@ const CategoryPage = () => {
     return `rgb(${r}, ${g}, ${b})`;
   };
 
+  const categoryName = category?.name_fr || category?.name || slug;
+
   return (
     <div className="category-page">
+      <SEO
+        title={categoryName}
+        description={`Retrouvez tous les articles AfricaVET dans la catégorie ${categoryName}. Actualités, analyses et ressources sur la santé animale en Afrique.`}
+        url={`/categorie/${slug}`}
+      />
       {/* Hero Banner */}
       <section className="category-banner-wrapper">
         <div className="container">

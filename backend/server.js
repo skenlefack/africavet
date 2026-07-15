@@ -72,6 +72,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // ROUTES
 // =====================================================
 
+// Sitemap & robots.txt (public, no /api prefix)
+app.use('/', require('./routes/sitemap'));
+
+// Prerender for SEO bots (serves meta-enriched HTML to crawlers)
+app.use('/', require('./routes/prerender'));
+
 // Auth & Users
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
@@ -175,6 +181,23 @@ app.listen(PORT, () => {
     }
   }, 60000); // Check every minute
   console.log(`📧 Newsletter scheduler started`);
+
+  // Opportunities expiration scheduler (check every hour)
+  setInterval(async () => {
+    try {
+      // Close expired opportunities
+      const [result] = await db.query(
+        `UPDATE opportunities SET status = 'closed', updated_at = NOW()
+         WHERE status = 'published' AND deadline IS NOT NULL AND deadline < NOW()`
+      );
+      if (result.affectedRows > 0) {
+        console.log(`⏰ Auto-closed ${result.affectedRows} expired opportunity(ies)`);
+      }
+    } catch (error) {
+      console.error('Opportunities expiration error:', error);
+    }
+  }, 3600000); // Check every hour
+  console.log(`⏰ Opportunities expiration scheduler started`);
 });
 
 module.exports = app;

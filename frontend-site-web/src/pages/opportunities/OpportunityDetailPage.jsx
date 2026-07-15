@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import FontAwesome from '../../component/uiStyle/FontAwesome';
 import LoadingSpinner from '../../component/shared/LoadingSpinner';
 import OpportunityCard from '../../component/opportunities/OpportunityCard';
+import SEO from '../../component/SEO';
 
 const TYPE_CONFIG = {
   job: { label: 'Emploi', color: '#2196F3', icon: 'briefcase' },
@@ -139,8 +140,37 @@ const OpportunityDetailPage = () => {
     }
   } catch { /* ignore */ }
 
+  const jobJsonLd = opp.opportunity_type === 'job' ? {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": displayTitle,
+    "description": opp.description_fr || opp.description_en || '',
+    "datePosted": opp.publication_date || opp.created_at,
+    "validThrough": opp.deadline || undefined,
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": opp.organization_name || "Non spécifié"
+    },
+    "jobLocation": opp.country ? {
+      "@type": "Place",
+      "address": { "@type": "PostalAddress", "addressCountry": opp.country, "addressLocality": opp.city || undefined }
+    } : undefined,
+    "employmentType": opp.job_type === 'full_time' ? 'FULL_TIME' : opp.job_type === 'part_time' ? 'PART_TIME' : opp.job_type === 'contract' ? 'CONTRACTOR' : undefined,
+    "baseSalary": opp.salary_min ? {
+      "@type": "MonetaryAmount",
+      "currency": opp.salary_currency || "USD",
+      "value": { "@type": "QuantitativeValue", "minValue": opp.salary_min, "maxValue": opp.salary_max || opp.salary_min, "unitText": opp.salary_period || "MONTH" }
+    } : undefined
+  } : null;
+
   return (
     <div className="opportunity-detail-page">
+      <SEO
+        title={displayTitle}
+        description={`${opp.organization_name ? opp.organization_name + ' - ' : ''}${displayTitle}. ${opp.country || ''}`}
+        url={`/opportunites/${opp.id}`}
+        jsonLd={jobJsonLd}
+      />
       {/* Hero Section */}
       <section style={{ background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)', padding: '40px 0 30px', color: '#fff' }}>
         <div className="container">
