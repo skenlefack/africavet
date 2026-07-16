@@ -693,6 +693,16 @@ export function Header({ lang, t }: HeaderProps) {
               >
                 {t.nav.contact}
               </a>
+
+              {/* Search */}
+              <a
+                href={`/${lang}/search`}
+                onClick={(e) => handleNavClick(e, `/${lang}/search`)}
+                className="px-2.5 py-2 rounded-full text-sm transition-all cursor-pointer text-gray-500 hover:text-gray-900 hover:bg-white hover:shadow-sm"
+                title={lang === 'fr' ? 'Rechercher' : 'Search'}
+              >
+                <Search size={18} />
+              </a>
             </div>
           </nav>
 

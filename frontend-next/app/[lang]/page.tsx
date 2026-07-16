@@ -25,6 +25,8 @@ import { LatestByRubric } from '@/components/sections/LatestByRubric';
 import { QuickLinksSection } from '@/components/sections/QuickLinksSection';
 import { OpportunitiesCarousel } from '@/components/sections/OpportunitiesCarousel';
 import { AlertsSection } from '@/components/sections/AlertsSection';
+import { AfricaMapSection } from '@/components/sections/AfricaMapSection';
+import { CommunitySection } from '@/components/sections/CommunitySection';
 
 // UI Components
 import {
@@ -343,6 +345,12 @@ export default async function HomePage({ params }: PageProps) {
           className="bg-gray-50"
         />
       )}
+
+      {/* Geographic Exploration */}
+      <AfricaMapSection lang={lang as Language} />
+
+      {/* Community / Get Involved */}
+      <CommunitySection lang={lang as Language} className="bg-gray-50" />
 
       {/* Partners Carousel */}
       <AnimatedSection animation="fadeInUp">

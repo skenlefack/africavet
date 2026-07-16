@@ -85,6 +85,11 @@ export default function OpportunitiesPage({ params }: PageProps) {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterCountry, setFilterCountry] = useState('');
+  const [filterWorkMode, setFilterWorkMode] = useState('');
+  const [filterContractType, setFilterContractType] = useState('');
+  const [filterScope, setFilterScope] = useState('');
 
   const t = {
     title: lang === 'fr' ? 'Opportunités' : 'Opportunities',
@@ -113,7 +118,7 @@ export default function OpportunitiesPage({ params }: PageProps) {
     fetchOpportunities();
     fetchCategories();
     fetchStats();
-  }, [activeTab, selectedCategory, page]);
+  }, [activeTab, selectedCategory, page, filterCountry, filterWorkMode, filterContractType, filterScope]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -133,6 +138,10 @@ export default function OpportunitiesPage({ params }: PageProps) {
       if (activeTab !== 'all') params.append('type', activeTab);
       if (selectedCategory) params.append('category', selectedCategory);
       if (searchQuery) params.append('search', searchQuery);
+      if (filterCountry) params.append('country', filterCountry);
+      if (filterWorkMode) params.append('work_mode', filterWorkMode);
+      if (filterContractType) params.append('contract_type', filterContractType);
+      if (filterScope) params.append('recruitment_scope', filterScope);
 
       const res = await fetch(`/api/opportunities?${params}`);
       const data = await res.json();
@@ -336,7 +345,99 @@ export default function OpportunitiesPage({ params }: PageProps) {
                 </option>
               ))}
             </select>
+
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={cn(
+                'flex items-center gap-2 px-4 py-3 border rounded-xl transition-colors',
+                showFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+              )}
+            >
+              <Filter size={18} />
+              {lang === 'fr' ? 'Filtres' : 'Filters'}
+              {(filterCountry || filterWorkMode || filterContractType || filterScope) && (
+                <span className="w-2 h-2 rounded-full bg-blue-500" />
+              )}
+            </button>
           </div>
+
+          {/* Advanced Filters Panel */}
+          {showFilters && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200 grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div>
+                <label className="text-xs font-medium text-gray-500 mb-1 block">
+                  {lang === 'fr' ? 'Pays' : 'Country'}
+                </label>
+                <input
+                  type="text"
+                  value={filterCountry}
+                  onChange={(e) => { setFilterCountry(e.target.value); setPage(1); }}
+                  placeholder={lang === 'fr' ? 'Ex: Cameroun' : 'E.g. Kenya'}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 mb-1 block">
+                  {lang === 'fr' ? 'Mode de travail' : 'Work Mode'}
+                </label>
+                <select
+                  value={filterWorkMode}
+                  onChange={(e) => { setFilterWorkMode(e.target.value); setPage(1); }}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="">{lang === 'fr' ? 'Tous' : 'All'}</option>
+                  <option value="on_site">{lang === 'fr' ? 'Sur site' : 'On-site'}</option>
+                  <option value="remote">{lang === 'fr' ? 'À distance' : 'Remote'}</option>
+                  <option value="hybrid">{lang === 'fr' ? 'Hybride' : 'Hybrid'}</option>
+                  <option value="home_based">Home-based</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 mb-1 block">
+                  {lang === 'fr' ? 'Type de contrat' : 'Contract Type'}
+                </label>
+                <select
+                  value={filterContractType}
+                  onChange={(e) => { setFilterContractType(e.target.value); setPage(1); }}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="">{lang === 'fr' ? 'Tous' : 'All'}</option>
+                  <option value="cdi">CDI</option>
+                  <option value="cdd">CDD</option>
+                  <option value="consultancy">{lang === 'fr' ? 'Consultance' : 'Consultancy'}</option>
+                  <option value="internship">{lang === 'fr' ? 'Stage' : 'Internship'}</option>
+                  <option value="volunteer">{lang === 'fr' ? 'Bénévolat' : 'Volunteer'}</option>
+                  <option value="freelance">Freelance</option>
+                  <option value="fellowship">Fellowship</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500 mb-1 block">
+                  {lang === 'fr' ? 'Portée' : 'Scope'}
+                </label>
+                <select
+                  value={filterScope}
+                  onChange={(e) => { setFilterScope(e.target.value); setPage(1); }}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="">{lang === 'fr' ? 'Tous' : 'All'}</option>
+                  <option value="national">{lang === 'fr' ? 'National' : 'National'}</option>
+                  <option value="international">{lang === 'fr' ? 'International' : 'International'}</option>
+                  <option value="regional">{lang === 'fr' ? 'Régional' : 'Regional'}</option>
+                </select>
+              </div>
+              {(filterCountry || filterWorkMode || filterContractType || filterScope) && (
+                <div className="col-span-2 md:col-span-4 text-right">
+                  <button
+                    onClick={() => { setFilterCountry(''); setFilterWorkMode(''); setFilterContractType(''); setFilterScope(''); setPage(1); }}
+                    className="text-sm text-red-500 hover:text-red-700"
+                  >
+                    {lang === 'fr' ? 'Effacer les filtres' : 'Clear filters'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
