@@ -9,6 +9,7 @@ const db = require('../config/db');
 const { auth: authenticate, optionalAuth, authorize } = require('../middleware/auth');
 const { sanitizeFields } = require('../middleware/sanitizeHtml');
 const { auditFromReq } = require('../middleware/auditLog');
+const { validateOpportunityPublish, getOpportunityCompleteness } = require('../middleware/qualityChecks');
 const isAdmin = authorize(['admin']);
 const multer = require('multer');
 const path = require('path');
@@ -338,6 +339,11 @@ router.get('/:id', optionalAuth, async (req, res) => {
 
     // Increment view count
     await db.query('UPDATE opportunities SET views_count = views_count + 1 WHERE id = ?', [id]);
+
+    // Add completeness score for admin
+    const completeness = getOpportunityCompleteness(opportunity);
+    opportunity.completeness_score = completeness.score;
+    opportunity.completeness_missing = completeness.missing;
 
     res.json({ success: true, data: opportunity });
   } catch (error) {
@@ -672,7 +678,7 @@ router.put('/:id/reject', authenticate, isAdmin, async (req, res) => {
  * PUT /api/opportunities/:id
  * Update an opportunity
  */
-router.put('/:id', authenticate, sanitizeFields('description_fr', 'description_en', 'submission_method', 'eligibility_criteria'), async (req, res) => {
+router.put('/:id', authenticate, sanitizeFields('description_fr', 'description_en', 'submission_method', 'eligibility_criteria'), validateOpportunityPublish, async (req, res) => {
   try {
     const { id } = req.params;
 

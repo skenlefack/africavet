@@ -35,11 +35,19 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom focus styles */
+/* Custom focus styles (WCAG 2.4.7 - Focus Visible) */
 input:focus,
 textarea:focus,
 select:focus {
   @apply outline-none ring-2 ring-green-500 ring-opacity-50;
+}
+
+/* Focus-visible for keyboard navigation on interactive elements */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  @apply outline-2 outline-offset-2 outline-blue-500;
 }
 
 /* ================================================

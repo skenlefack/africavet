@@ -57,9 +57,16 @@ export default async function LangLayout({ children, params }: LayoutProps) {
   const t = getTranslation(lang as Language);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" lang={lang}>
+      {/* Skip to content link for keyboard navigation (WCAG 2.4.1) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg focus:outline-none"
+      >
+        {lang === 'fr' ? 'Aller au contenu principal' : 'Skip to main content'}
+      </a>
       <Header lang={lang as Language} t={t} />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" className="flex-1" role="main">{children}</main>
       <Footer lang={lang as Language} t={t} />
       <BackToTop />
     </div>

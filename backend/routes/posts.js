@@ -6,6 +6,7 @@ const db = require('../config/db');
 const { auth, authorize, optionalAuth } = require('../middleware/auth');
 const { sanitizeFields } = require('../middleware/sanitizeHtml');
 const { auditFromReq } = require('../middleware/auditLog');
+const { validatePostPublish } = require('../middleware/qualityChecks');
 
 // HTML fields that need sanitization on posts
 const sanitizePostContent = sanitizeFields('content', 'content_fr', 'content_en', 'excerpt', 'excerpt_fr', 'excerpt_en');
@@ -278,7 +279,7 @@ router.get('/:idOrSlug', optionalAuth, async (req, res) => {
 // @route   POST /api/posts
 // @desc    Create new post
 // @access  Private (admin, editor, author)
-router.post('/', auth, authorize('admin', 'editor', 'author'), sanitizePostContent, async (req, res) => {
+router.post('/', auth, authorize('admin', 'editor', 'author'), sanitizePostContent, validatePostPublish, async (req, res) => {
   try {
     const {
       title, title_fr, title_en, content, content_fr, content_en,
@@ -382,7 +383,7 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), sanitizePostConte
 // @route   PUT /api/posts/:id
 // @desc    Update post
 // @access  Private (admin, editor, author-own)
-router.put('/:id', auth, authorize('admin', 'editor', 'author'), sanitizePostContent, async (req, res) => {
+router.put('/:id', auth, authorize('admin', 'editor', 'author'), sanitizePostContent, validatePostPublish, async (req, res) => {
   try {
     const { id } = req.params;
 
