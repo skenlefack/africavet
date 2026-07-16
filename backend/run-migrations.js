@@ -63,6 +63,7 @@ const MIGRATIONS = [
   '033_create_contact_messages.sql',
   '034_seed_ohsi_ad.sql',
   '035_add_opportunity_attachments.sql',
+  '036_taxonomy_refactor.sql',
   'create_homepage_sections.sql',
   'update_pillars_partners.sql',
   'fix_encoding.sql'

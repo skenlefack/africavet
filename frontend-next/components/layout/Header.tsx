@@ -199,7 +199,85 @@ export function Header({ lang, t }: HeaderProps) {
     },
   ];
 
-  // Thématiques menu
+  // Thématiques menu — restructured per audit recommendations
+  const thematiquesItems = [
+    {
+      id: 'actualites',
+      label: lang === 'fr' ? 'Actualités' : 'News',
+      href: `/${lang}/news?category=actualites`,
+      icon: Newspaper,
+      children: [
+        { id: 'actualites-institutionnelles', label: lang === 'fr' ? 'Institutionnelles' : 'Institutional', href: `/${lang}/news?category=actualites-institutionnelles` },
+        { id: 'alertes-sanitaires', label: lang === 'fr' ? 'Alertes sanitaires' : 'Health Alerts', href: `/${lang}/news?category=alertes-sanitaires` },
+        { id: 'politiques-publiques', label: lang === 'fr' ? 'Politiques publiques' : 'Public Policies', href: `/${lang}/news?category=politiques-publiques` },
+      ],
+    },
+    {
+      id: 'sante-animale',
+      label: lang === 'fr' ? 'Santé animale' : 'Animal Health',
+      href: `/${lang}/news?category=sante-animale`,
+      icon: Stethoscope,
+      children: [
+        { id: 'maladies-transfrontalieres', label: lang === 'fr' ? 'Maladies transfrontalières' : 'Transboundary Diseases', href: `/${lang}/news?category=maladies-transfrontalieres` },
+        { id: 'medicaments-veterinaires', label: lang === 'fr' ? 'Médicaments vétérinaires' : 'Veterinary Medicines', href: `/${lang}/news?category=medicaments-veterinaires` },
+        { id: 'services-veterinaires', label: lang === 'fr' ? 'Services vétérinaires' : 'Veterinary Services', href: `/${lang}/news?category=services-veterinaires` },
+      ],
+    },
+    {
+      id: 'one-health',
+      label: 'One Health',
+      href: `/${lang}/news?category=one-health`,
+      icon: HeartPulse,
+      children: [
+        { id: 'zoonoses-oh', label: 'Zoonoses', href: `/${lang}/news?category=zoonoses-oh` },
+        { id: 'securite-sanitaire-aliments', label: lang === 'fr' ? 'Sécurité alimentaire' : 'Food Safety', href: `/${lang}/news?category=securite-sanitaire-aliments` },
+        { id: 'environnement-climat', label: lang === 'fr' ? 'Environnement & climat' : 'Environment & Climate', href: `/${lang}/news?category=environnement-climat` },
+      ],
+    },
+    {
+      id: 'elevage',
+      label: lang === 'fr' ? 'Élevage' : 'Livestock',
+      href: `/${lang}/news?category=elevage`,
+      icon: Beef,
+      children: [
+        { id: 'bovins-petits-ruminants', label: lang === 'fr' ? 'Bovins & ruminants' : 'Cattle & Ruminants', href: `/${lang}/news?category=bovins-petits-ruminants` },
+        { id: 'aviculture', label: lang === 'fr' ? 'Aviculture' : 'Poultry', href: `/${lang}/news?category=aviculture` },
+        { id: 'pastoralisme', label: lang === 'fr' ? 'Pastoralisme' : 'Pastoralism', href: `/${lang}/news?category=pastoralisme` },
+      ],
+    },
+    {
+      id: 'peches',
+      label: lang === 'fr' ? 'Pêche & aquaculture' : 'Fisheries & Aquaculture',
+      href: `/${lang}/news?category=peches`,
+      icon: Fish,
+      children: [
+        { id: 'aquaculture', label: lang === 'fr' ? 'Aquaculture' : 'Aquaculture', href: `/${lang}/news?category=aquaculture` },
+        { id: 'peche-artisanale', label: lang === 'fr' ? 'Pêche artisanale' : 'Artisanal Fishing', href: `/${lang}/news?category=peche-artisanale` },
+      ],
+    },
+    {
+      id: 'faune',
+      label: lang === 'fr' ? 'Faune & bien-être animal' : 'Wildlife & Animal Welfare',
+      href: `/${lang}/news?category=faune`,
+      icon: Bird,
+      children: [
+        { id: 'conservation', label: 'Conservation', href: `/${lang}/news?category=conservation` },
+        { id: 'bien-etre-animal', label: lang === 'fr' ? 'Bien-être animal' : 'Animal Welfare', href: `/${lang}/news?category=bien-etre-animal` },
+      ],
+    },
+    {
+      id: 'ressources',
+      label: lang === 'fr' ? 'Ressources' : 'Resources',
+      href: `/${lang}/news?category=ressources`,
+      icon: BookOpen,
+      children: [
+        { id: 'guides', label: 'Guides', href: `/${lang}/news?category=guides` },
+        { id: 'publications-scientifiques', label: lang === 'fr' ? 'Publications' : 'Publications', href: `/${lang}/news?category=publications-scientifiques` },
+        { id: 'videos-ressources', label: lang === 'fr' ? 'Vidéos' : 'Videos', href: `/${lang}/news?category=videos-ressources` },
+      ],
+    },
+  ];
+
   const thematiquesMenu = {
     id: 'thematiques',
     label: lang === 'fr' ? 'Thématiques' : 'Topics',
@@ -207,14 +285,7 @@ export function Header({ lang, t }: HeaderProps) {
     color: 'text-teal-600',
     bgColor: 'bg-teal-50',
     icon: LayoutGrid,
-    items: [
-      { id: 'elevage', label: lang === 'fr' ? 'Élevage' : 'Livestock', href: `/${lang}/news?category=elevage`, icon: Beef },
-      { id: 'peches', label: lang === 'fr' ? 'Pêches' : 'Fisheries', href: `/${lang}/news?category=peches`, icon: Fish },
-      { id: 'faune', label: lang === 'fr' ? 'Faune' : 'Wildlife', href: `/${lang}/news?category=faune`, icon: Bird },
-      { id: 'one-health', label: 'One Health', href: `/${lang}/news?category=one-health`, icon: HeartPulse },
-      { id: 'sante-animale', label: lang === 'fr' ? 'Santé animale' : 'Animal Health', href: `/${lang}/news?category=sante-animale`, icon: Stethoscope },
-      { id: 'antibioresistance', label: lang === 'fr' ? 'Antibiorésistance' : 'Antimicrobial Resistance', href: `/${lang}/news?category=antibioresistance`, icon: TestTube2 },
-    ],
+    items: thematiquesItems.map(t => ({ id: t.id, label: t.label, href: t.href, icon: t.icon })),
   };
 
   return (
@@ -486,23 +557,38 @@ export function Header({ lang, t }: HeaderProps) {
                           </div>
                         </div>
 
-                        {/* Menu Items */}
+                        {/* Menu Items with sub-categories */}
                         <div className="py-2">
-                          {thematiquesMenu.items.map((item, index) => (
-                            <motion.a
-                              key={item.id}
-                              href={item.href}
-                              onClick={(e) => handleNavClick(e, item.href)}
-                              className={cn(
-                                'flex items-center gap-3 px-5 py-3 text-sm font-medium text-gray-600',
-                                'hover:bg-gray-50 transition-all cursor-pointer group',
-                                index !== thematiquesMenu.items.length - 1 && 'border-b border-gray-50'
+                          {thematiquesItems.map((item, index) => (
+                            <div key={item.id}>
+                              <motion.a
+                                href={item.href}
+                                onClick={(e) => handleNavClick(e, item.href)}
+                                className={cn(
+                                  'flex items-center gap-3 px-5 py-2.5 text-sm font-semibold text-gray-700',
+                                  'hover:bg-gray-50 transition-all cursor-pointer group',
+                                  index !== thematiquesItems.length - 1 && 'border-b border-gray-50'
+                                )}
+                                whileHover={{ x: 4 }}
+                              >
+                                <item.icon size={18} className={cn(thematiquesMenu.color, 'transition-transform group-hover:scale-110')} />
+                                <span className="group-hover:text-gray-900">{item.label}</span>
+                              </motion.a>
+                              {item.children && item.children.length > 0 && (
+                                <div className="pl-12 pb-1">
+                                  {item.children.map(child => (
+                                    <a
+                                      key={child.id}
+                                      href={child.href}
+                                      onClick={(e) => handleNavClick(e, child.href)}
+                                      className="block px-3 py-1.5 text-xs text-gray-500 hover:text-teal-700 hover:bg-teal-50/50 rounded transition-colors cursor-pointer"
+                                    >
+                                      {child.label}
+                                    </a>
+                                  ))}
+                                </div>
                               )}
-                              whileHover={{ x: 4 }}
-                            >
-                              <item.icon size={18} className={cn(thematiquesMenu.color, 'transition-transform group-hover:scale-110')} />
-                              <span className="group-hover:text-gray-900">{item.label}</span>
-                            </motion.a>
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -687,16 +773,31 @@ export function Header({ lang, t }: HeaderProps) {
                     </div>
                   </div>
                   <div className="pl-4 space-y-1">
-                    {thematiquesMenu.items.map((item) => (
-                      <a
-                        key={item.id}
-                        href={item.href}
-                        onClick={(e) => handleNavClick(e, item.href)}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-                      >
-                        <item.icon size={16} className={thematiquesMenu.color} />
-                        {item.label}
-                      </a>
+                    {thematiquesItems.map((item) => (
+                      <div key={item.id}>
+                        <a
+                          href={item.href}
+                          onClick={(e) => handleNavClick(e, item.href)}
+                          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <item.icon size={16} className={thematiquesMenu.color} />
+                          {item.label}
+                        </a>
+                        {item.children && (
+                          <div className="pl-10 space-y-0.5">
+                            {item.children.map(child => (
+                              <a
+                                key={child.id}
+                                href={child.href}
+                                onClick={(e) => handleNavClick(e, child.href)}
+                                className="block px-3 py-1.5 text-xs text-gray-500 hover:text-teal-700 rounded transition-colors"
+                              >
+                                {child.label}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>

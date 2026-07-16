@@ -25,15 +25,24 @@ const getDescendantIds = (items, parentId) => {
 
 // @route   GET /api/categories
 // @desc    Get all categories (flat list with post count)
+// @query   ?taxonomy_type=subject (optional filter)
 router.get('/', async (req, res) => {
   try {
+    const { taxonomy_type } = req.query;
+    let whereClause = '';
+    const params = [];
+    if (taxonomy_type) {
+      whereClause = 'WHERE c.taxonomy_type = ?';
+      params.push(taxonomy_type);
+    }
     const [categories] = await db.query(`
       SELECT c.*,
         (SELECT COUNT(DISTINCT p.id) FROM posts p INNER JOIN post_categories pc ON p.id = pc.post_id WHERE pc.category_id = c.id AND p.status = 'published') as post_count,
         (SELECT name FROM categories WHERE id = c.parent_id) as parent_name
       FROM categories c
+      ${whereClause}
       ORDER BY c.sort_order ASC, c.name ASC
-    `);
+    `, params);
     res.json({ success: true, data: categories });
   } catch (error) {
     console.error('Get categories error:', error);
@@ -43,7 +52,35 @@ router.get('/', async (req, res) => {
 
 // @route   GET /api/categories/tree
 // @desc    Get categories as tree structure
+// @query   ?taxonomy_type=subject (optional filter)
 router.get('/tree', async (req, res) => {
+  try {
+    const { taxonomy_type } = req.query;
+    let extraWhere = '';
+    const params = [];
+    if (taxonomy_type) {
+      extraWhere = 'AND c.taxonomy_type = ?';
+      params.push(taxonomy_type);
+    }
+    const [categories] = await db.query(`
+      SELECT c.*,
+        (SELECT COUNT(DISTINCT p.id) FROM posts p INNER JOIN post_categories pc ON p.id = pc.post_id WHERE pc.category_id = c.id AND p.status = 'published') as post_count
+      FROM categories c
+      WHERE c.status = 'active' ${extraWhere}
+      ORDER BY c.sort_order ASC, c.name ASC
+    `, params);
+
+    const tree = buildTree(categories);
+    res.json({ success: true, data: tree });
+  } catch (error) {
+    console.error('Get categories tree error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// @route   GET /api/categories/by-type
+// @desc    Get categories grouped by taxonomy_type
+router.get('/by-type', async (req, res) => {
   try {
     const [categories] = await db.query(`
       SELECT c.*,
@@ -52,11 +89,23 @@ router.get('/tree', async (req, res) => {
       WHERE c.status = 'active'
       ORDER BY c.sort_order ASC, c.name ASC
     `);
-    
-    const tree = buildTree(categories);
-    res.json({ success: true, data: tree });
+
+    const grouped = {};
+    categories.forEach(cat => {
+      const type = cat.taxonomy_type || 'subject';
+      if (!grouped[type]) grouped[type] = [];
+      grouped[type].push(cat);
+    });
+
+    // Build trees per type
+    const result = {};
+    for (const [type, cats] of Object.entries(grouped)) {
+      result[type] = buildTree(cats);
+    }
+
+    res.json({ success: true, data: result });
   } catch (error) {
-    console.error('Get categories tree error:', error);
+    console.error('Get categories by type error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -117,13 +166,14 @@ router.get('/slug/:slug', async (req, res) => {
       ORDER BY sort_order ASC
     `, [categories[0].id]);
 
-    // Get posts in this category
+    // Get posts in this category (via junction table)
     const [posts] = await db.query(`
       SELECT p.*, u.username as author_name
       FROM posts p
+      INNER JOIN post_categories pc ON p.id = pc.post_id
       LEFT JOIN users u ON p.author_id = u.id
-      WHERE p.category_id = ? AND p.status = 'published'
-      ORDER BY p.publish_at DESC, p.created_at DESC
+      WHERE pc.category_id = ? AND p.status = 'published'
+      ORDER BY p.published_at DESC, p.created_at DESC
       LIMIT 20
     `, [categories[0].id]);
 
@@ -143,7 +193,8 @@ router.post('/', auth, async (req, res) => {
   try {
     const {
       name, name_fr, name_en, slug, description, description_fr, description_en,
-      parent_id, icon, color, image, meta_title, meta_description, sort_order, status
+      parent_id, icon, color, image, meta_title, meta_description, sort_order, status,
+      taxonomy_type
     } = req.body;
 
     // Use multilingual fields with fallback to legacy fields
@@ -173,12 +224,12 @@ router.post('/', auth, async (req, res) => {
     const [result] = await db.query(`
       INSERT INTO categories (
         name, name_fr, name_en, slug, description, description_fr, description_en,
-        parent_id, icon, color, image, meta_title, meta_description, sort_order, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        parent_id, icon, color, image, meta_title, meta_description, sort_order, status, taxonomy_type
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       finalName, finalNameFr, finalNameEn, finalSlug, finalDescFr, finalDescFr, finalDescEn,
       parent_id || null, icon, color || '#007A33', image, meta_title, meta_description,
-      sort_order || 0, status || 'active'
+      sort_order || 0, status || 'active', taxonomy_type || 'subject'
     ]);
 
     const [newCategory] = await db.query('SELECT * FROM categories WHERE id = ?', [result.insertId]);
@@ -195,7 +246,8 @@ router.put('/:id', auth, async (req, res) => {
   try {
     const {
       name, name_fr, name_en, slug, description, description_fr, description_en,
-      parent_id, icon, color, image, meta_title, meta_description, sort_order, status
+      parent_id, icon, color, image, meta_title, meta_description, sort_order, status,
+      taxonomy_type
     } = req.body;
 
     // Use multilingual fields with fallback to legacy fields
@@ -224,15 +276,22 @@ router.put('/:id', auth, async (req, res) => {
       }
     }
 
-    await db.query(`
-      UPDATE categories SET
-        name = ?, name_fr = ?, name_en = ?, slug = ?, description = ?, description_fr = ?, description_en = ?,
-        parent_id = ?, icon = ?, color = ?, image = ?, meta_title = ?, meta_description = ?, sort_order = ?, status = ?
-      WHERE id = ?
-    `, [
+    // Build update query dynamically to only update taxonomy_type if provided
+    const updateFields = [
+      'name = ?', 'name_fr = ?', 'name_en = ?', 'slug = ?', 'description = ?', 'description_fr = ?', 'description_en = ?',
+      'parent_id = ?', 'icon = ?', 'color = ?', 'image = ?', 'meta_title = ?', 'meta_description = ?', 'sort_order = ?', 'status = ?'
+    ];
+    const updateValues = [
       finalName, finalNameFr, finalNameEn, slug, finalDescFr, finalDescFr, finalDescEn,
-      parent_id || null, icon, color, image, meta_title, meta_description, sort_order, status, req.params.id
-    ]);
+      parent_id || null, icon, color, image, meta_title, meta_description, sort_order, status
+    ];
+    if (taxonomy_type) {
+      updateFields.push('taxonomy_type = ?');
+      updateValues.push(taxonomy_type);
+    }
+    updateValues.push(req.params.id);
+
+    await db.query(`UPDATE categories SET ${updateFields.join(', ')} WHERE id = ?`, updateValues);
 
     const [updated] = await db.query('SELECT * FROM categories WHERE id = ?', [req.params.id]);
     res.json({ success: true, message: 'Category updated', data: updated[0] });
@@ -328,12 +387,13 @@ router.get('/:id/posts', async (req, res) => {
     }
 
     const [posts] = await db.query(`
-      SELECT p.*, c.name as category_name, u.username as author_name
+      SELECT DISTINCT p.*, c.name as category_name, u.username as author_name
       FROM posts p
-      LEFT JOIN categories c ON p.category_id = c.id
+      INNER JOIN post_categories pc ON p.id = pc.post_id
+      LEFT JOIN categories c ON pc.category_id = c.id
       LEFT JOIN users u ON p.author_id = u.id
-      WHERE p.category_id IN (?) AND p.status = 'published'
-      ORDER BY p.publish_at DESC, p.created_at DESC
+      WHERE pc.category_id IN (?) AND p.status = 'published'
+      ORDER BY p.published_at DESC, p.created_at DESC
     `, [categoryIds]);
 
     res.json({ success: true, data: posts });

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { Calendar, ArrowRight, Beef, Fish, TreePine, Heart, Pill, Shield, Mic, Play, Eye, MessageCircle } from 'lucide-react';
+import { Calendar, ArrowRight, Beef, Fish, TreePine, Heart, Pill, Shield, Mic, Play, Eye, MessageCircle, Newspaper, BookOpen, Stethoscope } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Language } from '@/lib/types';
 import { getImageUrl } from '@/lib/utils';
@@ -34,31 +34,22 @@ interface CategoryConfig {
 
 const categories: CategoryConfig[] = [
   {
-    id: 'elevage',
-    slug: 'elevage',
-    label: { fr: 'Élevage', en: 'Livestock' },
-    icon: Beef,
-    color: 'text-amber-600',
-    bgColor: 'bg-amber-50',
-    gradient: 'from-amber-500 to-orange-500',
-  },
-  {
-    id: 'peches',
-    slug: 'peches',
-    label: { fr: 'Pêches', en: 'Fisheries' },
-    icon: Fish,
-    color: 'text-blue-600',
+    id: 'actualites',
+    slug: 'actualites',
+    label: { fr: 'Actualités', en: 'News' },
+    icon: Newspaper,
+    color: 'text-blue-700',
     bgColor: 'bg-blue-50',
-    gradient: 'from-blue-500 to-cyan-500',
+    gradient: 'from-blue-600 to-indigo-600',
   },
   {
-    id: 'faune',
-    slug: 'faune',
-    label: { fr: 'Faune', en: 'Wildlife' },
-    icon: TreePine,
-    color: 'text-emerald-600',
-    bgColor: 'bg-emerald-50',
-    gradient: 'from-emerald-500 to-green-500',
+    id: 'sante-animale',
+    slug: 'sante-animale',
+    label: { fr: 'Santé animale', en: 'Animal Health' },
+    icon: Stethoscope,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50',
+    gradient: 'from-purple-500 to-violet-500',
   },
   {
     id: 'one-health',
@@ -70,22 +61,40 @@ const categories: CategoryConfig[] = [
     gradient: 'from-rose-500 to-pink-500',
   },
   {
-    id: 'sante-animale',
-    slug: 'sante-animale',
-    label: { fr: 'Santé animale', en: 'Animal Health' },
-    icon: Shield,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
-    gradient: 'from-purple-500 to-violet-500',
+    id: 'elevage',
+    slug: 'elevage',
+    label: { fr: 'Élevage', en: 'Livestock' },
+    icon: Beef,
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    gradient: 'from-amber-500 to-orange-500',
   },
   {
-    id: 'antibioresistance',
-    slug: 'antibioresistance',
-    label: { fr: 'Antibiorésistance', en: 'AMR' },
-    icon: Pill,
-    color: 'text-red-600',
-    bgColor: 'bg-red-50',
-    gradient: 'from-red-500 to-rose-500',
+    id: 'peches',
+    slug: 'peches',
+    label: { fr: 'Pêche & aquaculture', en: 'Fisheries & Aquaculture' },
+    icon: Fish,
+    color: 'text-blue-600',
+    bgColor: 'bg-sky-50',
+    gradient: 'from-blue-500 to-cyan-500',
+  },
+  {
+    id: 'faune',
+    slug: 'faune',
+    label: { fr: 'Faune & bien-être', en: 'Wildlife & Welfare' },
+    icon: TreePine,
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-50',
+    gradient: 'from-emerald-500 to-green-500',
+  },
+  {
+    id: 'ressources',
+    slug: 'ressources',
+    label: { fr: 'Ressources', en: 'Resources' },
+    icon: BookOpen,
+    color: 'text-slate-600',
+    bgColor: 'bg-slate-50',
+    gradient: 'from-slate-500 to-gray-600',
   },
 ];
 

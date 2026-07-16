@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { api, getToken } from '../../../services/api';
+
+const TAXONOMY_TYPES = [
+    { value: 'subject', label: 'Sujet' },
+    { value: 'region', label: 'Région' },
+    { value: 'country', label: 'Pays' },
+    { value: 'disease', label: 'Maladie' },
+    { value: 'species', label: 'Espèce' },
+    { value: 'audience', label: 'Public cible' },
+    { value: 'organization', label: 'Organisation' },
+    { value: 'content_format', label: 'Format de contenu' },
+];
 
 const CategoryEditor = () => {
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const token = getToken();
     const isEditing = !!id;
@@ -21,7 +33,8 @@ const CategoryEditor = () => {
         description_en: '',
         parent_id: '',
         icon: '',
-        color: '#1091FF'
+        color: '#1091FF',
+        taxonomy_type: searchParams.get('type') || 'subject'
     });
 
     // Couleurs prédéfinies pour les catégories
@@ -96,7 +109,8 @@ const CategoryEditor = () => {
                 description_en: cat.description_en || '',
                 parent_id: cat.parent_id || '',
                 icon: cat.icon || '',
-                color: cat.color || '#1091FF'
+                color: cat.color || '#1091FF',
+                taxonomy_type: cat.taxonomy_type || 'subject'
             });
         }
         setLoading(false);
@@ -247,17 +261,36 @@ const CategoryEditor = () => {
                                     </div>
                                 </div>
 
-                                <div className="mb-3">
-                                    <label className="form-label">Slug</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        name="slug"
-                                        value={form.slug}
-                                        onChange={handleChange}
-                                        placeholder="categorie-slug"
-                                    />
-                                    <small className="text-muted">Identifiant URL unique</small>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <div className="mb-3">
+                                            <label className="form-label">Slug</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                name="slug"
+                                                value={form.slug}
+                                                onChange={handleChange}
+                                                placeholder="categorie-slug"
+                                            />
+                                            <small className="text-muted">Identifiant URL unique</small>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="mb-3">
+                                            <label className="form-label">Type de taxonomie</label>
+                                            <select
+                                                className="form-select"
+                                                name="taxonomy_type"
+                                                value={form.taxonomy_type}
+                                                onChange={handleChange}
+                                            >
+                                                {TAXONOMY_TYPES.map(t => (
+                                                    <option key={t.value} value={t.value}>{t.label}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="row">
@@ -432,7 +465,7 @@ const CategoryEditor = () => {
                                     >
                                         <option value="">-- Aucune (racine) --</option>
                                         {categories
-                                            .filter(c => c.id !== parseInt(id))
+                                            .filter(c => c.id !== parseInt(id) && (c.taxonomy_type || 'subject') === form.taxonomy_type)
                                             .map(cat => (
                                                 <option key={cat.id} value={cat.id}>
                                                     {cat.name_fr || cat.name}

@@ -28,6 +28,8 @@ router.get('/', optionalAuth, async (req, res) => {
       author,
       search,
       featured,
+      country,
+      region,
       sort = 'created_at',
       order = 'DESC'
     } = req.query;
@@ -72,6 +74,16 @@ router.get('/', optionalAuth, async (req, res) => {
 
     if (featured === 'true') {
       whereConditions.push('p.featured = 1');
+    }
+
+    if (country) {
+      whereConditions.push('p.country = ?');
+      params.push(country);
+    }
+
+    if (region) {
+      whereConditions.push('p.region = ?');
+      params.push(region);
     }
 
     if (search) {
@@ -125,15 +137,26 @@ router.get('/', optionalAuth, async (req, res) => {
       // Get categories from post_categories junction table
       try {
         const [postCategories] = await db.query(
-          `SELECT c.id, c.name, c.name_fr, c.name_en, c.slug, c.color
+          `SELECT c.id, c.name, c.name_fr, c.name_en, c.slug, c.color, c.taxonomy_type
            FROM categories c
            INNER JOIN post_categories pc ON c.id = pc.category_id
            WHERE pc.post_id = ?`,
           [post.id]
         );
         post.categories = postCategories;
-        // Keep category_name for backward compatibility (first category)
-        if (postCategories.length > 0) {
+        // Group categories by taxonomy_type
+        post.categories_by_type = {};
+        postCategories.forEach(cat => {
+          const type = cat.taxonomy_type || 'subject';
+          if (!post.categories_by_type[type]) post.categories_by_type[type] = [];
+          post.categories_by_type[type].push(cat);
+        });
+        // Keep category_name for backward compatibility (first subject category)
+        const firstSubject = postCategories.find(c => (c.taxonomy_type || 'subject') === 'subject');
+        if (firstSubject) {
+          post.category_name = firstSubject.name;
+          post.category_slug = firstSubject.slug;
+        } else if (postCategories.length > 0) {
           post.category_name = postCategories[0].name;
           post.category_slug = postCategories[0].slug;
         } else {
@@ -142,6 +165,7 @@ router.get('/', optionalAuth, async (req, res) => {
         }
       } catch (e) {
         post.categories = [];
+        post.categories_by_type = {};
         post.category_name = null;
       }
 
@@ -257,7 +281,8 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), async (req, res) 
       status = 'draft', visibility = 'public', password, featured = false,
       allow_comments = true, meta_title, meta_title_fr, meta_title_en,
       meta_description, meta_description_fr, meta_description_en, meta_keywords,
-      published_at, scheduled_at, tags = []
+      published_at, scheduled_at, tags = [],
+      country, region
     } = req.body;
 
     // Validation: au moins un titre requis (FR ou EN ou legacy)
@@ -297,15 +322,16 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), async (req, res) 
        excerpt, excerpt_fr, excerpt_en, featured_image, image_caption, author_id, category_id,
        type, status, visibility, password, featured, allow_comments,
        meta_title, meta_title_fr, meta_title_en, meta_description, meta_description_fr, meta_description_en,
-       meta_keywords, published_at, scheduled_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       meta_keywords, published_at, scheduled_at, country, region)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [finalTitle, finalTitleFr, finalTitleEn, slug, finalContentFr, finalContentFr, finalContentEn,
        finalExcerptFr, finalExcerptFr, finalExcerptEn, featured_image, image_caption || null, req.user.id, finalCategoryId,
        type, status, visibility, password, featured, allow_comments,
        finalMetaTitleFr, finalMetaTitleFr, finalMetaTitleEn, finalMetaDescFr, finalMetaDescFr, finalMetaDescEn,
        meta_keywords,
        status === 'published' ? toMySQLDateTime(published_at || new Date()) : null,
-       status === 'scheduled' ? toMySQLDateTime(scheduled_at) : null]
+       status === 'scheduled' ? toMySQLDateTime(scheduled_at) : null,
+       country || null, region || null]
     );
 
     // Add tags
@@ -366,7 +392,8 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), async (req, res
       status, visibility, password, featured, allow_comments,
       meta_title, meta_title_fr, meta_title_en,
       meta_description, meta_description_fr, meta_description_en,
-      meta_keywords, published_at, scheduled_at, tags, author_id
+      meta_keywords, published_at, scheduled_at, tags, author_id,
+      country, region
     } = req.body;
 
     // Use multilingual fields with fallback
@@ -427,7 +454,9 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), async (req, res
        meta_description_en = COALESCE(?, meta_description_en),
        meta_keywords = COALESCE(?, meta_keywords),
        published_at = CASE WHEN ? = 'published' AND published_at IS NULL THEN NOW() ELSE COALESCE(?, published_at) END,
-       scheduled_at = COALESCE(?, scheduled_at)
+       scheduled_at = COALESCE(?, scheduled_at),
+       country = COALESCE(?, country),
+       region = COALESCE(?, region)
        WHERE id = ?`,
       [finalTitle, finalTitleFr, finalTitleEn, slug,
        finalContentFr, finalContentFr, finalContentEn,
@@ -435,7 +464,8 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), async (req, res
        featured_image, image_caption != null ? image_caption : null, finalCategoryId, finalAuthorId, type, status, visibility, password, featured, allow_comments,
        finalMetaTitleFr, finalMetaTitleFr, finalMetaTitleEn,
        finalMetaDescFr, finalMetaDescFr, finalMetaDescEn,
-       meta_keywords, status, toMySQLDateTime(published_at), toMySQLDateTime(scheduled_at), id]
+       meta_keywords, status, toMySQLDateTime(published_at), toMySQLDateTime(scheduled_at),
+       country || null, region || null, id]
     );
 
     // Update tags

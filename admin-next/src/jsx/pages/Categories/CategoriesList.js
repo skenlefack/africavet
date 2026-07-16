@@ -13,16 +13,29 @@ const CategoriesList = () => {
     const [viewMode, setViewMode] = useState('flat'); // 'flat' or 'tree'
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [taxonomyType, setTaxonomyType] = useState('subject');
+
+    const taxonomyTypes = [
+        { value: 'subject', label: 'Sujets', icon: 'fa-tags' },
+        { value: 'region', label: 'Régions', icon: 'fa-map' },
+        { value: 'disease', label: 'Maladies', icon: 'fa-virus' },
+        { value: 'species', label: 'Espèces', icon: 'fa-paw' },
+        { value: 'audience', label: 'Publics', icon: 'fa-users' },
+        { value: 'organization', label: 'Organisations', icon: 'fa-building' },
+        { value: 'content_format', label: 'Formats', icon: 'fa-file-alt' },
+        { value: 'country', label: 'Pays', icon: 'fa-flag' },
+    ];
 
     const fetchCategories = async () => {
-        const res = await api.get('/categories', token);
+        const res = await api.get(`/categories?taxonomy_type=${taxonomyType}`, token);
         if (res.success) setCategories(res.data || []);
         setLoading(false);
     };
 
     useEffect(() => {
+        setLoading(true);
         fetchCategories();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [taxonomyType]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleDelete = async (id) => {
         if (window.confirm('Supprimer cette catégorie ?')) {
@@ -166,10 +179,12 @@ const CategoriesList = () => {
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 className="mb-1" style={{ fontWeight: '700' }}>Catégories</h2>
-                    <p className="text-muted mb-0">{categories.length} catégories au total</p>
+                    <p className="text-muted mb-0">
+                        {categories.length} {taxonomyTypes.find(t => t.value === taxonomyType)?.label.toLowerCase() || 'catégories'}
+                    </p>
                 </div>
                 <Link
-                    to="/categories/new"
+                    to={`/categories/new?type=${taxonomyType}`}
                     className="btn btn-primary"
                     style={{
                         background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)',
@@ -178,6 +193,27 @@ const CategoriesList = () => {
                 >
                     <i className="fas fa-plus me-2"></i> Nouvelle catégorie
                 </Link>
+            </div>
+
+            {/* Taxonomy type tabs */}
+            <div className="card mb-3">
+                <div className="card-body py-2 px-3">
+                    <div className="d-flex flex-wrap gap-2">
+                        {taxonomyTypes.map(t => (
+                            <button
+                                key={t.value}
+                                className={`btn btn-sm ${taxonomyType === t.value ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                onClick={() => { setTaxonomyType(t.value); setCurrentPage(1); setSearchQuery(''); }}
+                                style={taxonomyType === t.value ? {
+                                    background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)',
+                                    border: 'none'
+                                } : {}}
+                            >
+                                <i className={`fas ${t.icon} me-1`}></i> {t.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             {/* Search and filters */}

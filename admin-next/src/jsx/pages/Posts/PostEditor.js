@@ -69,7 +69,9 @@ const PostEditor = () => {
         meta_description_fr: '',
         meta_description_en: '',
         meta_keywords_fr: '',
-        meta_keywords_en: ''
+        meta_keywords_en: '',
+        country: '',
+        region: ''
     });
 
     useEffect(() => {
@@ -119,7 +121,9 @@ const PostEditor = () => {
                 meta_description_fr: res.data.meta_description_fr || '',
                 meta_description_en: res.data.meta_description_en || '',
                 meta_keywords_fr: res.data.meta_keywords_fr || '',
-                meta_keywords_en: res.data.meta_keywords_en || ''
+                meta_keywords_en: res.data.meta_keywords_en || '',
+                country: res.data.country || '',
+                region: res.data.region || ''
             });
         }
         setLoading(false);
@@ -433,9 +437,9 @@ const PostEditor = () => {
                                 />
                             </div>
                         </div>
-                        <div className="col-md-3">
+                        <div className="col-md-2">
                             <label className="form-label small text-muted mb-1">
-                                Categories
+                                Sujets
                                 {formData.category_ids && formData.category_ids.length > 0 && (
                                     <span className="badge bg-success ms-1" style={{ fontSize: '0.65rem' }}>{formData.category_ids.length}</span>
                                 )}
@@ -452,7 +456,7 @@ const PostEditor = () => {
                                 >
                                     <span className="text-truncate">
                                         {formData.category_ids && formData.category_ids.length > 0
-                                            ? `${formData.category_ids.length} categorie(s)`
+                                            ? `${formData.category_ids.length} sujet(s)`
                                             : 'Selectionner...'}
                                     </span>
                                     <i className="fas fa-chevron-down ms-1" style={{ fontSize: '0.6rem' }}></i>
@@ -462,47 +466,86 @@ const PostEditor = () => {
                                         className="position-absolute bg-white rounded shadow-sm p-2 mt-1"
                                         style={{
                                             zIndex: 1000,
-                                            minWidth: '200px',
-                                            maxHeight: '200px',
+                                            minWidth: '250px',
+                                            maxHeight: '300px',
                                             overflowY: 'auto',
                                             border: '1px solid #eee'
                                         }}
                                     >
-                                        {categories.map(cat => (
-                                            <div key={cat.id} className="form-check py-1">
-                                                <input
-                                                    type="checkbox"
-                                                    className="form-check-input"
-                                                    id={`cat-${cat.id}`}
-                                                    checked={formData.category_ids?.includes(cat.id) || false}
-                                                    onChange={(e) => {
-                                                        const catId = cat.id;
-                                                        setFormData(prev => {
-                                                            const currentIds = prev.category_ids || [];
-                                                            if (e.target.checked) {
-                                                                return { ...prev, category_ids: [...currentIds, catId] };
-                                                            } else {
-                                                                return { ...prev, category_ids: currentIds.filter(id => id !== catId) };
-                                                            }
-                                                        });
-                                                    }}
-                                                    style={{ cursor: 'pointer' }}
-                                                />
-                                                <label
-                                                    className="form-check-label small"
-                                                    htmlFor={`cat-${cat.id}`}
-                                                    style={{ cursor: 'pointer' }}
-                                                >
-                                                    {cat.name_fr || cat.name}
-                                                </label>
-                                            </div>
-                                        ))}
-                                        {categories.length === 0 && (
-                                            <div className="text-muted small py-2 text-center">Aucune categorie</div>
-                                        )}
+                                        {(() => {
+                                            const subjectCats = categories.filter(c => (c.taxonomy_type || 'subject') === 'subject');
+                                            const buildCatTree = (items, parentId = null, level = 0) => {
+                                                return items
+                                                    .filter(item => item.parent_id === parentId)
+                                                    .map(cat => (
+                                                        <React.Fragment key={cat.id}>
+                                                            <div className="form-check py-1" style={{ paddingLeft: `${level * 16}px` }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className="form-check-input"
+                                                                    id={`cat-${cat.id}`}
+                                                                    checked={formData.category_ids?.includes(cat.id) || false}
+                                                                    onChange={(e) => {
+                                                                        const catId = cat.id;
+                                                                        setFormData(prev => {
+                                                                            const currentIds = prev.category_ids || [];
+                                                                            if (e.target.checked) {
+                                                                                return { ...prev, category_ids: [...currentIds, catId] };
+                                                                            } else {
+                                                                                return { ...prev, category_ids: currentIds.filter(id => id !== catId) };
+                                                                            }
+                                                                        });
+                                                                    }}
+                                                                    style={{ cursor: 'pointer' }}
+                                                                />
+                                                                <label
+                                                                    className="form-check-label small"
+                                                                    htmlFor={`cat-${cat.id}`}
+                                                                    style={{ cursor: 'pointer', fontWeight: level === 0 ? '600' : '400' }}
+                                                                >
+                                                                    {cat.name_fr || cat.name}
+                                                                </label>
+                                                            </div>
+                                                            {buildCatTree(items, cat.id, level + 1)}
+                                                        </React.Fragment>
+                                                    ));
+                                            };
+                                            return subjectCats.length > 0 ? buildCatTree(subjectCats) : (
+                                                <div className="text-muted small py-2 text-center">Aucun sujet</div>
+                                            );
+                                        })()}
                                     </div>
                                 )}
                             </div>
+                        </div>
+                        <div className="col-md-1">
+                            <label className="form-label small text-muted mb-1">Pays</label>
+                            <input
+                                type="text"
+                                className="form-control form-control-sm border-0 bg-light"
+                                name="country"
+                                value={formData.country}
+                                onChange={handleChange}
+                                placeholder="Ex: Cameroun"
+                                style={{ borderRadius: '6px', fontSize: '0.8rem' }}
+                            />
+                        </div>
+                        <div className="col-md-1">
+                            <label className="form-label small text-muted mb-1">Region</label>
+                            <select
+                                className="form-select form-select-sm border-0 bg-light"
+                                name="region"
+                                value={formData.region}
+                                onChange={handleChange}
+                                style={{ borderRadius: '6px', fontSize: '0.75rem' }}
+                            >
+                                <option value="">--</option>
+                                <option value="Afrique de l'Ouest">Afr. Ouest</option>
+                                <option value="Afrique centrale">Afr. Centrale</option>
+                                <option value="Afrique de l'Est">Afr. Est</option>
+                                <option value="Afrique australe">Afr. Australe</option>
+                                <option value="Afrique du Nord">Afr. Nord</option>
+                            </select>
                         </div>
                         <div className="col-md-1">
                             <select
