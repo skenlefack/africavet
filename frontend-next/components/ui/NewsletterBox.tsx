@@ -24,6 +24,7 @@ export function NewsletterBox({
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [wantOpportunities, setWantOpportunities] = useState(true);
 
   const defaultTitle = lang === 'fr' ? 'Newsletter AfricaVet' : 'AfricaVet Newsletter';
   const defaultDescription = lang === 'fr'
@@ -49,6 +50,20 @@ export function NewsletterBox({
       });
 
       if (response.ok) {
+        // Also set opportunity digest preference if opted in
+        if (wantOpportunities) {
+          try {
+            await fetch('/api/newsletter/preferences', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email,
+                preference_type: 'opportunity_digest',
+                frequency: 'weekly',
+              }),
+            });
+          } catch { /* preference save is best-effort */ }
+        }
         setStatus('success');
         setEmail('');
         setTimeout(() => setStatus('idle'), 5000);

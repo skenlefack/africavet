@@ -68,6 +68,7 @@ const MIGRATIONS = [
   '038_translation_status_audit_log.sql',
   '039_editorial_credibility_images.sql',
   '040_cleanup_wp_categories.sql',
+  '041_subscriber_preferences.sql',
   'create_homepage_sections.sql',
   'update_pillars_partners.sql',
   'fix_encoding.sql'

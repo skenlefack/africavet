@@ -209,6 +209,21 @@ app.listen(PORT, () => {
     }
   }, 3600000); // Check every hour
   console.log(`⏰ Opportunities expiration scheduler started`);
+
+  // Opportunity digest & closing alerts scheduler (check every 6 hours)
+  const { processOpportunityDigest, processClosingAlerts } = require('./services/opportunityDigestService');
+  setInterval(async () => {
+    try {
+      const digestCount = await processOpportunityDigest();
+      if (digestCount > 0) console.log(`📬 Sent ${digestCount} opportunity digest(s)`);
+
+      const alertCount = await processClosingAlerts();
+      if (alertCount > 0) console.log(`🔔 Sent ${alertCount} closing alert(s)`);
+    } catch (error) {
+      console.error('Digest/alert scheduler error:', error);
+    }
+  }, 21600000); // Every 6 hours
+  console.log(`📬 Opportunity digest scheduler started`);
 });
 
 module.exports = app;

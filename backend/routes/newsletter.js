@@ -1792,4 +1792,86 @@ router.put('/settings', auth, async (req, res) => {
   }
 });
 
+// =========================================
+// SUBSCRIBER PREFERENCES (public, token-based)
+// =========================================
+
+/**
+ * GET /api/newsletter/preferences/:email
+ * Get subscriber alert preferences
+ */
+router.get('/preferences/:email', async (req, res) => {
+  try {
+    const [subs] = await db.query('SELECT id FROM newsletter_subscribers WHERE email = ? AND status = ?', [req.params.email, 'active']);
+    if (subs.length === 0) return res.status(404).json({ success: false, message: 'Subscriber not found' });
+
+    const [prefs] = await db.query('SELECT * FROM subscriber_preferences WHERE subscriber_id = ?', [subs[0].id]);
+    res.json({ success: true, data: prefs });
+  } catch (error) {
+    console.error('Get preferences error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+/**
+ * POST /api/newsletter/preferences
+ * Set/update subscriber alert preferences
+ */
+router.post('/preferences', async (req, res) => {
+  try {
+    const { email, preference_type, countries, regions, opportunity_types, domains, frequency } = req.body;
+
+    if (!email || !preference_type) {
+      return res.status(400).json({ success: false, message: 'email and preference_type are required' });
+    }
+
+    const [subs] = await db.query('SELECT id FROM newsletter_subscribers WHERE email = ? AND status = ?', [email, 'active']);
+    if (subs.length === 0) return res.status(404).json({ success: false, message: 'Please subscribe to the newsletter first' });
+
+    await db.query(`
+      INSERT INTO subscriber_preferences (subscriber_id, preference_type, countries, regions, opportunity_types, domains, frequency)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        countries = VALUES(countries),
+        regions = VALUES(regions),
+        opportunity_types = VALUES(opportunity_types),
+        domains = VALUES(domains),
+        frequency = VALUES(frequency),
+        is_active = 1
+    `, [
+      subs[0].id, preference_type,
+      countries ? JSON.stringify(countries) : null,
+      regions ? JSON.stringify(regions) : null,
+      opportunity_types ? JSON.stringify(opportunity_types) : null,
+      domains ? JSON.stringify(domains) : null,
+      frequency || 'weekly'
+    ]);
+
+    res.json({ success: true, message: 'Preferences saved' });
+  } catch (error) {
+    console.error('Save preferences error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+/**
+ * DELETE /api/newsletter/preferences/:email/:type
+ * Disable a specific preference
+ */
+router.delete('/preferences/:email/:type', async (req, res) => {
+  try {
+    const [subs] = await db.query('SELECT id FROM newsletter_subscribers WHERE email = ?', [req.params.email]);
+    if (subs.length === 0) return res.status(404).json({ success: false, message: 'Not found' });
+
+    await db.query(
+      'UPDATE subscriber_preferences SET is_active = 0 WHERE subscriber_id = ? AND preference_type = ?',
+      [subs[0].id, req.params.type]
+    );
+    res.json({ success: true, message: 'Preference disabled' });
+  } catch (error) {
+    console.error('Delete preference error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 module.exports = router;
