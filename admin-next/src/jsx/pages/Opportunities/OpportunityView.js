@@ -210,6 +210,20 @@ const OpportunityView = () => {
                     </div>
                 </div>
                 <div className="d-flex gap-2">
+                    <button
+                        className="btn btn-outline-success btn-sm"
+                        onClick={async () => {
+                            const res = await api.post(`/opportunities/${id}/duplicate`, {}, token);
+                            if (res.success) {
+                                setToast({ type: 'success', message: 'Opportunité dupliquée' });
+                                setTimeout(() => navigate(`/opportunities/edit/${res.data.id}`), 500);
+                            } else {
+                                setToast({ type: 'error', message: res.message || 'Erreur' });
+                            }
+                        }}
+                    >
+                        <i className="fas fa-copy me-1"></i> Dupliquer
+                    </button>
                     <Link to={`/opportunities/edit/${id}`} className="btn btn-outline-primary btn-sm">
                         <i className="fas fa-edit me-1"></i> Éditer
                     </Link>

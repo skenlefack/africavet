@@ -753,6 +753,64 @@ router.put('/:id', authenticate, sanitizeFields('description_fr', 'description_e
 });
 
 /**
+ * POST /api/opportunities/:id/duplicate
+ * Duplicate an opportunity as a new draft
+ */
+router.post('/:id/duplicate', authenticate, async (req, res) => {
+  try {
+    const [originals] = await db.query('SELECT * FROM opportunities WHERE id = ?', [req.params.id]);
+    if (originals.length === 0) {
+      return res.status(404).json({ success: false, message: 'Opportunity not found' });
+    }
+
+    const orig = originals[0];
+
+    const [result] = await db.query(`
+      INSERT INTO opportunities (
+        opportunity_type, title_fr, title_en, description_fr, description_en,
+        organization_name, organization_id, contact_name, contact_email, contact_phone,
+        website_url, application_url, source_url,
+        country, region, city, address, is_remote, work_mode,
+        job_type, contract_type, work_rhythm, contract_duration,
+        experience_required, experience_min_years, experience_max_years,
+        education_required, languages_required, nationality_required, recruitment_scope,
+        salary_min, salary_max, salary_currency, salary_period, salary_type,
+        positions_count, grade, department,
+        tender_reference, tender_type, budget_min, budget_max, budget_currency,
+        submission_method, eligibility_criteria,
+        tags, submitted_by, status, offer_status
+      ) SELECT
+        opportunity_type, CONCAT('[COPIE] ', title_fr), title_en, description_fr, description_en,
+        organization_name, organization_id, contact_name, contact_email, contact_phone,
+        website_url, application_url, source_url,
+        country, region, city, address, is_remote, work_mode,
+        job_type, contract_type, work_rhythm, contract_duration,
+        experience_required, experience_min_years, experience_max_years,
+        education_required, languages_required, nationality_required, recruitment_scope,
+        salary_min, salary_max, salary_currency, salary_period, salary_type,
+        positions_count, grade, department,
+        tender_reference, tender_type, budget_min, budget_max, budget_currency,
+        submission_method, eligibility_criteria,
+        tags, ?, 'draft', 'open'
+      FROM opportunities WHERE id = ?
+    `, [req.user.id, req.params.id]);
+
+    await auditFromReq(req, 'duplicate', 'opportunity', result.insertId, {
+      details: { source_id: parseInt(req.params.id), title: orig.title_fr }
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Opportunité dupliquée',
+      data: { id: result.insertId }
+    });
+  } catch (error) {
+    console.error('Error duplicating opportunity:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+/**
  * DELETE /api/opportunities/:id
  * Delete an opportunity
  */

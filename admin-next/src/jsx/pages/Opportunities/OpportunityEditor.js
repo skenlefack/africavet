@@ -58,6 +58,16 @@ const OpportunityEditor = () => {
     const [files, setFiles] = useState([]);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef(null);
+    const [currentStep, setCurrentStep] = useState(1);
+    const [isDirty, setIsDirty] = useState(false);
+    const autoSaveRef = useRef(null);
+
+    const STEPS = [
+        { id: 1, label: 'Identification', icon: 'fa-tag', fields: ['opportunity_type', 'title_fr', 'title_en', 'organization_name', 'tender_reference', 'source_url', 'application_url'] },
+        { id: 2, label: 'Contenu', icon: 'fa-align-left', fields: ['description_fr', 'description_en'] },
+        { id: 3, label: 'Métadonnées', icon: 'fa-sliders-h', fields: ['country', 'city', 'work_mode', 'contract_type', 'salary_min', 'deadline'] },
+        { id: 4, label: 'Publication', icon: 'fa-paper-plane', fields: ['status', 'offer_status', 'is_featured'] },
+    ];
 
     const [form, setForm] = useState({
         opportunity_type: 'job',
@@ -182,7 +192,36 @@ const OpportunityEditor = () => {
 
     const handleChange = (key, value) => {
         setForm(prev => ({ ...prev, [key]: value }));
+        setIsDirty(true);
     };
+
+    // Auto-save draft every 60 seconds
+    useEffect(() => {
+        if (!isDirty || !isEditing || form.status === 'published') return;
+        autoSaveRef.current = setTimeout(async () => {
+            const data = {
+                ...form,
+                description_fr: editorRefFr.current ? editorRefFr.current.getContent() : form.description_fr,
+                description_en: editorRefEn.current ? editorRefEn.current.getContent() : form.description_en,
+            };
+            await api.put(`/opportunities/${id}`, data, token);
+            setIsDirty(false);
+            setToast({ type: 'success', message: 'Sauvegarde automatique effectuée' });
+        }, 60000);
+        return () => clearTimeout(autoSaveRef.current);
+    }, [isDirty]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Warn before leaving with unsaved changes
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isDirty]);
 
     const handleFileUpload = async (e) => {
         const selectedFiles = Array.from(e.target.files);
@@ -280,6 +319,58 @@ const OpportunityEditor = () => {
         setSaving(false);
     };
 
+    // Calculate completeness
+    const getCompleteness = () => {
+        const checks = [
+            { ok: !!form.title_fr, label: 'Titre FR' },
+            { ok: !!form.organization_name, label: 'Organisation' },
+            { ok: !!form.country, label: 'Pays' },
+            { ok: !!(editorRefFr.current ? editorRefFr.current.getContent() : form.description_fr), label: 'Description' },
+            { ok: !!form.deadline || form.offer_status === 'continuous', label: 'Date limite' },
+            { ok: !!form.contact_email, label: 'Email contact' },
+            { ok: !!form.application_url, label: 'Lien candidature' },
+            { ok: !!form.source_url, label: 'Source officielle' },
+        ];
+        const done = checks.filter(c => c.ok).length;
+        return { score: Math.round((done / checks.length) * 100), checks };
+    };
+
+    const completeness = getCompleteness();
+
+    // Save as draft (quick save without navigation)
+    const handleSaveDraft = async () => {
+        setSaving(true);
+        const data = {
+            ...form,
+            status: form.status === 'published' ? form.status : 'draft',
+            description_fr: editorRefFr.current ? editorRefFr.current.getContent() : form.description_fr,
+            description_en: editorRefEn.current ? editorRefEn.current.getContent() : form.description_en,
+            is_remote: form.work_mode === 'remote' || form.work_mode === 'home_based' ? 1 : 0,
+            is_featured: form.is_featured ? 1 : 0,
+            is_urgent: form.is_urgent ? 1 : 0,
+            salary_min: form.salary_min ? Number(form.salary_min) : null,
+            salary_max: form.salary_max ? Number(form.salary_max) : null,
+            positions_count: form.positions_count ? Number(form.positions_count) : 1,
+            experience_min_years: form.experience_min_years ? Number(form.experience_min_years) : null,
+            experience_max_years: form.experience_max_years ? Number(form.experience_max_years) : null,
+            languages_required: form.languages_required ? form.languages_required.split(',').map(l => l.trim()).filter(Boolean) : null,
+            attachments: files.length > 0 ? JSON.stringify(files) : null,
+        };
+        const res = isEditing
+            ? await api.put(`/opportunities/${id}`, data, token)
+            : await api.post('/opportunities', data, token);
+        if (res.success) {
+            setIsDirty(false);
+            setToast({ type: 'success', message: 'Brouillon enregistré' });
+            if (!isEditing && res.data?.id) {
+                navigate(`/opportunities/edit/${res.data.id}`, { replace: true });
+            }
+        } else {
+            setToast({ type: 'error', message: res.message || 'Erreur' });
+        }
+        setSaving(false);
+    };
+
     if (loading) {
         return (
             <div className="text-center py-5">
@@ -302,7 +393,7 @@ const OpportunityEditor = () => {
             )}
 
             {/* Header */}
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb mb-1">
@@ -315,14 +406,58 @@ const OpportunityEditor = () => {
                         {isEditing ? 'Modifier l\'opportunité' : 'Nouvelle opportunité'}
                     </h2>
                 </div>
-                <Link to={isEditing ? `/opportunities/view/${id}` : '/opportunities/list'} className="btn btn-outline-secondary btn-sm">
-                    <i className="fas fa-arrow-left me-1"></i> Annuler
-                </Link>
+                <div className="d-flex align-items-center gap-2">
+                    {/* Completeness badge */}
+                    <span className={`badge ${completeness.score >= 80 ? 'bg-success' : completeness.score >= 50 ? 'bg-warning text-dark' : 'bg-secondary'}`}
+                        style={{ fontSize: '0.8rem' }}>
+                        {completeness.score}% complet
+                    </span>
+                    <Link to={isEditing ? `/opportunities/view/${id}` : '/opportunities/list'} className="btn btn-outline-secondary btn-sm">
+                        <i className="fas fa-arrow-left me-1"></i> Annuler
+                    </Link>
+                </div>
+            </div>
+
+            {/* Step Navigation */}
+            <div className="card border-0 shadow-sm mb-4">
+                <div className="card-body py-3">
+                    <div className="d-flex justify-content-between align-items-center">
+                        {STEPS.map((step, idx) => (
+                            <React.Fragment key={step.id}>
+                                <button
+                                    type="button"
+                                    className="btn d-flex align-items-center gap-2 px-3 py-2 border-0"
+                                    onClick={() => setCurrentStep(step.id)}
+                                    style={{
+                                        background: currentStep === step.id ? 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)' : 'transparent',
+                                        color: currentStep === step.id ? 'white' : '#6c757d',
+                                        borderRadius: '8px',
+                                        fontWeight: currentStep === step.id ? 600 : 400,
+                                        fontSize: '0.85rem',
+                                    }}
+                                >
+                                    <span className="d-flex align-items-center justify-content-center"
+                                        style={{ width: 28, height: 28, borderRadius: '50%', background: currentStep === step.id ? 'rgba(255,255,255,0.2)' : '#f0f0f0', fontSize: '0.75rem', fontWeight: 700 }}>
+                                        {step.id}
+                                    </span>
+                                    <span className="d-none d-md-inline">
+                                        <i className={`fas ${step.icon} me-1`}></i>{step.label}
+                                    </span>
+                                </button>
+                                {idx < STEPS.length - 1 && (
+                                    <div style={{ flex: 1, height: 2, background: step.id < currentStep ? '#7ac142' : '#e9ecef', margin: '0 4px' }} />
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             <form onSubmit={handleSubmit}>
                 <div className="row align-items-start">
                     <div className="col-lg-8">
+                        {/* STEP 1: Identification — Type, Title, Organization, Contact */}
+                        {currentStep === 1 && (<>
                         {/* Type & Title */}
                         <div className="card border-0 shadow-sm mb-4">
                             <div className="card-header bg-white border-0">
@@ -351,6 +486,10 @@ const OpportunityEditor = () => {
                             </div>
                         </div>
 
+                        </>)}
+
+                        {/* STEP 2: Content — Description */}
+                        {currentStep === 2 && (<>
                         {/* Description */}
                         <div className="card border-0 shadow-sm mb-4">
                             <div className="card-header bg-white border-0 d-flex justify-content-between align-items-center">
@@ -437,6 +576,10 @@ const OpportunityEditor = () => {
                             </div>
                         </div>
 
+                        </>)}
+
+                        {/* STEP 3: Metadata — Location, Job details, Salary */}
+                        {currentStep === 3 && (<>
                         {/* Location */}
                         <div className="card border-0 shadow-sm mb-4">
                             <div className="card-header bg-white border-0">
@@ -648,10 +791,11 @@ const OpportunityEditor = () => {
                             </div>
                             </>
                         )}
+                        </>)}
                     </div>
 
-                    {/* Sidebar */}
-                    <div className="col-lg-4" style={{ position: 'sticky', top: '5rem', alignSelf: 'flex-start' }}>
+                    {/* Sidebar — STEP 4: Publication (always visible on step 4, sticky on other steps) */}
+                    <div className={currentStep === 4 ? 'col-lg-8' : 'col-lg-4'} style={{ position: 'sticky', top: '5rem', alignSelf: 'flex-start' }}>
                         {/* Publish - Double status */}
                         <div className="card border-0 shadow-sm mb-4">
                             <div className="card-header bg-white border-0">
@@ -803,6 +947,47 @@ const OpportunityEditor = () => {
                     </div>
                 </div>
             </form>
+
+            {/* Fixed Action Bar */}
+            <div className="position-fixed bottom-0 start-0 end-0 bg-white border-top shadow-lg py-3 px-4"
+                style={{ zIndex: 1050 }}>
+                <div className="d-flex justify-content-between align-items-center" style={{ maxWidth: 1200, margin: '0 auto' }}>
+                    <div className="d-flex gap-2">
+                        {currentStep > 1 && (
+                            <button type="button" className="btn btn-outline-secondary"
+                                onClick={() => setCurrentStep(currentStep - 1)}>
+                                <i className="fas fa-chevron-left me-1"></i> Précédent
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="d-flex align-items-center gap-2">
+                        {isDirty && <span className="text-muted small"><i className="fas fa-circle text-warning me-1" style={{ fontSize: 8 }}></i>Non enregistré</span>}
+
+                        <button type="button" className="btn btn-outline-primary" onClick={handleSaveDraft} disabled={saving}>
+                            <i className="fas fa-save me-1"></i> Enregistrer
+                        </button>
+
+                        {currentStep < 4 ? (
+                            <button type="button" className="btn btn-primary"
+                                onClick={() => setCurrentStep(currentStep + 1)}
+                                style={{ background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)', border: 'none' }}>
+                                Suivant <i className="fas fa-chevron-right ms-1"></i>
+                            </button>
+                        ) : (
+                            <button type="button" className="btn btn-success" onClick={handleSubmit} disabled={saving}>
+                                {saving ? (
+                                    <><span className="spinner-border spinner-border-sm me-1"></span> Publication...</>
+                                ) : (
+                                    <><i className="fas fa-paper-plane me-1"></i> {isEditing ? 'Mettre à jour' : 'Publier'}</>
+                                )}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+            {/* Spacer for fixed bar */}
+            <div style={{ height: 80 }} />
         </>
     );
 };
