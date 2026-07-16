@@ -79,7 +79,8 @@ info "Transferring config files..."
 $SCP_CMD deploy/docker-compose.prod.yml $SERVER_USER@$SERVER_IP:$DEPLOY_DIR/docker-compose.prod.yml
 $SCP_CMD deploy/.env.production         $SERVER_USER@$SERVER_IP:$APP_DIR/.env
 $SCP_CMD deploy/nginx.conf              $SERVER_USER@$SERVER_IP:$DEPLOY_DIR/nginx.conf
-$SCP_CMD deploy/default.conf            $SERVER_USER@$SERVER_IP:$DEPLOY_DIR/default.conf
+# Always transfer the SSL config as default.conf (SSL is active in production)
+$SCP_CMD deploy/default-ssl.conf        $SERVER_USER@$SERVER_IP:$DEPLOY_DIR/default.conf
 $SCP_CMD deploy/default-ssl.conf        $SERVER_USER@$SERVER_IP:$DEPLOY_DIR/default-ssl.conf
 $SCP_CMD deploy/setup-ssl.sh            $SERVER_USER@$SERVER_IP:$DEPLOY_DIR/setup-ssl.sh
 $SCP_CMD deploy/setup-firewall.sh       $SERVER_USER@$SERVER_IP:$DEPLOY_DIR/setup-firewall.sh
