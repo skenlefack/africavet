@@ -287,7 +287,10 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), sanitizePostConte
       allow_comments = true, meta_title, meta_title_fr, meta_title_en,
       meta_description, meta_description_fr, meta_description_en, meta_keywords,
       published_at, scheduled_at, tags = [],
-      country, region
+      country, region,
+      sources, reviewer_name, reviewer_title, reviewer_organization,
+      health_disclaimer, image_credit, image_source,
+      translation_status_fr, translation_status_en, original_language
     } = req.body;
 
     // Validation: au moins un titre requis (FR ou EN ou legacy)
@@ -327,8 +330,11 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), sanitizePostConte
        excerpt, excerpt_fr, excerpt_en, featured_image, image_caption, author_id, category_id,
        type, status, visibility, password, featured, allow_comments,
        meta_title, meta_title_fr, meta_title_en, meta_description, meta_description_fr, meta_description_en,
-       meta_keywords, published_at, scheduled_at, country, region)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       meta_keywords, published_at, scheduled_at, country, region,
+       sources, reviewer_name, reviewer_title, reviewer_organization, health_disclaimer, image_credit, image_source,
+       translation_status_fr, translation_status_en, original_language)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [finalTitle, finalTitleFr, finalTitleEn, slug, finalContentFr, finalContentFr, finalContentEn,
        finalExcerptFr, finalExcerptFr, finalExcerptEn, featured_image, image_caption || null, req.user.id, finalCategoryId,
        type, status, visibility, password, featured, allow_comments,
@@ -336,7 +342,10 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), sanitizePostConte
        meta_keywords,
        status === 'published' ? toMySQLDateTime(published_at || new Date()) : null,
        status === 'scheduled' ? toMySQLDateTime(scheduled_at) : null,
-       country || null, region || null]
+       country || null, region || null,
+       sources ? JSON.stringify(sources) : null, reviewer_name || null, reviewer_title || null, reviewer_organization || null,
+       health_disclaimer ? 1 : 0, image_credit || null, image_source || null,
+       translation_status_fr || 'original', translation_status_en || 'not_started', original_language || 'fr']
     );
 
     // Add tags
@@ -395,7 +404,10 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), sanitizePostCon
       meta_title, meta_title_fr, meta_title_en,
       meta_description, meta_description_fr, meta_description_en,
       meta_keywords, published_at, scheduled_at, tags, author_id,
-      country, region
+      country, region,
+      sources, reviewer_name, reviewer_title, reviewer_organization,
+      health_disclaimer, image_credit, image_source,
+      translation_status_fr, translation_status_en, original_language
     } = req.body;
 
     // Use multilingual fields with fallback
@@ -458,7 +470,17 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), sanitizePostCon
        published_at = CASE WHEN ? = 'published' AND published_at IS NULL THEN NOW() ELSE COALESCE(?, published_at) END,
        scheduled_at = COALESCE(?, scheduled_at),
        country = COALESCE(?, country),
-       region = COALESCE(?, region)
+       region = COALESCE(?, region),
+       sources = COALESCE(?, sources),
+       reviewer_name = COALESCE(?, reviewer_name),
+       reviewer_title = COALESCE(?, reviewer_title),
+       reviewer_organization = COALESCE(?, reviewer_organization),
+       health_disclaimer = COALESCE(?, health_disclaimer),
+       image_credit = COALESCE(?, image_credit),
+       image_source = COALESCE(?, image_source),
+       translation_status_fr = COALESCE(?, translation_status_fr),
+       translation_status_en = COALESCE(?, translation_status_en),
+       original_language = COALESCE(?, original_language)
        WHERE id = ?`,
       [finalTitle, finalTitleFr, finalTitleEn, slug,
        finalContentFr, finalContentFr, finalContentEn,
@@ -467,7 +489,10 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), sanitizePostCon
        finalMetaTitleFr, finalMetaTitleFr, finalMetaTitleEn,
        finalMetaDescFr, finalMetaDescFr, finalMetaDescEn,
        meta_keywords, status, toMySQLDateTime(published_at), toMySQLDateTime(scheduled_at),
-       country || null, region || null, id]
+       country || null, region || null,
+       sources ? JSON.stringify(sources) : null, reviewer_name || null, reviewer_title || null, reviewer_organization || null,
+       health_disclaimer !== undefined ? (health_disclaimer ? 1 : 0) : null, image_credit || null, image_source || null,
+       translation_status_fr || null, translation_status_en || null, original_language || null, id]
     );
 
     // Update tags
@@ -608,6 +633,47 @@ router.delete('/trash/empty', auth, authorize('admin'), async (req, res) => {
     res.json({ success: true, message: `${trashedPosts.length} article(s) supprimé(s) définitivement` });
   } catch (error) {
     console.error('Empty trash error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// =========================================
+// PUBLIC AUTHOR ENDPOINTS
+// =========================================
+
+// @route   GET /api/posts/authors/:username
+// @desc    Get public author profile with their posts
+router.get('/authors/:username', async (req, res) => {
+  try {
+    const { username } = req.params;
+    const [users] = await db.query(
+      `SELECT id, username, first_name, last_name, avatar, bio, profession, specialization, country, city
+       FROM users WHERE username = ? AND status = 'active'`,
+      [username]
+    );
+
+    if (users.length === 0) {
+      return res.status(404).json({ success: false, message: 'Author not found' });
+    }
+
+    const author = users[0];
+
+    // Get author's published posts
+    const [posts] = await db.query(
+      `SELECT p.id, p.title, p.title_fr, p.title_en, p.slug, p.excerpt_fr, p.excerpt_en,
+              p.featured_image, p.published_at, p.view_count, p.type
+       FROM posts p
+       WHERE p.author_id = ? AND p.status = 'published'
+       ORDER BY p.published_at DESC LIMIT 50`,
+      [author.id]
+    );
+
+    res.json({
+      success: true,
+      data: { ...author, posts, post_count: posts.length }
+    });
+  } catch (error) {
+    console.error('Get author profile error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

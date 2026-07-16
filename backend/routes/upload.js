@@ -248,27 +248,42 @@ router.post('/image/:type', auth, uploadImage.single('file'), validateUpload('im
       }
     }
 
-    // Create thumbnail for photos
-    if (type === 'experts' || type === 'organizations') {
-      const thumbPath = path.join(__dirname, '..', 'uploads', 'thumbnails', processedFilename);
-      try {
-        await sharp(path.join(path.dirname(originalPath), processedFilename))
-          .resize(150, 150, { fit: 'cover' })
-          .webp({ quality: 80 })
-          .toFile(thumbPath);
-      } catch (thumbError) {
-        console.error('Thumbnail creation error:', thumbError);
-      }
+    // Create thumbnail (150px) for all images
+    const thumbDir = path.join(__dirname, '..', 'uploads', 'thumbnails');
+    if (!fs.existsSync(thumbDir)) fs.mkdirSync(thumbDir, { recursive: true });
+    const thumbPath = path.join(thumbDir, processedFilename);
+    try {
+      await sharp(path.join(path.dirname(originalPath), processedFilename))
+        .resize(150, 150, { fit: 'cover' })
+        .webp({ quality: 80 })
+        .toFile(thumbPath);
+    } catch (thumbError) {
+      console.error('Thumbnail creation error:', thumbError);
+    }
+
+    // Create medium variant (400px) for cards/lists
+    const mediumDir = path.join(__dirname, '..', 'uploads', 'medium');
+    if (!fs.existsSync(mediumDir)) fs.mkdirSync(mediumDir, { recursive: true });
+    const mediumPath = path.join(mediumDir, processedFilename);
+    try {
+      await sharp(path.join(path.dirname(originalPath), processedFilename))
+        .resize(400, 400, { fit: 'inside', withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toFile(mediumPath);
+    } catch (medError) {
+      console.error('Medium variant creation error:', medError);
     }
 
     const fileUrl = `/uploads/${type}/${processedFilename}`;
     const thumbUrl = `/uploads/thumbnails/${processedFilename}`;
+    const mediumUrl = `/uploads/medium/${processedFilename}`;
 
     res.json({
       success: true,
       data: {
         url: fileUrl,
         thumbnail: thumbUrl,
+        medium: mediumUrl,
         filename: processedFilename,
         originalName: req.file.originalname,
         size: req.file.size,

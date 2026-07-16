@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { auth, authorize, requirePermission } = require('../middleware/auth');
+const { auth, authorize, requirePermission, optionalAuth } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -1255,8 +1255,8 @@ router.delete('/experts/:id', auth, authorize('admin'), async (req, res) => {
 
 // ==================== ORGANIZATIONS (PILIER 3) ====================
 
-// GET all organizations
-router.get('/organizations', auth, async (req, res) => {
+// GET all organizations (public)
+router.get('/organizations', optionalAuth, async (req, res) => {
   try {
     const { page = 1, limit = 20, type, region, search, parent_id } = req.query;
     const offset = (page - 1) * limit;
@@ -1308,8 +1308,8 @@ router.get('/organizations', auth, async (req, res) => {
   }
 });
 
-// GET single organization
-router.get('/organizations/:id', auth, async (req, res) => {
+// GET single organization (public)
+router.get('/organizations/:id', optionalAuth, async (req, res) => {
   try {
     const [orgs] = await db.query('SELECT * FROM organizations WHERE id = ?', [req.params.id]);
 
@@ -1341,6 +1341,24 @@ router.get('/organizations/:id', auth, async (req, res) => {
     });
   } catch (error) {
     console.error('Get organization error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// GET opportunities linked to an organization (public)
+router.get('/organizations/:id/opportunities', optionalAuth, async (req, res) => {
+  try {
+    const [opps] = await db.query(
+      `SELECT id, title_fr, title_en, opportunity_type, country, deadline, status, offer_status, slug
+       FROM opportunities
+       WHERE (organization_id = ? OR organization_name = (SELECT name FROM organizations WHERE id = ?))
+       AND status = 'published'
+       ORDER BY created_at DESC LIMIT 20`,
+      [req.params.id, req.params.id]
+    );
+    res.json({ success: true, data: opps });
+  } catch (error) {
+    console.error('Get org opportunities error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

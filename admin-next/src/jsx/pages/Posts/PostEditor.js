@@ -74,7 +74,14 @@ const PostEditor = () => {
         region: '',
         translation_status_fr: 'original',
         translation_status_en: 'not_started',
-        original_language: 'fr'
+        original_language: 'fr',
+        sources: '',
+        reviewer_name: '',
+        reviewer_title: '',
+        reviewer_organization: '',
+        health_disclaimer: false,
+        image_credit: '',
+        image_source: ''
     });
 
     useEffect(() => {
@@ -129,7 +136,14 @@ const PostEditor = () => {
                 region: res.data.region || '',
                 translation_status_fr: res.data.translation_status_fr || 'original',
                 translation_status_en: res.data.translation_status_en || 'not_started',
-                original_language: res.data.original_language || 'fr'
+                original_language: res.data.original_language || 'fr',
+                sources: res.data.sources || '',
+                reviewer_name: res.data.reviewer_name || '',
+                reviewer_title: res.data.reviewer_title || '',
+                reviewer_organization: res.data.reviewer_organization || '',
+                health_disclaimer: !!res.data.health_disclaimer,
+                image_credit: res.data.image_credit || '',
+                image_source: res.data.image_source || ''
             });
         }
         setLoading(false);
@@ -311,6 +325,7 @@ const PostEditor = () => {
     const tabs = [
         { id: 'content', icon: 'fa-file-alt', label: 'Contenu' },
         { id: 'media', icon: 'fa-image', label: 'Media' },
+        { id: 'editorial', icon: 'fa-shield-alt', label: 'Sources & Crédibilité' },
         { id: 'seo', icon: 'fa-search', label: 'SEO' },
     ];
 
@@ -740,6 +755,78 @@ const PostEditor = () => {
                                         <i className="fas fa-info-circle me-1" style={{ color: '#7ac142' }}></i>
                                         <strong>Conseil:</strong> Utilisez des images de 1200x630px pour un affichage optimal sur les reseaux sociaux.
                                     </small>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* EDITORIAL CREDIBILITY TAB */}
+                    {activeTab === 'editorial' && (
+                        <div className="card border-0 shadow-sm">
+                            <div className="card-body">
+                                <h6 className="fw-bold mb-3"><i className="fas fa-shield-alt text-primary me-2"></i>Sources & Crédibilité éditoriale</h6>
+
+                                <div className="row g-3 mb-4">
+                                    <div className="col-12">
+                                        <label className="form-label">Sources (une par ligne : Organisation — Titre — Date — URL)</label>
+                                        <textarea
+                                            className="form-control"
+                                            name="sources"
+                                            value={formData.sources}
+                                            onChange={handleChange}
+                                            rows={4}
+                                            placeholder={"WOAH — Rapport PPR 2026 — Juillet 2026 — https://woah.org/...\nFAO — Bulletin épidémiologique — Juin 2026 — https://fao.org/..."}
+                                        />
+                                        <small className="text-muted">Format libre. Sera affiché en bloc « Sources » sous l'article.</small>
+                                    </div>
+                                </div>
+
+                                <h6 className="fw-bold mb-3"><i className="fas fa-user-check text-success me-2"></i>Réviseur technique</h6>
+                                <div className="row g-3 mb-4">
+                                    <div className="col-md-4">
+                                        <label className="form-label">Nom du réviseur</label>
+                                        <input type="text" className="form-control" name="reviewer_name"
+                                            value={formData.reviewer_name} onChange={handleChange}
+                                            placeholder="Dr Jean Dupont" />
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label className="form-label">Titre / Spécialité</label>
+                                        <input type="text" className="form-control" name="reviewer_title"
+                                            value={formData.reviewer_title} onChange={handleChange}
+                                            placeholder="Vétérinaire épidémiologiste" />
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label className="form-label">Organisation</label>
+                                        <input type="text" className="form-control" name="reviewer_organization"
+                                            value={formData.reviewer_organization} onChange={handleChange}
+                                            placeholder="EISMV Dakar" />
+                                    </div>
+                                </div>
+
+                                <h6 className="fw-bold mb-3"><i className="fas fa-camera text-info me-2"></i>Crédits image</h6>
+                                <div className="row g-3 mb-4">
+                                    <div className="col-md-6">
+                                        <label className="form-label">Crédit photo</label>
+                                        <input type="text" className="form-control" name="image_credit"
+                                            value={formData.image_credit} onChange={handleChange}
+                                            placeholder="© FAO/John Smith" />
+                                    </div>
+                                    <div className="col-md-6">
+                                        <label className="form-label">Source de l'image</label>
+                                        <input type="url" className="form-control" name="image_source"
+                                            value={formData.image_source} onChange={handleChange}
+                                            placeholder="https://source.org/photo.jpg" />
+                                    </div>
+                                </div>
+
+                                <div className="form-check">
+                                    <input className="form-check-input" type="checkbox" id="healthDisclaimer"
+                                        checked={formData.health_disclaimer}
+                                        onChange={e => setFormData(prev => ({ ...prev, health_disclaimer: e.target.checked }))} />
+                                    <label className="form-check-label" htmlFor="healthDisclaimer">
+                                        <i className="fas fa-exclamation-triangle text-warning me-1"></i>
+                                        Afficher l'avertissement sanitaire : « Cet article est informatif et ne remplace pas l'avis des services vétérinaires compétents. »
+                                    </label>
                                 </div>
                             </div>
                         </div>
