@@ -107,6 +107,7 @@ app.use('/api/dashboard', require('./routes/dashboard'));
 
 // Analytics
 app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/feed', require('./routes/feed'));
 
 // OHWR-Mapping
 app.use('/api/mapping', require('./routes/mapping'));

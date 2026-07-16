@@ -59,6 +59,14 @@ export const metadata: Metadata = {
     description: 'Plateforme panafricaine de médecine vétérinaire',
     images: ['/images/og-image.jpg'],
   },
+  alternates: {
+    types: {
+      'application/rss+xml': [
+        { url: '/api/feed/articles.xml', title: 'AfricaVET - Articles RSS' },
+        { url: '/api/feed/opportunities.xml', title: 'AfricaVET - Opportunités RSS' },
+      ],
+    },
+  },
   robots: {
     index: true,
     follow: true,

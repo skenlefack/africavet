@@ -520,4 +520,72 @@ router.get('/export', auth, authorize('admin', 'editor'), async (req, res) => {
   }
 });
 
+// =====================================================
+// CONTENT ANALYTICS
+// =====================================================
+
+/**
+ * GET /api/analytics/content
+ * Content stats: posts, opportunities, top content, by country/type
+ */
+router.get('/content', auth, authorize('admin', 'editor'), async (req, res) => {
+  try {
+    const period = parseInt(req.query.period) || 30;
+    const sinceDate = new Date(Date.now() - period * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+    const [
+      [postStats], [oppStats], [topPosts], [topOpps], [oppsByCountry], [oppsByType]
+    ] = await Promise.all([
+      db.query(`SELECT COUNT(*) as total, SUM(CASE WHEN status='published' THEN 1 ELSE 0 END) as published,
+        SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as new_period, SUM(view_count) as total_views FROM posts`, [sinceDate]),
+      db.query(`SELECT COUNT(*) as total, SUM(CASE WHEN status='published' THEN 1 ELSE 0 END) as published,
+        SUM(CASE WHEN status='published' AND (offer_status='open' OR offer_status='closing_soon') THEN 1 ELSE 0 END) as active,
+        SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as new_period, SUM(views_count) as total_views,
+        SUM(applications_count) as total_applications FROM opportunities`, [sinceDate]),
+      db.query(`SELECT id, title_fr, slug, view_count, type FROM posts WHERE status='published' ORDER BY view_count DESC LIMIT 10`),
+      db.query(`SELECT id, title_fr, opportunity_type, organization_name, country, views_count, applications_count
+        FROM opportunities WHERE status='published' ORDER BY views_count DESC LIMIT 10`),
+      db.query(`SELECT country, COUNT(*) as count FROM opportunities WHERE status='published' AND country IS NOT NULL AND country!=''
+        GROUP BY country ORDER BY count DESC LIMIT 15`),
+      db.query(`SELECT opportunity_type, COUNT(*) as count,
+        SUM(CASE WHEN offer_status IN ('open','closing_soon') THEN 1 ELSE 0 END) as active_count
+        FROM opportunities WHERE status='published' GROUP BY opportunity_type`),
+    ]);
+
+    res.json({
+      success: true,
+      data: { period, posts: postStats[0], opportunities: oppStats[0], top_posts: topPosts, top_opportunities: topOpps,
+        opportunities_by_country: oppsByCountry, opportunities_by_type: oppsByType }
+    });
+  } catch (error) {
+    console.error('Content analytics error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+/**
+ * GET /api/analytics/content-by-country
+ * Public: articles + opportunities count per country (for interactive map)
+ */
+router.get('/content-by-country', async (req, res) => {
+  try {
+    const [postsByCountry] = await db.query(`SELECT country, COUNT(*) as posts FROM posts
+      WHERE status='published' AND country IS NOT NULL AND country!='' GROUP BY country`);
+    const [oppsByCountry] = await db.query(`SELECT country, COUNT(*) as opportunities FROM opportunities
+      WHERE status='published' AND country IS NOT NULL AND country!='' GROUP BY country`);
+
+    const map = {};
+    for (const r of postsByCountry) { map[r.country] = { country: r.country, posts: r.posts, opportunities: 0 }; }
+    for (const r of oppsByCountry) {
+      if (!map[r.country]) map[r.country] = { country: r.country, posts: 0, opportunities: 0 };
+      map[r.country].opportunities = r.opportunities;
+    }
+
+    res.json({ success: true, data: Object.values(map).sort((a, b) => (b.posts + b.opportunities) - (a.posts + a.opportunities)) });
+  } catch (error) {
+    console.error('Content by country error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 module.exports = router;

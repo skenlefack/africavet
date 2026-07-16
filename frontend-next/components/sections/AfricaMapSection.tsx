@@ -1,7 +1,8 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Newspaper, Briefcase, ChevronRight } from 'lucide-react';
+import { MapPin, Newspaper, Briefcase, ChevronRight, Rss } from 'lucide-react';
 import { Language } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
@@ -69,6 +70,32 @@ interface AfricaMapSectionProps {
 }
 
 export function AfricaMapSection({ lang, className }: AfricaMapSectionProps) {
+  const [countryData, setCountryData] = useState<Record<string, { posts: number; opportunities: number }>>({});
+
+  useEffect(() => {
+    fetch('/api/analytics/content-by-country')
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          const map: Record<string, { posts: number; opportunities: number }> = {};
+          for (const item of data.data) {
+            map[item.country] = { posts: item.posts, opportunities: item.opportunities };
+          }
+          setCountryData(map);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Count content for a region's countries
+  const getRegionCounts = (countries: string[]) => {
+    let posts = 0, opps = 0;
+    for (const c of countries) {
+      if (countryData[c]) { posts += countryData[c].posts; opps += countryData[c].opportunities; }
+    }
+    return { posts, opps };
+  };
+
   const t = {
     title: lang === 'fr' ? 'Explorer par région' : 'Explore by Region',
     subtitle: lang === 'fr'
@@ -121,29 +148,40 @@ export function AfricaMapSection({ lang, className }: AfricaMapSectionProps) {
                     {region.countries.length} {t.countries}
                   </p>
 
-                  {/* Action links */}
-                  <div className="space-y-2">
-                    <a
-                      href={`/${lang}/news?region=${region.slug}`}
-                      className="flex items-center justify-between text-sm text-gray-600 hover:text-gray-900 transition-colors"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Newspaper size={14} className={region.color} />
-                        {t.news}
-                      </span>
-                      <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </a>
-                    <a
-                      href={`/${lang}/opportunities?region=${region.slug}`}
-                      className="flex items-center justify-between text-sm text-gray-600 hover:text-gray-900 transition-colors"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Briefcase size={14} className={region.color} />
-                        {t.opportunities}
-                      </span>
-                      <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </a>
-                  </div>
+                  {/* Action links with counts */}
+                  {(() => {
+                    const counts = getRegionCounts(region.countries);
+                    return (
+                      <div className="space-y-2">
+                        <a
+                          href={`/${lang}/news?region=${region.slug}`}
+                          className="flex items-center justify-between text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                        >
+                          <span className="flex items-center gap-2">
+                            <Newspaper size={14} className={region.color} />
+                            {t.news}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            {counts.posts > 0 && <span className="text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">{counts.posts}</span>}
+                            <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </span>
+                        </a>
+                        <a
+                          href={`/${lang}/opportunities?region=${region.slug}`}
+                          className="flex items-center justify-between text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                        >
+                          <span className="flex items-center gap-2">
+                            <Briefcase size={14} className={region.color} />
+                            {t.opportunities}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            {counts.opps > 0 && <span className="text-xs bg-gray-100 px-1.5 py-0.5 rounded-full">{counts.opps}</span>}
+                            <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </span>
+                        </a>
+                      </div>
+                    );
+                  })()}
 
                   {/* Countries preview */}
                   <div className="mt-4 pt-3 border-t border-gray-100">
