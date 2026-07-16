@@ -6,6 +6,7 @@ const fs = require('fs');
 const sharp = require('sharp');
 const { v4: uuidv4 } = require('uuid');
 const { auth } = require('../middleware/auth');
+const { validateUpload } = require('../middleware/uploadSecurity');
 
 // Ensure upload directories exist
 const uploadDirs = [
@@ -102,7 +103,7 @@ const uploadImage = multer({
 const uploadDocument = multer({
   storage: documentStorage,
   fileFilter: documentFilter,
-  limits: { fileSize: 50 * 1024 * 1024 } // 50MB max for documents
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB max for documents
 });
 
 // ============================================
@@ -211,7 +212,7 @@ const uploadElearningPpt = multer({
 });
 
 // Upload image (photo, logo)
-router.post('/image/:type', auth, uploadImage.single('file'), async (req, res) => {
+router.post('/image/:type', auth, uploadImage.single('file'), validateUpload('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'Aucun fichier uploadé' });
@@ -281,7 +282,7 @@ router.post('/image/:type', auth, uploadImage.single('file'), async (req, res) =
 });
 
 // Upload document (PDF, Word, Excel, Video)
-router.post('/document', auth, uploadDocument.single('file'), async (req, res) => {
+router.post('/document', auth, uploadDocument.single('file'), validateUpload('document'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'Aucun fichier uploadé' });
@@ -316,7 +317,7 @@ router.post('/document', auth, uploadDocument.single('file'), async (req, res) =
 // ============================================
 
 // Upload e-learning video
-router.post('/elearning/video', auth, uploadElearningVideo.single('file'), async (req, res) => {
+router.post('/elearning/video', auth, uploadElearningVideo.single('file'), validateUpload('video'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'Aucun fichier uploadé' });

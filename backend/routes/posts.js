@@ -4,6 +4,11 @@ const { body, query, validationResult } = require('express-validator');
 const slugify = require('slugify');
 const db = require('../config/db');
 const { auth, authorize, optionalAuth } = require('../middleware/auth');
+const { sanitizeFields } = require('../middleware/sanitizeHtml');
+const { auditFromReq } = require('../middleware/auditLog');
+
+// HTML fields that need sanitization on posts
+const sanitizePostContent = sanitizeFields('content', 'content_fr', 'content_en', 'excerpt', 'excerpt_fr', 'excerpt_en');
 
 // Helper function to convert ISO 8601 date to MySQL datetime format
 const toMySQLDateTime = (isoDate) => {
@@ -273,7 +278,7 @@ router.get('/:idOrSlug', optionalAuth, async (req, res) => {
 // @route   POST /api/posts
 // @desc    Create new post
 // @access  Private (admin, editor, author)
-router.post('/', auth, authorize('admin', 'editor', 'author'), async (req, res) => {
+router.post('/', auth, authorize('admin', 'editor', 'author'), sanitizePostContent, async (req, res) => {
   try {
     const {
       title, title_fr, title_en, content, content_fr, content_en,
@@ -356,10 +361,7 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), async (req, res) 
     const [newPost] = await db.query('SELECT * FROM posts WHERE id = ?', [result.insertId]);
 
     // Log activity
-    await db.query(
-      'INSERT INTO activity_log (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, 'create', 'post', result.insertId, JSON.stringify({ title })]
-    );
+    await auditFromReq(req, 'create', 'post', result.insertId, { details: { title: finalTitleFr } });
 
     res.status(201).json({ success: true, message: 'Post created', data: newPost[0] });
   } catch (error) {
@@ -371,7 +373,7 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), async (req, res) 
 // @route   PUT /api/posts/:id
 // @desc    Update post
 // @access  Private (admin, editor, author-own)
-router.put('/:id', auth, authorize('admin', 'editor', 'author'), async (req, res) => {
+router.put('/:id', auth, authorize('admin', 'editor', 'author'), sanitizePostContent, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -490,10 +492,7 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), async (req, res
     const [updated] = await db.query('SELECT * FROM posts WHERE id = ?', [id]);
 
     // Log activity
-    await db.query(
-      'INSERT INTO activity_log (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, 'update', 'post', id, JSON.stringify({ title: updated[0].title })]
-    );
+    await auditFromReq(req, 'update', 'post', parseInt(id), { details: { title: updated[0].title } });
 
     res.json({ success: true, message: 'Post updated', data: updated[0] });
   } catch (error) {
@@ -518,10 +517,7 @@ router.delete('/:id', auth, authorize('admin', 'editor'), async (req, res) => {
     await db.query('UPDATE posts SET status = ?, deleted_at = NOW() WHERE id = ?', ['trash', id]);
 
     // Log activity
-    await db.query(
-      'INSERT INTO activity_log (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, 'trash', 'post', id, JSON.stringify({ title: posts[0].title })]
-    );
+    await auditFromReq(req, 'trash', 'post', parseInt(id), { details: { title: posts[0].title } });
 
     res.json({ success: true, message: 'Article déplacé dans la corbeille' });
   } catch (error) {
@@ -550,10 +546,7 @@ router.post('/:id/restore', auth, authorize('admin', 'editor'), async (req, res)
     await db.query('UPDATE posts SET status = ?, deleted_at = NULL WHERE id = ?', ['draft', id]);
 
     // Log activity
-    await db.query(
-      'INSERT INTO activity_log (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, 'restore', 'post', id, JSON.stringify({ title: posts[0].title })]
-    );
+    await auditFromReq(req, 'restore', 'post', parseInt(id), { details: { title: posts[0].title } });
 
     res.json({ success: true, message: 'Article restauré' });
   } catch (error) {
@@ -581,10 +574,7 @@ router.delete('/:id/permanent', auth, authorize('admin'), async (req, res) => {
     await db.query('DELETE FROM posts WHERE id = ?', [id]);
 
     // Log activity
-    await db.query(
-      'INSERT INTO activity_log (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, 'permanent_delete', 'post', id, JSON.stringify({ title: posts[0].title })]
-    );
+    await auditFromReq(req, 'permanent_delete', 'post', parseInt(id), { details: { title: posts[0].title } });
 
     res.json({ success: true, message: 'Article supprimé définitivement' });
   } catch (error) {
@@ -613,10 +603,7 @@ router.delete('/trash/empty', auth, authorize('admin'), async (req, res) => {
     await db.query('DELETE FROM posts WHERE status = ?', ['trash']);
 
     // Log activity
-    await db.query(
-      'INSERT INTO activity_log (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, 'empty_trash', 'post', null, JSON.stringify({ count: trashedPosts.length })]
-    );
+    await auditFromReq(req, 'empty_trash', 'post', null, { details: { count: trashedPosts.length } });
 
     res.json({ success: true, message: `${trashedPosts.length} article(s) supprimé(s) définitivement` });
   } catch (error) {

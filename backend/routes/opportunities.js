@@ -7,6 +7,8 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const { auth: authenticate, optionalAuth, authorize } = require('../middleware/auth');
+const { sanitizeFields } = require('../middleware/sanitizeHtml');
+const { auditFromReq } = require('../middleware/auditLog');
 const isAdmin = authorize(['admin']);
 const multer = require('multer');
 const path = require('path');
@@ -348,7 +350,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
  * POST /api/opportunities
  * Create a new opportunity (requires authentication)
  */
-router.post('/', authenticate, upload.single('logo'), async (req, res) => {
+router.post('/', authenticate, upload.single('logo'), sanitizeFields('description_fr', 'description_en', 'submission_method', 'eligibility_criteria'), async (req, res) => {
   try {
     const {
       opportunity_type,
@@ -489,6 +491,10 @@ router.post('/', authenticate, upload.single('logo'), async (req, res) => {
         );
       }
     }
+
+    await auditFromReq(req, 'create', 'opportunity', opportunityId, {
+      details: { title: title_fr, type: opportunity_type }
+    });
 
     res.status(201).json({
       success: true,
@@ -666,7 +672,7 @@ router.put('/:id/reject', authenticate, isAdmin, async (req, res) => {
  * PUT /api/opportunities/:id
  * Update an opportunity
  */
-router.put('/:id', authenticate, async (req, res) => {
+router.put('/:id', authenticate, sanitizeFields('description_fr', 'description_en', 'submission_method', 'eligibility_criteria'), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -729,6 +735,10 @@ router.put('/:id', authenticate, async (req, res) => {
       values
     );
 
+    await auditFromReq(req, 'update', 'opportunity', parseInt(id), {
+      details: { fields_changed: Object.keys(req.body).filter(k => allowedFields.includes(k)) }
+    });
+
     res.json({ success: true, message: 'Opportunity updated' });
   } catch (error) {
     console.error('Error updating opportunity:', error);
@@ -744,7 +754,13 @@ router.delete('/:id', authenticate, isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Get title before deleting for audit
+    const [oppData] = await db.query('SELECT title_fr, opportunity_type FROM opportunities WHERE id = ?', [id]);
     await db.query('DELETE FROM opportunities WHERE id = ?', [id]);
+
+    await auditFromReq(req, 'delete', 'opportunity', parseInt(id), {
+      details: { title: oppData[0]?.title_fr, type: oppData[0]?.opportunity_type }
+    });
 
     res.json({ success: true, message: 'Opportunity deleted' });
   } catch (error) {

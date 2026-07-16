@@ -65,6 +65,7 @@ const MIGRATIONS = [
   '035_add_opportunity_attachments.sql',
   '036_taxonomy_refactor.sql',
   '037_enhance_opportunities_workflow.sql',
+  '038_translation_status_audit_log.sql',
   'create_homepage_sections.sql',
   'update_pillars_partners.sql',
   'fix_encoding.sql'

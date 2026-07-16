@@ -21,23 +21,26 @@ export async function generateMetadata({
   const { lang } = await params;
 
   const titles = {
-    fr: 'One Health Cameroun | Plateforme Une Seule Santé',
-    en: 'One Health Cameroon | One Health Platform',
+    fr: 'AfricaVET | Le portail panafricain de la santé animale et de la médecine vétérinaire',
+    en: 'AfricaVET | Pan-African Animal Health & Veterinary Medicine Portal',
   };
 
   const descriptions = {
-    fr: "Plateforme nationale de surveillance des zoonoses One Health Cameroun.",
-    en: "National platform for zoonoses surveillance One Health Cameroon.",
+    fr: "Actualités, analyses, opportunités et ressources sur la santé animale, le One Health, les zoonoses, l'élevage, la faune sauvage, la pêche et l'aquaculture en Afrique.",
+    en: "News, analysis, opportunities and resources on animal health, One Health, zoonoses, livestock, wildlife, fisheries and aquaculture in Africa.",
   };
+
+  const otherLang = lang === 'fr' ? 'en' : 'fr';
 
   return {
     title: titles[lang as Language] || titles.fr,
     description: descriptions[lang as Language] || descriptions.fr,
     alternates: {
-      canonical: `/${lang}`,
+      canonical: `https://www.africavet.com/${lang}`,
       languages: {
-        fr: '/fr',
-        en: '/en',
+        'fr': 'https://www.africavet.com/fr',
+        'en': 'https://www.africavet.com/en',
+        'x-default': 'https://www.africavet.com/fr',
       },
     },
   };

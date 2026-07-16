@@ -71,7 +71,10 @@ const PostEditor = () => {
         meta_keywords_fr: '',
         meta_keywords_en: '',
         country: '',
-        region: ''
+        region: '',
+        translation_status_fr: 'original',
+        translation_status_en: 'not_started',
+        original_language: 'fr'
     });
 
     useEffect(() => {
@@ -123,7 +126,10 @@ const PostEditor = () => {
                 meta_keywords_fr: res.data.meta_keywords_fr || '',
                 meta_keywords_en: res.data.meta_keywords_en || '',
                 country: res.data.country || '',
-                region: res.data.region || ''
+                region: res.data.region || '',
+                translation_status_fr: res.data.translation_status_fr || 'original',
+                translation_status_en: res.data.translation_status_en || 'not_started',
+                original_language: res.data.original_language || 'fr'
             });
         }
         setLoading(false);
@@ -557,6 +563,23 @@ const PostEditor = () => {
                             >
                                 <option value="draft">Brouillon</option>
                                 <option value="published">Publie</option>
+                            </select>
+                        </div>
+                        <div className="col-md-1">
+                            <label className="form-label small text-muted mb-1" style={{ fontSize: '0.65rem' }}>Trad. EN</label>
+                            <select
+                                className="form-select form-select-sm border-0 bg-light"
+                                name="translation_status_en"
+                                value={formData.translation_status_en}
+                                onChange={handleChange}
+                                style={{ borderRadius: '6px', fontSize: '0.7rem' }}
+                            >
+                                <option value="not_started">Non traduit</option>
+                                <option value="auto">Auto</option>
+                                <option value="to_review">A reviser</option>
+                                <option value="translated">Traduit</option>
+                                <option value="validated">Valide</option>
+                                <option value="obsolete">Obsolete</option>
                             </select>
                         </div>
                     </div>

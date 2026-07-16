@@ -106,6 +106,7 @@ const OpportunityEditor = () => {
         offer_status: 'open',
         is_featured: false,
         is_urgent: false,
+        translation_status_en: 'not_started',
     });
 
     useEffect(() => {
@@ -171,6 +172,7 @@ const OpportunityEditor = () => {
                 offer_status: d.offer_status || 'open',
                 is_featured: !!d.is_featured,
                 is_urgent: !!d.is_urgent,
+                translation_status_en: d.translation_status_en || 'not_started',
             });
         } else {
             setToast({ type: 'error', message: 'Opportunité introuvable' });
@@ -714,6 +716,19 @@ const OpportunityEditor = () => {
                                     <label className="form-check-label" htmlFor="isUrgent">
                                         <i className="fas fa-bolt text-danger me-1"></i> Urgent
                                     </label>
+                                </div>
+                                <hr className="my-2" />
+                                <div className="mb-2">
+                                    <label className="form-label small">Traduction EN</label>
+                                    <select className="form-select form-select-sm" value={form.translation_status_en}
+                                        onChange={e => handleChange('translation_status_en', e.target.value)}>
+                                        <option value="not_started">Non traduit</option>
+                                        <option value="auto">Traduction auto</option>
+                                        <option value="to_review">À réviser</option>
+                                        <option value="translated">Traduit</option>
+                                        <option value="validated">Validé</option>
+                                        <option value="obsolete">Obsolète</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
