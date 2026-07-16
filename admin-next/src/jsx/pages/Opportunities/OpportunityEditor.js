@@ -78,15 +78,32 @@ const OpportunityEditor = () => {
         city: '',
         address: '',
         is_remote: false,
+        work_mode: 'on_site',
         job_type: '',
+        contract_type: '',
+        work_rhythm: '',
+        contract_duration: '',
+        contract_start_date: '',
+        contract_end_date: '',
         experience_required: '',
+        experience_min_years: '',
+        experience_max_years: '',
         education_required: '',
+        languages_required: '',
+        nationality_required: '',
+        recruitment_scope: '',
+        positions_count: 1,
+        grade: '',
+        department: '',
         salary_min: '',
         salary_max: '',
         salary_currency: '',
         salary_period: '',
+        salary_type: '',
         deadline: '',
-        status: 'pending',
+        deadline_timezone: 'UTC',
+        status: 'draft',
+        offer_status: 'open',
         is_featured: false,
         is_urgent: false,
     });
@@ -126,15 +143,32 @@ const OpportunityEditor = () => {
                 city: d.city || '',
                 address: d.address || '',
                 is_remote: !!d.is_remote,
+                work_mode: d.work_mode || 'on_site',
                 job_type: d.job_type || '',
+                contract_type: d.contract_type || '',
+                work_rhythm: d.work_rhythm || '',
+                contract_duration: d.contract_duration || '',
+                contract_start_date: d.contract_start_date ? d.contract_start_date.split('T')[0] : '',
+                contract_end_date: d.contract_end_date ? d.contract_end_date.split('T')[0] : '',
                 experience_required: d.experience_required || '',
+                experience_min_years: d.experience_min_years || '',
+                experience_max_years: d.experience_max_years || '',
                 education_required: d.education_required || '',
+                languages_required: d.languages_required ? (typeof d.languages_required === 'string' ? d.languages_required : JSON.stringify(d.languages_required)) : '',
+                nationality_required: d.nationality_required || '',
+                recruitment_scope: d.recruitment_scope || '',
+                positions_count: d.positions_count || 1,
+                grade: d.grade || '',
+                department: d.department || '',
                 salary_min: d.salary_min || '',
                 salary_max: d.salary_max || '',
                 salary_currency: d.salary_currency || '',
                 salary_period: d.salary_period || '',
+                salary_type: d.salary_type || '',
                 deadline: d.deadline ? d.deadline.split('T')[0] : '',
-                status: d.status || 'pending',
+                deadline_timezone: d.deadline_timezone || 'UTC',
+                status: d.status || 'draft',
+                offer_status: d.offer_status || 'open',
                 is_featured: !!d.is_featured,
                 is_urgent: !!d.is_urgent,
             });
@@ -216,11 +250,15 @@ const OpportunityEditor = () => {
             attachments: files.length > 0 ? JSON.stringify(files) : null,
             description_fr: editorRefFr.current ? editorRefFr.current.getContent() : form.description_fr,
             description_en: editorRefEn.current ? editorRefEn.current.getContent() : form.description_en,
-            is_remote: form.is_remote ? 1 : 0,
+            is_remote: form.work_mode === 'remote' || form.work_mode === 'home_based' ? 1 : 0,
             is_featured: form.is_featured ? 1 : 0,
             is_urgent: form.is_urgent ? 1 : 0,
             salary_min: form.salary_min ? Number(form.salary_min) : null,
             salary_max: form.salary_max ? Number(form.salary_max) : null,
+            positions_count: form.positions_count ? Number(form.positions_count) : 1,
+            experience_min_years: form.experience_min_years ? Number(form.experience_min_years) : null,
+            experience_max_years: form.experience_max_years ? Number(form.experience_max_years) : null,
+            languages_required: form.languages_required ? form.languages_required.split(',').map(l => l.trim()).filter(Boolean) : null,
         };
 
         let res;
@@ -427,12 +465,15 @@ const OpportunityEditor = () => {
                                         <input type="text" className="form-control" value={form.address}
                                             onChange={e => handleChange('address', e.target.value)} />
                                     </div>
-                                    <div className="col-md-4 d-flex align-items-end">
-                                        <div className="form-check">
-                                            <input className="form-check-input" type="checkbox" id="isRemote"
-                                                checked={form.is_remote} onChange={e => handleChange('is_remote', e.target.checked)} />
-                                            <label className="form-check-label" htmlFor="isRemote">Télétravail possible</label>
-                                        </div>
+                                    <div className="col-md-4">
+                                        <label className="form-label">Mode de travail</label>
+                                        <select className="form-select" value={form.work_mode}
+                                            onChange={e => handleChange('work_mode', e.target.value)}>
+                                            <option value="on_site">Sur site</option>
+                                            <option value="remote">À distance</option>
+                                            <option value="hybrid">Hybride</option>
+                                            <option value="home_based">Home-based</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -440,35 +481,127 @@ const OpportunityEditor = () => {
 
                         {/* Job-specific fields */}
                         {form.opportunity_type === 'job' && (
+                            <>
                             <div className="card border-0 shadow-sm mb-4">
                                 <div className="card-header bg-white border-0">
-                                    <h5 className="mb-0"><i className="fas fa-briefcase text-primary me-2"></i>Détails du poste</h5>
+                                    <h5 className="mb-0"><i className="fas fa-briefcase text-primary me-2"></i>Contrat & Poste</h5>
                                 </div>
                                 <div className="card-body">
                                     <div className="row g-3">
-                                        <div className="col-md-4">
-                                            <label className="form-label">Type de contrat</label>
-                                            <select className="form-select" value={form.job_type}
-                                                onChange={e => handleChange('job_type', e.target.value)}>
+                                        <div className="col-md-3">
+                                            <label className="form-label">Nature du contrat</label>
+                                            <select className="form-select" value={form.contract_type}
+                                                onChange={e => handleChange('contract_type', e.target.value)}>
                                                 <option value="">— Choisir —</option>
-                                                <option value="full_time">Temps plein</option>
-                                                <option value="part_time">Temps partiel</option>
-                                                <option value="contract">Contrat</option>
+                                                <option value="cdi">CDI</option>
+                                                <option value="cdd">CDD</option>
                                                 <option value="consultancy">Consultance</option>
                                                 <option value="internship">Stage</option>
                                                 <option value="volunteer">Bénévolat</option>
+                                                <option value="temporary">Temporaire</option>
                                                 <option value="freelance">Freelance</option>
+                                                <option value="fellowship">Fellowship</option>
+                                                <option value="other">Autre</option>
                                             </select>
                                         </div>
+                                        <div className="col-md-3">
+                                            <label className="form-label">Rythme de travail</label>
+                                            <select className="form-select" value={form.work_rhythm}
+                                                onChange={e => handleChange('work_rhythm', e.target.value)}>
+                                                <option value="">— Choisir —</option>
+                                                <option value="full_time">Temps plein</option>
+                                                <option value="part_time">Temps partiel</option>
+                                            </select>
+                                        </div>
+                                        <div className="col-md-3">
+                                            <label className="form-label">Durée du contrat</label>
+                                            <input type="text" className="form-control" placeholder="ex: 12 mois"
+                                                value={form.contract_duration} onChange={e => handleChange('contract_duration', e.target.value)} />
+                                        </div>
+                                        <div className="col-md-3">
+                                            <label className="form-label">Nombre de postes</label>
+                                            <input type="number" className="form-control" min="1" value={form.positions_count}
+                                                onChange={e => handleChange('positions_count', e.target.value)} />
+                                        </div>
+                                        <div className="col-md-3">
+                                            <label className="form-label">Date début contrat</label>
+                                            <input type="date" className="form-control" value={form.contract_start_date}
+                                                onChange={e => handleChange('contract_start_date', e.target.value)} />
+                                        </div>
+                                        <div className="col-md-3">
+                                            <label className="form-label">Date fin contrat</label>
+                                            <input type="date" className="form-control" value={form.contract_end_date}
+                                                onChange={e => handleChange('contract_end_date', e.target.value)} />
+                                        </div>
+                                        <div className="col-md-3">
+                                            <label className="form-label">Grade / Niveau</label>
+                                            <input type="text" className="form-control" placeholder="ex: P-3, NOB"
+                                                value={form.grade} onChange={e => handleChange('grade', e.target.value)} />
+                                        </div>
+                                        <div className="col-md-3">
+                                            <label className="form-label">Département</label>
+                                            <input type="text" className="form-control" value={form.department}
+                                                onChange={e => handleChange('department', e.target.value)} />
+                                        </div>
+                                        <div className="col-md-4">
+                                            <label className="form-label">Recrutement</label>
+                                            <select className="form-select" value={form.recruitment_scope}
+                                                onChange={e => handleChange('recruitment_scope', e.target.value)}>
+                                                <option value="">— Portée —</option>
+                                                <option value="national">National</option>
+                                                <option value="international">International</option>
+                                                <option value="regional">Régional</option>
+                                            </select>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <label className="form-label">Nationalité requise</label>
+                                            <input type="text" className="form-control" placeholder="ex: Pays CEDEAO"
+                                                value={form.nationality_required} onChange={e => handleChange('nationality_required', e.target.value)} />
+                                        </div>
+                                        <div className="col-md-4">
+                                            <label className="form-label">Langues requises</label>
+                                            <input type="text" className="form-control" placeholder="ex: Français, Anglais"
+                                                value={form.languages_required} onChange={e => handleChange('languages_required', e.target.value)} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="card border-0 shadow-sm mb-4">
+                                <div className="card-header bg-white border-0">
+                                    <h5 className="mb-0"><i className="fas fa-user-tie text-primary me-2"></i>Profil & Rémunération</h5>
+                                </div>
+                                <div className="card-body">
+                                    <div className="row g-3">
                                         <div className="col-md-4">
                                             <label className="form-label">Expérience requise</label>
                                             <input type="text" className="form-control" placeholder="ex: 2-5 ans"
                                                 value={form.experience_required} onChange={e => handleChange('experience_required', e.target.value)} />
                                         </div>
                                         <div className="col-md-4">
+                                            <label className="form-label">Exp. min (années)</label>
+                                            <input type="number" className="form-control" min="0"
+                                                value={form.experience_min_years} onChange={e => handleChange('experience_min_years', e.target.value)} />
+                                        </div>
+                                        <div className="col-md-4">
+                                            <label className="form-label">Exp. max (années)</label>
+                                            <input type="number" className="form-control" min="0"
+                                                value={form.experience_max_years} onChange={e => handleChange('experience_max_years', e.target.value)} />
+                                        </div>
+                                        <div className="col-md-6">
                                             <label className="form-label">Formation requise</label>
                                             <input type="text" className="form-control" placeholder="ex: DVM, Master"
                                                 value={form.education_required} onChange={e => handleChange('education_required', e.target.value)} />
+                                        </div>
+                                        <div className="col-md-6">
+                                            <label className="form-label">Brut / Net</label>
+                                            <select className="form-select" value={form.salary_type}
+                                                onChange={e => handleChange('salary_type', e.target.value)}>
+                                                <option value="">— Préciser —</option>
+                                                <option value="gross">Brut</option>
+                                                <option value="net">Net</option>
+                                                <option value="undisclosed">Non communiqué</option>
+                                            </select>
                                         </div>
                                         <div className="col-md-3">
                                             <label className="form-label">Salaire min</label>
@@ -491,9 +624,9 @@ const OpportunityEditor = () => {
                                                 <option value="USD">USD</option>
                                                 <option value="GBP">GBP</option>
                                                 <option value="CHF">CHF</option>
-                                                <option value="KES">KES (Shilling kenyan)</option>
-                                                <option value="ZAR">ZAR (Rand)</option>
-                                                <option value="NGN">NGN (Naira)</option>
+                                                <option value="KES">KES</option>
+                                                <option value="ZAR">ZAR</option>
+                                                <option value="NGN">NGN</option>
                                             </select>
                                         </div>
                                         <div className="col-md-3">
@@ -511,31 +644,62 @@ const OpportunityEditor = () => {
                                     </div>
                                 </div>
                             </div>
+                            </>
                         )}
                     </div>
 
                     {/* Sidebar */}
                     <div className="col-lg-4" style={{ position: 'sticky', top: '5rem', alignSelf: 'flex-start' }}>
-                        {/* Publish */}
+                        {/* Publish - Double status */}
                         <div className="card border-0 shadow-sm mb-4">
                             <div className="card-header bg-white border-0">
                                 <h6 className="mb-0"><i className="fas fa-cogs text-primary me-2"></i>Publication</h6>
                             </div>
                             <div className="card-body">
                                 <div className="mb-3">
-                                    <label className="form-label">Statut</label>
+                                    <label className="form-label">Statut éditorial</label>
                                     <select className="form-select" value={form.status}
                                         onChange={e => handleChange('status', e.target.value)}>
                                         <option value="draft">Brouillon</option>
                                         <option value="pending">En attente</option>
-                                        <option value="published">Publiée</option>
-                                        <option value="closed">Clôturée</option>
+                                        <option value="submitted">Soumis</option>
+                                        <option value="verified">Vérifié</option>
+                                        <option value="scheduled">Programmé</option>
+                                        <option value="published">Publié</option>
+                                        <option value="closed">Clôturé</option>
+                                        <option value="archived">Archivé</option>
+                                        <option value="rejected">Rejeté</option>
+                                    </select>
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Statut de l'offre</label>
+                                    <select className="form-select" value={form.offer_status}
+                                        onChange={e => handleChange('offer_status', e.target.value)}>
+                                        <option value="open">Ouverte</option>
+                                        <option value="closing_soon">Clôture prochaine</option>
+                                        <option value="expired">Expirée</option>
+                                        <option value="filled">Pourvue</option>
+                                        <option value="suspended">Suspendue</option>
+                                        <option value="cancelled">Annulée</option>
+                                        <option value="continuous">Candidatures continues</option>
                                     </select>
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label">Date limite</label>
                                     <input type="date" className="form-control" value={form.deadline}
                                         onChange={e => handleChange('deadline', e.target.value)} />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Fuseau horaire</label>
+                                    <select className="form-select form-select-sm" value={form.deadline_timezone}
+                                        onChange={e => handleChange('deadline_timezone', e.target.value)}>
+                                        <option value="UTC">UTC</option>
+                                        <option value="Africa/Douala">Afrique Centrale (WAT)</option>
+                                        <option value="Africa/Dakar">Afrique Ouest (GMT)</option>
+                                        <option value="Africa/Nairobi">Afrique Est (EAT)</option>
+                                        <option value="Africa/Johannesburg">Afrique Sud (SAST)</option>
+                                        <option value="Europe/Paris">Paris (CET)</option>
+                                    </select>
                                 </div>
                                 <div className="form-check mb-2">
                                     <input className="form-check-input" type="checkbox" id="isFeatured"

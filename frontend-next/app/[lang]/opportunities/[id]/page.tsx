@@ -52,6 +52,25 @@ interface OpportunityDetail {
   unit_price?: number;
   start_date?: string;
   deadline?: string;
+  deadline_timezone?: string;
+  offer_status?: string;
+  closing_soon?: boolean;
+  days_remaining?: number;
+  contract_type?: string;
+  work_rhythm?: string;
+  work_mode?: string;
+  contract_duration?: string;
+  positions_count?: number;
+  grade?: string;
+  department?: string;
+  recruitment_scope?: string;
+  nationality_required?: string;
+  languages_required?: string;
+  experience_min_years?: number;
+  experience_max_years?: number;
+  salary_type?: string;
+  application_url?: string;
+  source_url?: string;
   is_featured: boolean;
   is_urgent: boolean;
   views_count: number;
@@ -227,6 +246,9 @@ export default function OpportunityDetailPage({ params }: PageProps) {
   };
 
   const isDeadlinePassed = opportunity?.deadline && new Date(opportunity.deadline) < new Date();
+  const isOfferClosed = opportunity?.offer_status === 'expired' || opportunity?.offer_status === 'filled' || opportunity?.offer_status === 'cancelled' || opportunity?.offer_status === 'suspended';
+  const isClosingSoon = opportunity?.offer_status === 'closing_soon' || (opportunity?.closing_soon);
+  const canApply = !isDeadlinePassed && !isOfferClosed;
 
   if (loading) {
     return (
@@ -444,8 +466,39 @@ export default function OpportunityDetailPage({ params }: PageProps) {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Expired / Closed Banner */}
+            {(isDeadlinePassed || isOfferClosed) && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+                <div className="text-red-600 font-semibold mb-1">
+                  <i className="fas fa-calendar-times mr-2"></i>
+                  {lang === 'fr' ? 'Cette offre est expirée' : 'This opportunity has expired'}
+                </div>
+                <p className="text-sm text-red-500">
+                  {lang === 'fr' ? 'Le contenu reste disponible à titre d\'archive.' : 'Content remains available as archive.'}
+                </p>
+                <Link
+                  href={`/${lang}/opportunities`}
+                  className="inline-flex items-center gap-1 mt-2 text-sm text-blue-600 hover:text-blue-700"
+                >
+                  {lang === 'fr' ? 'Voir les opportunités ouvertes' : 'View open opportunities'}
+                  <ArrowLeft size={14} className="rotate-180" />
+                </Link>
+              </div>
+            )}
+
+            {/* Closing Soon Banner */}
+            {isClosingSoon && !isDeadlinePassed && !isOfferClosed && (
+              <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 text-center">
+                <span className="text-orange-600 font-semibold text-sm">
+                  <Clock size={14} className="inline mr-1" />
+                  {lang === 'fr' ? 'Clôture prochaine' : 'Closing soon'}
+                  {opportunity.days_remaining && ` — ${opportunity.days_remaining} ${lang === 'fr' ? 'jour(s) restant(s)' : 'day(s) remaining'}`}
+                </span>
+              </div>
+            )}
+
             {/* Apply Button */}
-            {!isDeadlinePassed && (
+            {canApply && (
               <button
                 onClick={() => setShowApplyModal(true)}
                 className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all shadow-lg"

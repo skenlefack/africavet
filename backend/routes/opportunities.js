@@ -52,15 +52,18 @@ router.get('/', optionalAuth, async (req, res) => {
   try {
     const {
       type,           // job, tender, market
-      status,         // draft, pending, published, closed, cancelled
+      status,         // draft, pending, published, closed, cancelled, etc.
+      offer_status,   // open, closing_soon, expired, filled, suspended, cancelled, continuous
       category,       // category slug
       country,
       region,
       remote,         // 1 or 0
+      work_mode,      // on_site, remote, hybrid, home_based
       featured,       // 1 or 0
       urgent,         // 1 or 0
       search,
       job_type,       // full_time, part_time, etc.
+      contract_type,  // cdi, cdd, consultancy, etc.
       page = 1,
       limit = 12,
       sort = 'newest'
@@ -118,6 +121,24 @@ router.get('/', optionalAuth, async (req, res) => {
     if (job_type) {
       query += ' AND o.job_type = ?';
       params.push(job_type);
+    }
+
+    // Contract type filter
+    if (contract_type) {
+      query += ' AND o.contract_type = ?';
+      params.push(contract_type);
+    }
+
+    // Work mode filter
+    if (work_mode) {
+      query += ' AND o.work_mode = ?';
+      params.push(work_mode);
+    }
+
+    // Offer status filter
+    if (offer_status) {
+      query += ' AND o.offer_status = ?';
+      params.push(offer_status);
     }
 
     // Search
@@ -340,18 +361,36 @@ router.post('/', authenticate, upload.single('logo'), async (req, res) => {
       contact_email,
       contact_phone,
       website_url,
+      application_url,
+      source_url,
       country,
       region,
       city,
       address,
       is_remote,
+      work_mode,
       job_type,
+      contract_type,
+      work_rhythm,
+      contract_duration,
+      contract_start_date,
+      contract_end_date,
       experience_required,
+      experience_min_years,
+      experience_max_years,
       education_required,
+      languages_required,
+      languages_desired,
+      nationality_required,
+      recruitment_scope,
       salary_min,
       salary_max,
       salary_currency,
       salary_period,
+      salary_type,
+      positions_count,
+      grade,
+      department,
       skills_required,
       benefits,
       tender_reference,
@@ -367,6 +406,7 @@ router.post('/', authenticate, upload.single('logo'), async (req, res) => {
       unit_price,
       start_date,
       deadline,
+      deadline_timezone,
       categories,
       tags,
       attachments
@@ -386,26 +426,55 @@ router.post('/', authenticate, upload.single('logo'), async (req, res) => {
     const [result] = await db.query(`
       INSERT INTO opportunities (
         opportunity_type, title_fr, title_en, description_fr, description_en,
-        organization_name, organization_logo, contact_name, contact_email, contact_phone, website_url,
-        country, region, city, address, is_remote,
-        job_type, experience_required, education_required, salary_min, salary_max, salary_currency, salary_period,
+        organization_name, organization_logo, contact_name, contact_email, contact_phone,
+        website_url, application_url, source_url,
+        country, region, city, address, is_remote, work_mode,
+        job_type, contract_type, work_rhythm, contract_duration, contract_start_date, contract_end_date,
+        experience_required, experience_min_years, experience_max_years,
+        education_required, languages_required, languages_desired,
+        nationality_required, recruitment_scope,
+        salary_min, salary_max, salary_currency, salary_period, salary_type,
+        positions_count, grade, department,
         skills_required, benefits,
         tender_reference, tender_type, budget_min, budget_max, budget_currency,
         submission_method, eligibility_criteria, required_documents,
         market_category, quantity, unit_price,
-        start_date, deadline,
-        tags, attachments, submitted_by, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+        start_date, deadline, deadline_timezone,
+        tags, attachments, submitted_by, status, offer_status
+      ) VALUES (
+        ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?,
+        ?, ?, ?,
+        ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?,
+        ?, ?, ?,
+        ?, ?, ?,
+        ?, ?,
+        ?, ?, ?, ?, ?,
+        ?, ?, ?,
+        ?, ?,
+        ?, ?, ?, ?, ?,
+        ?, ?, ?,
+        ?, ?, ?,
+        ?, ?, ?,
+        ?, ?, ?, 'draft', 'open'
+      )
     `, [
       opportunity_type, title_fr, title_en || null, description_fr || null, description_en || null,
-      organization_name || null, organization_logo, contact_name || null, contact_email || null, contact_phone || null, website_url || null,
-      country || 'Cameroun', region || null, city || null, address || null, is_remote ? 1 : 0,
-      job_type || null, experience_required || null, education_required || null, salary_min || null, salary_max || null, salary_currency || 'XAF', salary_period || 'month',
+      organization_name || null, organization_logo, contact_name || null, contact_email || null, contact_phone || null,
+      website_url || null, application_url || null, source_url || null,
+      country || null, region || null, city || null, address || null, is_remote ? 1 : 0, work_mode || 'on_site',
+      job_type || null, contract_type || null, work_rhythm || null, contract_duration || null, contract_start_date || null, contract_end_date || null,
+      experience_required || null, experience_min_years || null, experience_max_years || null,
+      education_required || null, languages_required ? JSON.stringify(languages_required) : null, languages_desired ? JSON.stringify(languages_desired) : null,
+      nationality_required || null, recruitment_scope || null,
+      salary_min || null, salary_max || null, salary_currency || null, salary_period || null, salary_type || null,
+      positions_count || 1, grade || null, department || null,
       skills_required ? JSON.stringify(skills_required) : null, benefits ? JSON.stringify(benefits) : null,
-      tender_reference || null, tender_type || null, budget_min || null, budget_max || null, budget_currency || 'XAF',
+      tender_reference || null, tender_type || null, budget_min || null, budget_max || null, budget_currency || null,
       submission_method || null, eligibility_criteria || null, required_documents ? JSON.stringify(required_documents) : null,
       market_category || null, quantity || null, unit_price || null,
-      start_date || null, deadline || null,
+      start_date || null, deadline || null, deadline_timezone || 'UTC',
       tags ? JSON.stringify(tags) : null, attachments || null, req.user.id
     ]);
 
@@ -618,18 +687,34 @@ router.put('/:id', authenticate, async (req, res) => {
     const allowedFields = [
       'title_fr', 'title_en', 'description_fr', 'description_en',
       'organization_name', 'contact_name', 'contact_email', 'contact_phone',
-      'country', 'region', 'city', 'address', 'is_remote',
-      'job_type', 'experience_required', 'salary_min', 'salary_max',
-      'deadline', 'is_featured', 'is_urgent', 'status', 'attachments'
+      'website_url', 'application_url', 'source_url',
+      'country', 'region', 'city', 'address', 'is_remote', 'work_mode',
+      'job_type', 'contract_type', 'work_rhythm', 'contract_duration',
+      'contract_start_date', 'contract_end_date',
+      'experience_required', 'experience_min_years', 'experience_max_years',
+      'education_required', 'languages_required', 'languages_desired',
+      'nationality_required', 'recruitment_scope',
+      'salary_min', 'salary_max', 'salary_currency', 'salary_period', 'salary_type',
+      'positions_count', 'grade', 'department',
+      'tender_reference', 'tender_type', 'budget_min', 'budget_max', 'budget_currency',
+      'submission_method', 'eligibility_criteria',
+      'deadline', 'deadline_timezone',
+      'is_featured', 'is_urgent', 'status', 'offer_status', 'attachments',
+      'skills_required', 'benefits', 'tags'
     ];
 
     const updates = [];
     const values = [];
 
+    const jsonFields = ['skills_required', 'benefits', 'languages_required', 'languages_desired', 'tags'];
     for (const field of allowedFields) {
       if (req.body[field] !== undefined) {
         updates.push(`${field} = ?`);
-        values.push(req.body[field]);
+        if (jsonFields.includes(field) && typeof req.body[field] !== 'string') {
+          values.push(JSON.stringify(req.body[field]));
+        } else {
+          values.push(req.body[field]);
+        }
       }
     }
 

@@ -185,9 +185,20 @@ app.listen(PORT, () => {
   // Opportunities expiration scheduler (check every hour)
   setInterval(async () => {
     try {
+      // Mark closing_soon (deadline within 7 days)
+      const [soonResult] = await db.query(
+        `UPDATE opportunities SET offer_status = 'closing_soon', updated_at = NOW()
+         WHERE status = 'published' AND offer_status = 'open'
+         AND deadline IS NOT NULL AND deadline > NOW()
+         AND deadline <= DATE_ADD(NOW(), INTERVAL 7 DAY)`
+      );
+      if (soonResult.affectedRows > 0) {
+        console.log(`⏰ Marked ${soonResult.affectedRows} opportunity(ies) as closing_soon`);
+      }
+
       // Close expired opportunities
       const [result] = await db.query(
-        `UPDATE opportunities SET status = 'closed', updated_at = NOW()
+        `UPDATE opportunities SET status = 'closed', offer_status = 'expired', updated_at = NOW()
          WHERE status = 'published' AND deadline IS NOT NULL AND deadline < NOW()`
       );
       if (result.affectedRows > 0) {

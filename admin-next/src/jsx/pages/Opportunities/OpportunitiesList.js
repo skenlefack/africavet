@@ -12,9 +12,24 @@ const TYPE_CONFIG = {
 const STATUS_CONFIG = {
     draft: { label: 'Brouillon', color: '#9e9e9e', bg: '#f5f5f5' },
     pending: { label: 'En attente', color: '#ff9800', bg: '#fff3e0' },
-    published: { label: 'Publiée', color: '#4caf50', bg: '#e8f5e9' },
-    closed: { label: 'Clôturée', color: '#757575', bg: '#f5f5f5' },
-    cancelled: { label: 'Annulée', color: '#f44336', bg: '#ffebee' },
+    submitted: { label: 'Soumis', color: '#2196f3', bg: '#e3f2fd' },
+    verified: { label: 'Vérifié', color: '#00bcd4', bg: '#e0f7fa' },
+    scheduled: { label: 'Programmé', color: '#673ab7', bg: '#ede7f6' },
+    published: { label: 'Publié', color: '#4caf50', bg: '#e8f5e9' },
+    closed: { label: 'Clôturé', color: '#757575', bg: '#f5f5f5' },
+    archived: { label: 'Archivé', color: '#607d8b', bg: '#eceff1' },
+    cancelled: { label: 'Annulé', color: '#f44336', bg: '#ffebee' },
+    rejected: { label: 'Rejeté', color: '#e91e63', bg: '#fce4ec' },
+};
+
+const OFFER_STATUS_CONFIG = {
+    open: { label: 'Ouverte', color: '#4caf50', bg: '#e8f5e9', icon: 'fa-door-open' },
+    closing_soon: { label: 'Clôture prochaine', color: '#ff9800', bg: '#fff3e0', icon: 'fa-clock' },
+    expired: { label: 'Expirée', color: '#9e9e9e', bg: '#f5f5f5', icon: 'fa-calendar-times' },
+    filled: { label: 'Pourvue', color: '#2196f3', bg: '#e3f2fd', icon: 'fa-check-circle' },
+    suspended: { label: 'Suspendue', color: '#ff5722', bg: '#fbe9e7', icon: 'fa-pause-circle' },
+    cancelled: { label: 'Annulée', color: '#f44336', bg: '#ffebee', icon: 'fa-ban' },
+    continuous: { label: 'Continue', color: '#009688', bg: '#e0f2f1', icon: 'fa-infinity' },
 };
 
 const OpportunitiesList = () => {
@@ -30,6 +45,7 @@ const OpportunitiesList = () => {
     const [filters, setFilters] = useState({
         search: searchParams.get('search') || '',
         status: searchParams.get('status') || '',
+        offer_status: searchParams.get('offer_status') || '',
         type: searchParams.get('type') || '',
         country: searchParams.get('country') || '',
     });
@@ -56,6 +72,7 @@ const OpportunitiesList = () => {
         params.set('limit', itemsPerPage);
         if (filters.search) params.set('search', filters.search);
         if (filters.status) params.set('status', filters.status);
+        if (filters.offer_status) params.set('offer_status', filters.offer_status);
         if (filters.type) params.set('type', filters.type);
         if (filters.country) params.set('country', filters.country);
 
@@ -174,13 +191,21 @@ const OpportunitiesList = () => {
                         </div>
                         <div className="col-md-2">
                             <select className="form-select" value={filters.status} onChange={e => applyFilter('status', e.target.value)}>
-                                <option value="">Tous les statuts</option>
+                                <option value="">Statut éditorial</option>
                                 {Object.entries(STATUS_CONFIG).map(([k, v]) => (
                                     <option key={k} value={k}>{v.label}</option>
                                 ))}
                             </select>
                         </div>
-                        <div className="col-md-3 d-flex gap-2">
+                        <div className="col-md-2">
+                            <select className="form-select" value={filters.offer_status} onChange={e => applyFilter('offer_status', e.target.value)}>
+                                <option value="">Statut offre</option>
+                                {Object.entries(OFFER_STATUS_CONFIG).map(([k, v]) => (
+                                    <option key={k} value={k}>{v.label}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="col-md-1 d-flex gap-2">
                             <button className="btn btn-outline-secondary flex-grow-1" onClick={() => setShowFilters(!showFilters)}>
                                 <i className="fas fa-filter me-1"></i> Filtres
                                 {activeFilterCount > 0 && <span className="badge bg-primary ms-1">{activeFilterCount}</span>}
@@ -229,14 +254,16 @@ const OpportunitiesList = () => {
                                         <th style={{ color: 'white' }}>Pays</th>
                                         <th style={{ color: 'white' }}>Date limite</th>
                                         <th style={{ color: 'white' }}>Candidatures</th>
-                                        <th style={{ color: 'white' }}>Statut</th>
+                                        <th style={{ color: 'white' }}>Statut éditorial</th>
+                                        <th style={{ color: 'white' }}>Statut offre</th>
                                         <th style={{ color: 'white', width: 160 }}>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {opportunities.map(opp => {
                                         const typeCfg = TYPE_CONFIG[opp.opportunity_type] || TYPE_CONFIG.job;
-                                        const statusCfg = STATUS_CONFIG[opp.status] || STATUS_CONFIG.pending;
+                                        const statusCfg = STATUS_CONFIG[opp.status] || STATUS_CONFIG.draft;
+                                        const offerCfg = OFFER_STATUS_CONFIG[opp.offer_status] || OFFER_STATUS_CONFIG.open;
                                         const expired = isExpired(opp.deadline);
                                         return (
                                             <tr key={opp.id}>
@@ -270,6 +297,11 @@ const OpportunitiesList = () => {
                                                 <td>
                                                     <span className="badge" style={{ background: statusCfg.bg, color: statusCfg.color }}>
                                                         {statusCfg.label}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span className="badge" style={{ background: offerCfg.bg, color: offerCfg.color }}>
+                                                        <i className={`fas ${offerCfg.icon} me-1`}></i>{offerCfg.label}
                                                     </span>
                                                 </td>
                                                 <td>
