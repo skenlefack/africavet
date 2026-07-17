@@ -10,7 +10,7 @@ const { auth: authenticate, optionalAuth, authorize } = require('../middleware/a
 const { sanitizeFields } = require('../middleware/sanitizeHtml');
 const { auditFromReq } = require('../middleware/auditLog');
 const { validateOpportunityPublish, getOpportunityCompleteness } = require('../middleware/qualityChecks');
-const isAdmin = authorize(['admin']);
+const isAdmin = authorize('admin');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -73,7 +73,7 @@ router.get('/', optionalAuth, async (req, res) => {
     } = req.query;
 
     // If admin query (has auth token and admin/editor role), show all statuses
-    const isAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'editor');
+    const isAdmin = req.user && (req.user.role === 'superadmin' || req.user.role === 'admin' || req.user.role === 'editor');
     const statusFilter = isAdmin && !req.query.public ? '1=1' : "o.status = 'published'";
 
     let query = `
@@ -606,7 +606,7 @@ router.post('/:id/apply', optionalAuth, upload.single('cv'), async (req, res) =>
 router.get('/admin/pending', authenticate, isAdmin, async (req, res) => {
   try {
     const [opportunities] = await db.query(`
-      SELECT o.*, u.name as submitter_name, u.email as submitter_email
+      SELECT o.*, CONCAT(COALESCE(u.first_name,''), ' ', COALESCE(u.last_name,'')) as submitter_name, u.email as submitter_email
       FROM opportunities o
       LEFT JOIN users u ON o.submitted_by = u.id
       WHERE o.status = 'pending'
@@ -692,7 +692,7 @@ router.put('/:id', authenticate, sanitizeFields('description_fr', 'description_e
       return res.status(404).json({ success: false, message: 'Opportunity not found' });
     }
 
-    if (opportunities[0].submitted_by !== req.user.id && req.user.role !== 'admin') {
+    if (opportunities[0].submitted_by !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'superadmin') {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
@@ -851,7 +851,7 @@ router.get('/:id/applications', authenticate, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Opportunity not found' });
     }
 
-    if (opportunities[0].submitted_by !== req.user.id && req.user.role !== 'admin') {
+    if (opportunities[0].submitted_by !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'superadmin') {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
