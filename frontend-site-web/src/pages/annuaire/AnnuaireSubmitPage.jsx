@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import FontAwesome from '../../component/uiStyle/FontAwesome';
 import FileUpload from '../../component/shared/FileUpload';
 import { useAuth } from '../../context/AuthContext';
 import { annuaireApi, apiUpload } from '../../services/api';
+
+const DRAFT_KEY = 'africavet_annuaire_draft';
 
 const SPECIALITIES = [
   'Veterinaire',
@@ -75,6 +77,39 @@ const AnnuaireSubmitPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [draftRestored, setDraftRestored] = useState(false);
+
+  // Restore draft from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (draft.type) setType(draft.type);
+        if (draft.formData) setFormData(prev => ({ ...prev, ...draft.formData }));
+        setDraftRestored(true);
+        setTimeout(() => setDraftRestored(false), 5000);
+      }
+    } catch (e) { /* ignore parse errors */ }
+  }, []);
+
+  // Auto-save draft to localStorage on changes
+  const saveDraft = useCallback(() => {
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ type, formData, savedAt: new Date().toISOString() }));
+    } catch (e) { /* ignore quota errors */ }
+  }, [type, formData]);
+
+  useEffect(() => {
+    if (success) return;
+    const timer = setTimeout(saveDraft, 500);
+    return () => clearTimeout(timer);
+  }, [type, formData, saveDraft, success]);
+
+  // Clear draft on successful submission
+  const clearDraft = () => {
+    localStorage.removeItem(DRAFT_KEY);
+  };
 
   const handleChange = (e) => {
     const { name, value, type: inputType, checked } = e.target;
@@ -155,6 +190,7 @@ const AnnuaireSubmitPage = () => {
           await apiUpload(`/mapping/${response.data.id}/photo`, photoData, token);
         }
         setSuccess(true);
+        clearDraft();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         setError(response.message || 'Erreur lors de la soumission.');
@@ -255,6 +291,24 @@ const AnnuaireSubmitPage = () => {
 
       {/* Form */}
       <div className="container" style={{ padding: '40px 15px 60px', maxWidth: '800px' }}>
+        {draftRestored && (
+          <div style={{
+            background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '10px',
+            padding: '12px 16px', marginBottom: '16px', display: 'flex',
+            alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px'
+          }}>
+            <span style={{ color: '#1e40af', fontSize: '0.9rem' }}>
+              <FontAwesome name="history" style={{ marginRight: '8px' }} />
+              Brouillon restauré ! Vous pouvez continuer votre inscription.
+            </span>
+            <button type="button" onClick={() => { clearDraft(); window.location.reload(); }}
+              style={{ background: 'none', border: '1px solid #93c5fd', borderRadius: '6px',
+                padding: '4px 12px', fontSize: '0.8rem', color: '#2563eb', cursor: 'pointer' }}>
+              <FontAwesome name="trash" style={{ marginRight: '4px' }} /> Effacer le brouillon
+            </button>
+          </div>
+        )}
+
         {error && (
           <div className="alert alert-danger" style={{ borderRadius: '10px', marginBottom: '24px' }}>
             <FontAwesome name="exclamation-circle" style={{ marginRight: '8px' }} />

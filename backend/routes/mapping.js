@@ -291,7 +291,7 @@ const AFRICAN_COUNTRIES = [
 // GET / - Unified search across experts, organizations, etc.
 // Supports: type, search/q, country, country_code, city, species, services,
 //           status, emergency, speciality, organization_type, sort, page, limit
-router.get('/', auth, async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const {
       type, search, q, country, country_code, city,
@@ -1116,8 +1116,8 @@ router.post('/experts', auth, async (req, res) => {
     const {
       first_name, last_name, title, category, organization_id,
       email, phone, photo, biography, expertise_domains, qualifications,
-      latitude, longitude, region, city, address,
-      // New fields
+      latitude, longitude, region, city, country, country_code, specialization,
+      show_email, show_phone, submission_status,
       years_experience, cv_url, linkedin_url, twitter_url, orcid_id,
       google_scholar_url, researchgate_url, website, languages, education,
       certifications, publications_count, projects_count, awards,
@@ -1128,17 +1128,20 @@ router.post('/experts', auth, async (req, res) => {
     const [result] = await db.query(`
       INSERT INTO human_resources
       (first_name, last_name, title, category, organization_id, email, phone, photo, biography,
-       expertise_domains, qualifications, latitude, longitude, region, city, address,
+       expertise_domains, qualifications, latitude, longitude, region, city, country, country_code,
+       specialization, show_email, show_phone, submission_status, is_active,
        years_experience, cv_url, linkedin_url, twitter_url, orcid_id, google_scholar_url,
        researchgate_url, website, languages, education, certifications, publications_count,
        projects_count, awards, research_interests, available_for_collaboration, consultation_rate, expertise_summary)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       first_name, last_name, title, category, organization_id,
       email, phone, photo, biography,
       JSON.stringify(expertise_domains || []),
       JSON.stringify(qualifications || []),
-      latitude, longitude, region, city, address,
+      latitude, longitude, region, city, country || null, country_code || null,
+      specialization || null, show_email !== false, show_phone !== false,
+      submission_status || 'approved', true,
       years_experience || 0, cv_url, linkedin_url, twitter_url, orcid_id,
       google_scholar_url, researchgate_url, website,
       JSON.stringify(languages || []),
@@ -1367,23 +1370,40 @@ router.get('/organizations/:id/opportunities', optionalAuth, async (req, res) =>
 router.post('/organizations', auth, async (req, res) => {
   try {
     const {
-      name, acronym, type, description, mission, logo, website,
+      name, acronym, type, organization_type, description, mission, logo, website,
       parent_organization_id, latitude, longitude, region, city, address,
-      contact_email, contact_phone, social_links, domains, geolocation
+      country, country_code, contact_email, contact_phone, whatsapp,
+      show_email, show_phone, available_24_7,
+      social_links, domains, geolocation,
+      services, species_treated, specialties,
+      license_number, coverage_area, founded_year,
+      submission_status
     } = req.body;
+
+    const orgType = type || organization_type || null;
 
     const [result] = await db.query(`
       INSERT INTO organizations
       (name, acronym, type, description, mission, logo, website, parent_organization_id,
-       latitude, longitude, region, city, address, contact_email, contact_phone, social_links, domains, geolocation)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       latitude, longitude, region, city, address, country, country_code,
+       contact_email, contact_phone, whatsapp, show_email, show_phone, available_24_7,
+       social_links, domains, geolocation, services, species_treated, specialties,
+       license_number, coverage_area, founded_year, submission_status, is_active)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
-      name, acronym, type, description, mission, logo, website,
+      name, acronym, orgType, description, mission, logo, website,
       parent_organization_id, latitude, longitude, region, city, address,
-      contact_email, contact_phone,
+      country || null, country_code || null,
+      contact_email, contact_phone, whatsapp || null,
+      show_email !== false, show_phone !== false, available_24_7 || false,
       JSON.stringify(social_links || {}),
       JSON.stringify(domains || []),
-      geolocation ? JSON.stringify(geolocation) : null
+      geolocation ? JSON.stringify(geolocation) : null,
+      services ? JSON.stringify(services) : null,
+      species_treated ? JSON.stringify(species_treated) : null,
+      specialties ? JSON.stringify(specialties) : null,
+      license_number || null, coverage_area || null, founded_year || null,
+      submission_status || 'approved', true
     ]);
 
     const [newOrg] = await db.query('SELECT * FROM organizations WHERE id = ?', [result.insertId]);
@@ -3108,7 +3128,7 @@ router.put('/admin/notifications/read-all', auth, authorize('admin'), async (req
 // =====================================================
 // IMPORTANT: This must be AFTER all other routes since /:id is a catch-all pattern
 
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { type } = req.query;
@@ -3194,7 +3214,7 @@ router.get('/:id', auth, async (req, res) => {
         const [expertises] = await db.query(`
           SELECT ed.id, ed.name, ed.name_fr, ed.category
           FROM expert_expertise ee
-          JOIN expertise_domains ed ON ee.domain_id = ed.id
+          JOIN expertise_domains ed ON ee.expertise_domain_id = ed.id
           WHERE ee.expert_id = ?
         `, [id]);
         entry.expertises = expertises;
@@ -3258,9 +3278,9 @@ router.post('/', auth, async (req, res) => {
       const [result] = await db.query(`
         INSERT INTO human_resources
         (first_name, last_name, specialization, email, phone, city, country,
-         address, biography, years_experience,
+         biography, years_experience,
          show_email, show_phone, submitted_by, submission_status, submitted_at, is_active)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), 0)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), 0)
       `, [
         firstName, lastName,
         specialization || null,
@@ -3268,7 +3288,6 @@ router.post('/', auth, async (req, res) => {
         phone || null,
         city || null,
         country || null,
-        address || null,
         bio || null,
         years_experience ? parseInt(years_experience) : null,
         show_email !== false ? 1 : 0,
@@ -3278,9 +3297,9 @@ router.post('/', auth, async (req, res) => {
 
       insertId = result.insertId;
 
-      // Store skills as JSON
+      // Store skills in expertise_domains JSON field
       if (skills && Array.isArray(skills) && skills.length > 0) {
-        await db.query('UPDATE human_resources SET skills = ? WHERE id = ?',
+        await db.query('UPDATE human_resources SET expertise_domains = ? WHERE id = ?',
           [JSON.stringify(skills), insertId]);
       }
 
