@@ -63,7 +63,7 @@ const SearchResultsPage = () => {
       }}>
         <div className="container">
           <h1 style={{ color: "#fff", fontWeight: 800, fontSize: "1.8rem", marginBottom: "0.5rem" }}>
-            <i className="fas fa-search me-2"></i>
+            <i className="fa fa-search me-2"></i>
             {query ? `Résultats pour "${query}"` : "Rechercher sur AfricaVET"}
           </h1>
           {query && (
@@ -95,7 +95,7 @@ const SearchResultsPage = () => {
                   padding: "0 1.5rem"
                 }}
               >
-                <i className="fas fa-search me-1"></i> Rechercher
+                <i className="fa fa-search me-1"></i> Rechercher
               </button>
             </div>
           </form>
@@ -114,7 +114,7 @@ const SearchResultsPage = () => {
         {/* No query */}
         {!query && !loading && (
           <div className="text-center py-5">
-            <i className="fas fa-search fa-3x text-muted mb-3 d-block" style={{ opacity: 0.3 }}></i>
+            <i className="fa fa-search fa-3x text-muted mb-3 d-block" style={{ opacity: 0.3 }}></i>
             <p className="text-muted">Saisissez un mot-clé pour lancer la recherche</p>
           </div>
         )}
@@ -122,7 +122,7 @@ const SearchResultsPage = () => {
         {/* No results */}
         {query && !loading && results.length === 0 && (
           <div className="text-center py-5">
-            <i className="fas fa-inbox fa-3x mb-3 d-block" style={{ color: "#cbd5e1" }}></i>
+            <i className="fa fa-frown-o fa-3x mb-3 d-block" style={{ color: "#cbd5e1" }}></i>
             <h4 style={{ color: "#64748b" }}>Aucun résultat pour "{query}"</h4>
             <p className="text-muted">Essayez avec d'autres mots-clés ou vérifiez l'orthographe</p>
           </div>
@@ -158,7 +158,7 @@ const SearchResultsPage = () => {
                             alignItems: "center",
                             justifyContent: "center"
                           }}>
-                            <i className="fas fa-newspaper" style={{ fontSize: "2.5rem", color: "rgba(255,255,255,0.3)" }}></i>
+                            <i className="fa fa-newspaper" style={{ fontSize: "2.5rem", color: "rgba(255,255,255,0.3)" }}></i>
                           </div>
                         )}
                         <div className="card-body">
@@ -171,7 +171,7 @@ const SearchResultsPage = () => {
                         </div>
                         <div className="card-footer bg-transparent border-0 pt-0" style={{ padding: "0 1rem 1rem" }}>
                           <small style={{ color: "#7ac142", fontWeight: 600 }}>
-                            Lire l'article <i className="fas fa-arrow-right ms-1"></i>
+                            Lire l'article <i className="fa fa-arrow-right ms-1"></i>
                           </small>
                         </div>
                       </div>
@@ -189,7 +189,7 @@ const SearchResultsPage = () => {
                   disabled={page <= 1}
                   onClick={() => setPage(page - 1)}
                 >
-                  <i className="fas fa-chevron-left"></i>
+                  <i className="fa fa-chevron-left"></i>
                 </button>
                 <span className="btn btn-light disabled">
                   Page {page} / {totalPages}
@@ -199,7 +199,7 @@ const SearchResultsPage = () => {
                   disabled={page >= totalPages}
                   onClick={() => setPage(page + 1)}
                 >
-                  <i className="fas fa-chevron-right"></i>
+                  <i className="fa fa-chevron-right"></i>
                 </button>
               </div>
             )}

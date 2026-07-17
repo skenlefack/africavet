@@ -58,7 +58,7 @@ const SearchModal = ({ onClose, setSearchShow }) => {
               padding: "0 1.2rem",
               color: "#7ac142"
             }}>
-              <i className="fas fa-search" style={{ fontSize: "1.2rem" }}></i>
+              <i className="fa fa-search" style={{ fontSize: "1.2rem" }}></i>
             </div>
             <input
               ref={inputRef}
@@ -104,7 +104,7 @@ const SearchModal = ({ onClose, setSearchShow }) => {
               cursor: "pointer"
             }}
           >
-            <i className="fas fa-times me-1"></i> Fermer (Echap)
+            <i className="fa fa-times me-1"></i> Fermer (Echap)
           </button>
         </div>
       </div>
