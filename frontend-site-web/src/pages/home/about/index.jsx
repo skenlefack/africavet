@@ -275,14 +275,14 @@ function About() {
                     }}>
                       <FontAwesome name="rocket" /> D&eacute;couvrir RecallVET
                     </Link>
-                    <a href="mailto:contact@recallvet.com" style={{
+                    <Link to="/recallvet/demo" style={{
                       display: 'inline-flex', alignItems: 'center', gap: '8px',
                       background: '#fff', color: '#354e84', padding: '10px 22px',
                       borderRadius: '10px', fontWeight: 600, fontSize: '0.9rem',
                       textDecoration: 'none', border: '2px solid #354e84'
                     }}>
                       <FontAwesome name="calendar" /> Demander une d&eacute;mo
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>

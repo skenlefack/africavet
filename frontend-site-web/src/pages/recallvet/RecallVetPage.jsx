@@ -1,6 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import FontAwesome from "../../component/uiStyle/FontAwesome";
+
+const DemoLink = ({ children, className, style }) => (
+  <Link to="/recallvet/demo" className={className} style={style}>{children}</Link>
+);
 import "./recallvet.scss";
 
 const modules = {
@@ -87,9 +91,9 @@ const RecallVetPage = () => {
               <a href="https://recallvet.com" target="_blank" rel="noopener noreferrer" className="rv-btn rv-btn-primary">
                 <FontAwesome name="rocket" /> Essayer gratuitement
               </a>
-              <a href="mailto:contact@recallvet.com" className="rv-btn rv-btn-outline">
+              <DemoLink className="rv-btn rv-btn-outline">
                 <FontAwesome name="play-circle" /> Demander une d&eacute;mo
-              </a>
+              </DemoLink>
             </div>
           </div>
         </div>
@@ -209,10 +213,10 @@ const RecallVetPage = () => {
               <a href="https://recallvet.com" target="_blank" rel="noopener noreferrer" className="rv-btn rv-btn-white">
                 <FontAwesome name="rocket" /> D&eacute;marrer maintenant
               </a>
-              <a href="mailto:contact@recallvet.com" className="rv-btn rv-btn-ghost">
+              <DemoLink className="rv-btn rv-btn-ghost">
                 <FontAwesome name="calendar" /> Planifier une d&eacute;mo
-              </a>
-              <a href="mailto:contact@recallvet.com" className="rv-btn rv-btn-ghost">
+              </DemoLink>
+              <a href="mailto:info@africavet.com" className="rv-btn rv-btn-ghost">
                 <FontAwesome name="envelope" /> Nous contacter
               </a>
             </div>

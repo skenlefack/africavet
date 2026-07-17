@@ -63,6 +63,7 @@ const NotificationsPage = lazy(() => import("./pages/profile/NotificationsPage")
 
 // RecallVET
 const RecallVetPage = lazy(() => import("./pages/recallvet/RecallVetPage"));
+const DemoRequestPage = lazy(() => import("./pages/recallvet/DemoRequestPage"));
 
 // Legal pages
 const ConditionsPage = lazy(() => import("./pages/legal/ConditionsPage"));
@@ -133,6 +134,7 @@ const router = createBrowserRouter([
 
       // RecallVET (public)
       { path: "recallvet", element: <Lazy><RecallVetPage /></Lazy> },
+      { path: "recallvet/demo", element: <Lazy><DemoRequestPage /></Lazy> },
 
       // Legal pages (public)
       { path: "conditions", element: <Lazy><ConditionsPage /></Lazy> },
