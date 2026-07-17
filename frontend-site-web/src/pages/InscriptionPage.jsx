@@ -135,37 +135,37 @@ const InscriptionPage = () => {
                   <label htmlFor="email">Email</label>
                   <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} placeholder="votre@email.com" required disabled={loading} />
                 </div>
+                <div className="form-group">
+                  <label htmlFor="profession">Profession</label>
+                  <select id="profession" name="profession" value={formData.profession} onChange={handleChange} required disabled={loading}>
+                    <option value="">Sélectionnez</option>
+                    <option value="veterinaire">Vétérinaire</option>
+                    <option value="technicien">Technicien vétérinaire</option>
+                    <option value="eleveur">Éleveur</option>
+                    <option value="chercheur">Chercheur</option>
+                    <option value="etudiant">Étudiant</option>
+                    <option value="autre">Autre</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="pays">Pays</label>
+                  <CountrySelect
+                    value={formData.pays}
+                    onChange={handleChange}
+                    name="pays"
+                    required
+                    disabled={loading}
+                  />
+                </div>
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="profession">Profession</label>
-                    <select id="profession" name="profession" value={formData.profession} onChange={handleChange} required disabled={loading}>
-                      <option value="">Sélectionnez</option>
-                      <option value="veterinaire">Vétérinaire</option>
-                      <option value="technicien">Technicien vétérinaire</option>
-                      <option value="eleveur">Éleveur</option>
-                      <option value="chercheur">Chercheur</option>
-                      <option value="etudiant">Étudiant</option>
-                      <option value="autre">Autre</option>
-                    </select>
+                    <label htmlFor="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} placeholder="Minimum 6 caractères" required disabled={loading} />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="pays">Pays</label>
-                    <CountrySelect
-                      value={formData.pays}
-                      onChange={handleChange}
-                      name="pays"
-                      required
-                      disabled={loading}
-                    />
+                    <label htmlFor="confirmPassword">Confirmer le mot de passe</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Confirmez votre mot de passe" required disabled={loading} />
                   </div>
-                </div>
-                <div className="form-group">
-                  <label htmlFor="password">Mot de passe</label>
-                  <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} placeholder="Minimum 6 caractères" required disabled={loading} />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="confirmPassword">Confirmer le mot de passe</label>
-                  <input type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Confirmez votre mot de passe" required disabled={loading} />
                 </div>
                 <div className="form-group checkbox-group">
                   <label className="checkbox-label">
