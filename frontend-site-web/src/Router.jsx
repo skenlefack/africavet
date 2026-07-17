@@ -17,6 +17,7 @@ import About from "./pages/home/about";
 import Contact from "./pages/home/contact";
 import Error from "./pages/home/404";
 import SlugRedirect from "./pages/SlugRedirect";
+import SearchResultsPage from "./pages/SearchResultsPage";
 
 // E-Learning pages (lazy loaded)
 const CourseCatalogPage = lazy(() => import("./pages/elearning/CourseCatalogPage"));
@@ -94,6 +95,7 @@ const router = createBrowserRouter([
       { path: "contact", element: <Contact /> },
       { path: "inscription", element: <InscriptionPage /> },
       { path: "connexion", element: <ConnexionPage /> },
+      { path: "recherche", element: <SearchResultsPage /> },
       { path: "verification-email/:token", element: <Lazy><EmailVerificationPage /></Lazy> },
 
       // E-Learning (requires login)
