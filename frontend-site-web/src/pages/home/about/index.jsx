@@ -195,8 +195,8 @@ function About() {
               {/* RecallVET */}
               <div style={{
                 marginTop: '25px',
-                background: 'linear-gradient(135deg, #fff8f0 0%, #fef3e8 50%, #fff5ee 100%)',
-                border: '2px solid #f0c27f',
+                background: 'linear-gradient(135deg, #f0f7ff 0%, #eef6f0 50%, #f5f0ff 100%)',
+                border: '2px solid #7ac142',
                 borderRadius: '16px',
                 padding: '28px 30px',
                 position: 'relative',
@@ -205,85 +205,84 @@ function About() {
                 <div style={{
                   position: 'absolute', top: '-20px', right: '-20px',
                   width: '120px', height: '120px', borderRadius: '50%',
-                  background: 'rgba(240, 194, 127, 0.15)'
+                  background: 'rgba(122, 193, 66, 0.1)'
                 }} />
                 <div style={{
                   position: 'absolute', bottom: '-30px', left: '-15px',
                   width: '80px', height: '80px', borderRadius: '50%',
-                  background: 'rgba(231, 76, 60, 0.08)'
+                  background: 'rgba(53, 78, 132, 0.06)'
                 }} />
                 <div style={{ position: 'relative' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                     <div style={{
                       width: '48px', height: '48px', borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
+                      background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: '0 4px 12px rgba(231, 76, 60, 0.3)', flexShrink: 0
+                      boxShadow: '0 4px 12px rgba(122, 193, 66, 0.3)', flexShrink: 0
                     }}>
-                      <FontAwesome name="exclamation-circle" style={{ color: '#fff', fontSize: '22px' }} />
+                      <FontAwesome name="laptop" style={{ color: '#fff', fontSize: '20px' }} />
                     </div>
                     <div>
-                      <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.25rem', color: '#c0392b' }}>
-                        Recall<span style={{ color: '#354e84' }}>VET</span>
+                      <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.25rem', color: '#354e84' }}>
+                        Recall<span style={{ color: '#7ac142' }}>VET</span>
                       </h4>
-                      <span style={{ fontSize: '0.78rem', color: '#e67e22', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        Syst&egrave;me d'alerte panafricain
+                      <span style={{ fontSize: '0.78rem', color: '#7ac142', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Logiciel v&eacute;t&eacute;rinaire tout-en-un
                       </span>
                     </div>
                   </div>
 
                   <p style={{ color: '#555', lineHeight: 1.7, fontSize: '0.92rem', marginBottom: '12px' }}>
-                    <strong>RecallVET</strong> est le syst&egrave;me de veille et d'alerte sanitaire d'AfricaVET.
-                    Il permet aux professionnels v&eacute;t&eacute;rinaires et aux &eacute;leveurs de <strong>signaler
-                    en temps r&eacute;el</strong> les foyers de maladies animales, les rappels de produits
-                    v&eacute;t&eacute;rinaires d&eacute;fectueux et les urgences sanitaires sur tout le continent.
+                    <strong>RecallVET</strong> est le logiciel v&eacute;t&eacute;rinaire tout-en-un con&ccedil;u
+                    pour l'Afrique. G&eacute;rez votre cabinet, vos fermes et vos troupeaux depuis une seule
+                    plateforme &mdash; <strong>m&ecirc;me sans connexion internet</strong>.
                   </p>
 
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
                     {[
-                      { icon: 'bell', text: 'Alertes en temps réel' },
-                      { icon: 'map-marker', text: 'Géolocalisation des foyers' },
-                      { icon: 'users', text: 'Réseau de sentinelles' },
-                      { icon: 'shield', text: 'Rappels de produits' },
+                      { icon: 'stethoscope', text: 'Gestion clinique' },
+                      { icon: 'paw', text: 'Suivi des troupeaux' },
+                      { icon: 'file-text-o', text: 'Facturation OHADA' },
+                      { icon: 'wifi', text: 'Mode hors ligne' },
+                      { icon: 'mobile', text: 'Portail éleveurs' },
+                      { icon: 'magic', text: 'IA diagnostique' },
                     ].map((tag, i) => (
                       <span key={i} style={{
                         display: 'inline-flex', alignItems: 'center', gap: '5px',
-                        background: '#fff', border: '1px solid #f0c27f', borderRadius: '20px',
-                        padding: '4px 12px', fontSize: '0.78rem', color: '#8b5e3c', fontWeight: 500
+                        background: '#fff', border: '1px solid #c8e6a0', borderRadius: '20px',
+                        padding: '4px 12px', fontSize: '0.78rem', color: '#3d6b1e', fontWeight: 500
                       }}>
-                        <FontAwesome name={tag.icon} style={{ fontSize: '11px', color: '#e74c3c' }} />
+                        <FontAwesome name={tag.icon} style={{ fontSize: '11px', color: '#7ac142' }} />
                         {tag.text}
                       </span>
                     ))}
                   </div>
 
                   <p style={{ color: '#666', lineHeight: 1.7, fontSize: '0.88rem', marginBottom: '18px' }}>
-                    Gr&acirc;ce &agrave; RecallVET, les autorit&eacute;s v&eacute;t&eacute;rinaires, les chercheurs
-                    et les praticiens de terrain peuvent coordonner leurs efforts de surveillance
-                    &eacute;pid&eacute;miologique et prot&eacute;ger le cheptel africain contre les menaces
-                    sanitaires &eacute;mergentes comme la fi&egrave;vre aphteuse, la grippe aviaire,
-                    la peste des petits ruminants ou la fi&egrave;vre de la vall&eacute;e du Rift.
+                    18 modules int&eacute;gr&eacute;s : dossiers m&eacute;dicaux, consultations, pharmacie,
+                    laboratoire, &eacute;pid&eacute;miologie, CRM, rendez-vous, tableaux de bord et plus encore.
+                    Compatible multi-pays, trilingue (FR/EN/AR) et conforme aux normes OIE/WAHIS.
+                    D&eacute;j&agrave; adopt&eacute; par +250 cabinets &agrave; travers l'Afrique.
                   </p>
 
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <Link to="/recallvet" style={{
                       display: 'inline-flex', alignItems: 'center', gap: '8px',
-                      background: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
+                      background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)',
                       color: '#fff', padding: '10px 22px', borderRadius: '10px',
                       fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none',
-                      boxShadow: '0 4px 14px rgba(231, 76, 60, 0.3)',
-                      transition: 'transform 0.2s, box-shadow 0.2s'
+                      boxShadow: '0 4px 14px rgba(122, 193, 66, 0.3)'
                     }}>
-                      <FontAwesome name="bell" /> Consulter RecallVET
+                      <FontAwesome name="rocket" /> D&eacute;couvrir RecallVET
                     </Link>
-                    <Link to="/soumettre-alerte" style={{
+                    <a href="mailto:contact@recallvet.com" style={{
                       display: 'inline-flex', alignItems: 'center', gap: '8px',
-                      background: '#fff', color: '#c0392b', padding: '10px 22px',
+                      background: '#fff', color: '#354e84', padding: '10px 22px',
                       borderRadius: '10px', fontWeight: 600, fontSize: '0.9rem',
-                      textDecoration: 'none', border: '2px solid #e74c3c'
+                      textDecoration: 'none', border: '2px solid #354e84'
                     }}>
-                      <FontAwesome name="plus-circle" /> Signaler une alerte
-                    </Link>
+                      <FontAwesome name="calendar" /> Demander une d&eacute;mo
+                    </a>
                   </div>
                 </div>
               </div>
