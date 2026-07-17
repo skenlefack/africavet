@@ -88,6 +88,48 @@ router.get('/stats', auth, authorize('admin', 'editor'), async (req, res) => {
       newsletter = nlData[0] || newsletter;
     } catch (e) { /* table may not exist */ }
 
+    // Geographic stats: articles by country
+    let articlesByCountry = [];
+    try {
+      const [data] = await db.query(`
+        SELECT country, COUNT(*) as count FROM posts
+        WHERE status = 'published' AND country IS NOT NULL AND country != ''
+        GROUP BY country ORDER BY count DESC
+      `);
+      articlesByCountry = data;
+    } catch (e) { /* column may not exist */ }
+
+    // Geographic stats: annuaire entries by country
+    let annuaireByCountry = [];
+    try {
+      const [experts] = await db.query(`
+        SELECT country, COUNT(*) as count FROM human_resources
+        WHERE country IS NOT NULL AND country != ''
+        GROUP BY country
+      `);
+      const [orgs] = await db.query(`
+        SELECT country, COUNT(*) as count FROM organizations
+        WHERE country IS NOT NULL AND country != ''
+        GROUP BY country
+      `);
+      // Merge experts + orgs
+      const merged = {};
+      experts.forEach(r => { merged[r.country] = (merged[r.country] || 0) + r.count; });
+      orgs.forEach(r => { merged[r.country] = (merged[r.country] || 0) + r.count; });
+      annuaireByCountry = Object.entries(merged).map(([country, count]) => ({ country, count })).sort((a, b) => b.count - a.count);
+    } catch (e) { /* tables may not exist */ }
+
+    // Geographic stats: opportunities by country
+    let opportunitiesByCountry = [];
+    try {
+      const [data] = await db.query(`
+        SELECT country, COUNT(*) as count FROM opportunities
+        WHERE status = 'published' AND country IS NOT NULL AND country != ''
+        GROUP BY country ORDER BY count DESC
+      `);
+      opportunitiesByCountry = data;
+    } catch (e) { /* table may not exist */ }
+
     res.json({
       success: true,
       data: {
@@ -99,6 +141,9 @@ router.get('/stats', auth, authorize('admin', 'editor'), async (req, res) => {
         organizations: orgStats,
         topCategories,
         usersByCountry,
+        articlesByCountry,
+        annuaireByCountry,
+        opportunitiesByCountry,
         newsletter,
       }
     });

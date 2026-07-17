@@ -1,23 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { axiosInstance } from '../../../services/AuthService';
-import WorldMap from 'react-svg-worldmap';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { MapContainer, TileLayer, CircleMarker, Tooltip as LTooltip } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
-const countryToCode = {
-    'cameroun': 'cm', 'cameroon': 'cm', 'senegal': 'sn', 'sénégal': 'sn',
-    'cote d\'ivoire': 'ci', 'côte d\'ivoire': 'ci', 'mali': 'ml',
-    'burkina faso': 'bf', 'niger': 'ne', 'tchad': 'td', 'chad': 'td',
-    'gabon': 'ga', 'congo': 'cg', 'rdc': 'cd', 'rd congo': 'cd',
-    'nigeria': 'ng', 'togo': 'tg', 'benin': 'bj', 'bénin': 'bj',
-    'guinée': 'gn', 'guinea': 'gn', 'ghana': 'gh',
-    'maroc': 'ma', 'morocco': 'ma', 'tunisie': 'tn', 'algérie': 'dz',
-    'egypte': 'eg', 'afrique du sud': 'za', 'kenya': 'ke',
-    'tanzanie': 'tz', 'ouganda': 'ug', 'rwanda': 'rw', 'burundi': 'bi',
-    'ethiopie': 'et', 'djibouti': 'dj', 'soudan': 'sd', 'angola': 'ao',
-    'mozambique': 'mz', 'zambie': 'zm', 'zimbabwe': 'zw', 'malawi': 'mw',
-    'madagascar': 'mg', 'centrafrique': 'cf', 'sierra leone': 'sl',
-    'france': 'fr', 'belgique': 'be', 'suisse': 'ch', 'canada': 'ca', 'usa': 'us',
+// African country coordinates + name normalization
+const COUNTRY_COORDS = {
+    'algérie': [28.03, 1.66], 'algerie': [28.03, 1.66], 'angola': [-11.20, 17.87],
+    'afrique du sud': [-30.56, 22.94], 'bénin': [9.31, 2.31], 'benin': [9.31, 2.31],
+    'botswana': [-22.33, 24.68], 'burkina faso': [12.36, -1.56], 'burundi': [-3.37, 29.92],
+    'cameroun': [7.37, 12.35], 'cameroon': [7.37, 12.35], 'cap-vert': [16.00, -24.01],
+    'centrafrique': [6.61, 20.94], 'comores': [-11.88, 43.87], 'congo': [-0.23, 15.83],
+    'côte d\'ivoire': [7.54, -5.55], 'cote d\'ivoire': [7.54, -5.55],
+    'djibouti': [11.59, 43.15], 'égypte': [26.82, 30.80], 'egypte': [26.82, 30.80],
+    'érythrée': [15.18, 39.78], 'eswatini': [-26.52, 31.47],
+    'éthiopie': [9.15, 40.49], 'ethiopie': [9.15, 40.49],
+    'gabon': [-0.80, 11.61], 'gambie': [13.44, -15.31], 'ghana': [7.95, -1.02],
+    'guinée': [9.95, -9.70], 'guinee': [9.95, -9.70], 'guinée équatoriale': [1.65, 10.27],
+    'guinée-bissau': [11.80, -15.18], 'kenya': [-0.02, 37.91],
+    'lesotho': [-29.61, 28.23], 'liberia': [6.43, -9.43], 'libye': [26.34, 17.23],
+    'madagascar': [-18.77, 46.87], 'malawi': [-13.25, 34.30], 'mali': [17.57, -4.00],
+    'maroc': [31.79, -7.09], 'morocco': [31.79, -7.09],
+    'maurice': [-20.35, 57.55], 'mauritanie': [21.01, -10.94],
+    'mozambique': [-18.67, 35.53], 'namibie': [-22.96, 18.49],
+    'niger': [17.61, 8.08], 'nigeria': [9.08, 8.68], 'ouganda': [1.37, 32.29],
+    'rd congo': [-4.04, 21.76], 'rdc': [-4.04, 21.76], 'rwanda': [-1.94, 29.87],
+    'são tomé-et-príncipe': [0.19, 6.61], 'sénégal': [14.50, -14.45], 'senegal': [14.50, -14.45],
+    'seychelles': [-4.68, 55.49], 'sierra leone': [8.46, -11.78],
+    'somalie': [5.15, 46.20], 'soudan': [12.86, 30.22], 'soudan du sud': [6.88, 31.31],
+    'tanzanie': [-6.37, 34.89], 'tchad': [15.45, 18.73], 'chad': [15.45, 18.73],
+    'togo': [8.62, 1.21], 'tunisie': [33.89, 9.54],
+    'zambie': [-13.13, 27.85], 'zimbabwe': [-19.02, 29.15],
 };
 
 const COLORS = ['#7ac142', '#354e84', '#E67E22', '#E74C3C', '#9B59B6', '#3498DB', '#1ABC9C', '#F39C12'];
@@ -32,12 +46,34 @@ function AfricaVetDashboard() {
         axiosInstance.get('/posts?limit=5&sort=created_at&order=DESC').then(r => { if (r.data.success) setRecentPosts(r.data.data || []); }).catch(console.error);
     }, []);
 
-    if (loading) return <div style={{ textAlign: 'center', padding: '60px 0' }}><div className="spinner-border text-primary" /></div>;
+    // Merge all geographic data (must be before early return)
+    const geoData = useMemo(() => {
+        const merged = {};
+        const addData = (items, key) => {
+            (items || []).forEach(item => {
+                const name = (item.country || '').trim();
+                if (!name) return;
+                const k = name.toLowerCase();
+                if (!merged[k]) merged[k] = { country: name, articles: 0, annuaire: 0, opportunities: 0 };
+                merged[k][key] += item.count;
+            });
+        };
+        addData(stats?.articlesByCountry, 'articles');
+        addData(stats?.annuaireByCountry, 'annuaire');
+        addData(stats?.opportunitiesByCountry, 'opportunities');
+        // Also add user data
+        addData(stats?.usersByCountry, 'users');
+        return Object.values(merged)
+            .map(d => {
+                const coords = COUNTRY_COORDS[d.country.toLowerCase()];
+                const total = d.articles + d.annuaire + d.opportunities;
+                return coords ? { ...d, lat: coords[0], lng: coords[1], total } : null;
+            })
+            .filter(Boolean)
+            .sort((a, b) => b.total - a.total);
+    }, [stats]);
 
-    const mapData = (stats?.usersByCountry || []).map(item => {
-        const code = countryToCode[(item.country || '').toLowerCase().trim()];
-        return code ? { country: code, value: item.count } : null;
-    }).filter(Boolean);
+    if (loading) return <div style={{ textAlign: 'center', padding: '60px 0' }}><div className="spinner-border text-primary" /></div>;
 
     const statusData = [
         { name: 'Publiés', value: Number(stats?.posts?.published) || 0, color: '#27AE60' },
@@ -104,38 +140,72 @@ function AfricaVetDashboard() {
 
             {/* Map (left) + Charts (right) */}
             <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: '16px', marginBottom: '24px' }}>
-                {/* Map */}
+                {/* Leaflet Map */}
                 <div style={card}>
                     <div style={cardHeader}>
                         <h5 style={{ margin: 0, fontSize: '1rem', fontWeight: '600' }}>
                             <i className="fas fa-globe-africa me-2" style={{ color: '#7ac142' }}></i>Répartition géographique
                         </h5>
-                        <span style={{ background: '#354e84', color: '#fff', padding: '3px 10px', borderRadius: '12px', fontSize: '0.7rem' }}>{mapData.length} pays</span>
+                        <span style={{ background: '#354e84', color: '#fff', padding: '3px 10px', borderRadius: '12px', fontSize: '0.7rem' }}>{geoData.length} pays</span>
                     </div>
-                    <div style={{ ...cardBody, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '380px', justifyContent: 'center' }}>
-                        {mapData.length > 0 ? (
+                    <div style={{ ...cardBody, padding: 0, overflow: 'hidden', borderRadius: '0 0 12px 12px' }}>
+                        {geoData.length > 0 ? (
                             <>
-                                <WorldMap
-                                    color="#7ac142"
-                                    valueSuffix=" utilisateurs"
-                                    size="lg"
-                                    data={mapData}
-                                    backgroundColor="transparent"
-                                    borderColor="#d1d5db"
-                                    tooltipBgColor="#354e84"
-                                    tooltipTextColor="#fff"
-                                    richInteraction
-                                />
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '12px', justifyContent: 'center' }}>
-                                    {(stats?.usersByCountry || []).map((item, i) => (
-                                        <span key={i} style={{ background: '#f0fdf4', color: '#166534', fontSize: '0.72rem', padding: '3px 8px', borderRadius: '6px', fontWeight: '500' }}>
-                                            {item.country}: {item.count}
+                                <div style={{ height: '340px' }}>
+                                    <MapContainer
+                                        center={[5, 20]}
+                                        zoom={3}
+                                        minZoom={2}
+                                        maxZoom={7}
+                                        style={{ height: '100%', width: '100%', borderRadius: '0 0 12px 12px' }}
+                                        scrollWheelZoom={true}
+                                        attributionControl={false}
+                                    >
+                                        <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
+                                        {geoData.map((d, i) => {
+                                            const maxTotal = Math.max(...geoData.map(g => g.total), 1);
+                                            const radius = Math.max(8, Math.min(35, (d.total / maxTotal) * 35));
+                                            return (
+                                                <CircleMarker
+                                                    key={i}
+                                                    center={[d.lat, d.lng]}
+                                                    radius={radius}
+                                                    pathOptions={{
+                                                        fillColor: '#7ac142',
+                                                        fillOpacity: 0.6,
+                                                        color: '#354e84',
+                                                        weight: 2,
+                                                    }}
+                                                >
+                                                    <LTooltip direction="top" offset={[0, -radius]} opacity={0.95}>
+                                                        <div style={{ fontFamily: 'inherit', minWidth: '140px' }}>
+                                                            <strong style={{ fontSize: '0.9rem', color: '#354e84' }}>{d.country}</strong>
+                                                            <div style={{ borderTop: '1px solid #eee', marginTop: '4px', paddingTop: '4px', fontSize: '0.8rem', lineHeight: '1.6' }}>
+                                                                {d.articles > 0 && <div><i className="fas fa-newspaper me-1" style={{ color: '#7ac142', width: '14px' }}></i> {d.articles} article{d.articles > 1 ? 's' : ''}</div>}
+                                                                {d.annuaire > 0 && <div><i className="fas fa-address-book me-1" style={{ color: '#3498DB', width: '14px' }}></i> {d.annuaire} ressource{d.annuaire > 1 ? 's' : ''}</div>}
+                                                                {d.opportunities > 0 && <div><i className="fas fa-briefcase me-1" style={{ color: '#E67E22', width: '14px' }}></i> {d.opportunities} opportunité{d.opportunities > 1 ? 's' : ''}</div>}
+                                                            </div>
+                                                        </div>
+                                                    </LTooltip>
+                                                </CircleMarker>
+                                            );
+                                        })}
+                                    </MapContainer>
+                                </div>
+                                {/* Legend badges */}
+                                <div style={{ padding: '12px 16px', borderTop: '1px solid #f0f0f0', display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '80px', overflowY: 'auto' }}>
+                                    {geoData.slice(0, 20).map((d, i) => (
+                                        <span key={i} style={{
+                                            background: '#f0fdf4', color: '#166534', fontSize: '0.72rem',
+                                            padding: '3px 8px', borderRadius: '6px', fontWeight: '500', whiteSpace: 'nowrap'
+                                        }}>
+                                            {d.country}: {d.articles > 0 ? `${d.articles}a` : ''}{d.annuaire > 0 ? ` ${d.annuaire}r` : ''}{d.opportunities > 0 ? ` ${d.opportunities}o` : ''}
                                         </span>
                                     ))}
                                 </div>
                             </>
                         ) : (
-                            <div style={{ textAlign: 'center', color: '#9ca3af' }}>
+                            <div style={{ textAlign: 'center', color: '#9ca3af', padding: '60px 20px' }}>
                                 <i className="fas fa-globe-africa" style={{ fontSize: '56px', opacity: 0.2 }}></i>
                                 <p style={{ marginTop: '12px' }}>Données en cours de collecte</p>
                             </div>
