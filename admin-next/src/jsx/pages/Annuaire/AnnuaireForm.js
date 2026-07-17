@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 
 // Import TinyMCE self-hosted
@@ -221,6 +221,44 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
     const [photoFile, setPhotoFile] = useState(null);
     const [photoPreview, setPhotoPreview] = useState(null);
     const [errors, setErrors] = useState({});
+    const [draftRestored, setDraftRestored] = useState(false);
+
+    const DRAFT_KEY = 'africavet_admin_annuaire_draft';
+
+    // Restore draft on mount (only for new entries)
+    useEffect(() => {
+        if (isEditing) return;
+        try {
+            const saved = localStorage.getItem(DRAFT_KEY);
+            if (saved) {
+                const draft = JSON.parse(saved);
+                if (draft.entryType) setEntryType(draft.entryType);
+                if (draft.form) setForm(prev => ({ ...prev, ...draft.form }));
+                if (draft.activeSection !== undefined) setActiveSection(draft.activeSection);
+                setDraftRestored(true);
+                setTimeout(() => setDraftRestored(false), 6000);
+            }
+        } catch (e) { /* ignore */ }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Auto-save draft (only for new entries)
+    const saveDraft = useCallback(() => {
+        if (isEditing) return;
+        try {
+            localStorage.setItem(DRAFT_KEY, JSON.stringify({
+                entryType, form, activeSection,
+                savedAt: new Date().toISOString()
+            }));
+        } catch (e) { /* ignore */ }
+    }, [entryType, form, activeSection, isEditing]);
+
+    useEffect(() => {
+        if (isEditing) return;
+        const timer = setTimeout(saveDraft, 500);
+        return () => clearTimeout(timer);
+    }, [entryType, form, activeSection, saveDraft, isEditing]);
+
+    const clearDraft = () => localStorage.removeItem(DRAFT_KEY);
 
     const handleChange = (field, value) => {
         setForm(prev => ({ ...prev, [field]: value }));
@@ -342,6 +380,22 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
 
     return (
         <>
+            {/* Draft restored banner */}
+            {draftRestored && !isEditing && (
+                <div className="alert alert-info alert-dismissible fade show d-flex align-items-center justify-content-between mb-3" role="alert">
+                    <span>
+                        <i className="fas fa-history me-2"></i>
+                        Brouillon restauré ! Vous pouvez continuer votre saisie.
+                    </span>
+                    <div className="d-flex gap-2 align-items-center">
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => { clearDraft(); window.location.reload(); }}>
+                            <i className="fas fa-trash me-1"></i> Effacer
+                        </button>
+                        <button type="button" className="btn-close" onClick={() => setDraftRestored(false)}></button>
+                    </div>
+                </div>
+            )}
+
             {/* Section Nav */}
             <div className="card mb-4">
                 <div className="card-body py-2">

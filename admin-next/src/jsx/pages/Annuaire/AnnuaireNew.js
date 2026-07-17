@@ -19,6 +19,7 @@ const AnnuaireNew = () => {
             const res = await api.post(endpoint, data, token);
 
             if (res.success) {
+                localStorage.removeItem('africavet_admin_annuaire_draft');
                 const newId = res.data?.id || res.data?.insertId;
 
                 // Upload photo if provided
