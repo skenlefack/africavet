@@ -1,22 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-const SearchModal = ({ onClose }) => {
+const SearchModal = ({ onClose, setSearchShow }) => {
+  const close = onClose || (() => setSearchShow && setSearchShow(false));
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const inputRef = useRef(null);
 
   useEffect(() => {
     inputRef.current?.focus();
-    const handleEsc = (e) => { if (e.key === "Escape") onClose(); };
+    const handleEsc = (e) => { if (e.key === "Escape") close(); };
     document.addEventListener("keydown", handleEsc);
     return () => document.removeEventListener("keydown", handleEsc);
-  }, [onClose]);
+  }, [close]);
 
   const submitHandler = (e) => {
     e.preventDefault();
     if (search.trim()) {
-      onClose();
+      close();
       navigate(`/recherche?q=${encodeURIComponent(search.trim())}`);
     }
   };
@@ -35,7 +36,7 @@ const SearchModal = ({ onClose }) => {
         paddingTop: "15vh",
         animation: "fadeInSearch 0.2s ease"
       }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => { if (e.target === e.currentTarget) close(); }}
     >
       <div style={{
         width: "100%",
@@ -94,7 +95,7 @@ const SearchModal = ({ onClose }) => {
 
         <div className="text-center mt-3">
           <button
-            onClick={onClose}
+            onClick={close}
             style={{
               background: "none",
               border: "none",
