@@ -219,38 +219,26 @@ const ProfessionSelect = ({ value, onChange, name = "profession", required, disa
             </div>
           </div>
 
-          {/* Grouped list */}
+          {/* List */}
           <div style={{ maxHeight: "280px", overflowY: "auto" }}>
             {filteredGroups.length > 0 ? (
-              filteredGroups.map((group) => (
-                <div key={group.group}>
-                  <div style={{
-                    padding: "8px 16px 4px", fontSize: "0.75rem", fontWeight: 700,
-                    color: "#7ac142", textTransform: "uppercase", letterSpacing: "0.5px",
-                    background: "#f8fafc", borderTop: "1px solid #f1f5f9",
-                    position: "sticky", top: 0
-                  }}>
-                    {group.group}
-                  </div>
-                  {group.items.map((item) => (
-                    <button key={item} type="button" onClick={() => select(item)}
-                      style={{
-                        display: "block", width: "100%", padding: "9px 16px 9px 24px",
-                        border: "none",
-                        background: item === value ? "#f0fdf4" : "transparent",
-                        textAlign: "left", cursor: "pointer", fontSize: "0.88rem",
-                        color: item === value ? "#15803d" : "#334155",
-                        fontWeight: item === value ? 600 : 400,
-                        transition: "background 0.1s"
-                      }}
-                      onMouseOver={(e) => { if (item !== value) e.target.style.background = "#f8fafc"; }}
-                      onMouseOut={(e) => { if (item !== value) e.target.style.background = "transparent"; }}
-                    >
-                      {item === value && <i className="fa fa-check" style={{ marginRight: "8px", color: "#7ac142" }}></i>}
-                      {item}
-                    </button>
-                  ))}
-                </div>
+              filteredGroups.flatMap((group) => group.items).map((item) => (
+                <button key={item} type="button" onClick={() => select(item)}
+                  style={{
+                    display: "block", width: "100%", padding: "9px 16px",
+                    border: "none",
+                    background: item === value ? "#f0fdf4" : "transparent",
+                    textAlign: "left", cursor: "pointer", fontSize: "0.88rem",
+                    color: item === value ? "#15803d" : "#334155",
+                    fontWeight: item === value ? 600 : 400,
+                    transition: "background 0.1s"
+                  }}
+                  onMouseOver={(e) => { if (item !== value) e.target.style.background = "#f8fafc"; }}
+                  onMouseOut={(e) => { if (item !== value) e.target.style.background = "transparent"; }}
+                >
+                  {item === value && <i className="fa fa-check" style={{ marginRight: "8px", color: "#7ac142" }}></i>}
+                  {item}
+                </button>
               ))
             ) : (
               <div style={{ padding: "20px", textAlign: "center", color: "#94a3b8", fontSize: "0.9rem" }}>
