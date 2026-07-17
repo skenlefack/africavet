@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import FontAwesome from "../component/uiStyle/FontAwesome";
 import CountrySelect from "../component/CountrySelect";
+import ProfessionSelect from "../component/ProfessionSelect";
 import { useAuth } from "../context/AuthContext";
 import "./inscription.scss";
 
@@ -137,15 +138,13 @@ const InscriptionPage = () => {
                 </div>
                 <div className="form-group">
                   <label htmlFor="profession">Profession</label>
-                  <select id="profession" name="profession" value={formData.profession} onChange={handleChange} required disabled={loading}>
-                    <option value="">Sélectionnez</option>
-                    <option value="veterinaire">Vétérinaire</option>
-                    <option value="technicien">Technicien vétérinaire</option>
-                    <option value="eleveur">Éleveur</option>
-                    <option value="chercheur">Chercheur</option>
-                    <option value="etudiant">Étudiant</option>
-                    <option value="autre">Autre</option>
-                  </select>
+                  <ProfessionSelect
+                    value={formData.profession}
+                    onChange={handleChange}
+                    name="profession"
+                    required
+                    disabled={loading}
+                  />
                 </div>
                 <div className="form-group">
                   <label htmlFor="pays">Pays</label>
