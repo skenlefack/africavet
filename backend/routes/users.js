@@ -4,6 +4,9 @@ const bcrypt = require('bcryptjs');
 const db = require('../config/db');
 const { auth, authorize } = require('../middleware/auth');
 
+// Helper: check if a role is admin-level
+const isAdminRole = (role) => ['admin', 'superadmin'].includes(role);
+
 // GET all users
 router.get('/', auth, authorize('admin'), async (req, res) => {
   try {
@@ -31,7 +34,7 @@ router.get('/', auth, authorize('admin'), async (req, res) => {
     const [countResult] = await db.query(`SELECT COUNT(*) as total FROM users ${whereClause}`, params);
     const [users] = await db.query(
       `SELECT id, username, email, first_name, last_name, avatar, role, status, is_active, email_verified, last_login, created_at
-       FROM users ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+       FROM users ${whereClause} ORDER BY FIELD(role, 'superadmin', 'admin', 'editor', 'author', 'subscriber'), created_at DESC LIMIT ? OFFSET ?`,
       [...params, parseInt(limit), parseInt(offset)]
     );
 
@@ -66,6 +69,11 @@ router.post('/', auth, authorize('admin'), async (req, res) => {
   try {
     const { username, email, password, first_name, last_name, role, status } = req.body;
 
+    // Only superadmin can create admin or superadmin users
+    if (isAdminRole(role) && req.user.role !== 'superadmin') {
+      return res.status(403).json({ success: false, message: 'Seul le super-administrateur peut créer des comptes administrateurs.' });
+    }
+
     const [existing] = await db.query('SELECT id FROM users WHERE email = ? OR username = ?', [email, username]);
     if (existing.length > 0) {
       return res.status(400).json({ success: false, message: 'User already exists' });
@@ -96,6 +104,34 @@ router.put('/:id', auth, authorize('admin'), async (req, res) => {
     const { username, email, password, first_name, last_name, role, status, bio, avatar } = req.body;
     const { id } = req.params;
 
+    // Fetch the target user to check their role
+    const [targetUsers] = await db.query('SELECT id, role FROM users WHERE id = ?', [id]);
+    if (targetUsers.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    const targetUser = targetUsers[0];
+    const currentUserRole = req.user.role;
+
+    // Protection: nobody can modify a superadmin except themselves
+    if (targetUser.role === 'superadmin' && req.user.id !== targetUser.id) {
+      return res.status(403).json({ success: false, message: 'Impossible de modifier un super-administrateur.' });
+    }
+
+    // Protection: admins cannot modify other admins
+    if (targetUser.role === 'admin' && currentUserRole === 'admin' && req.user.id !== targetUser.id) {
+      return res.status(403).json({ success: false, message: 'Les administrateurs ne peuvent pas modifier d\'autres administrateurs.' });
+    }
+
+    // Protection: only superadmin can promote to admin/superadmin
+    if (role && isAdminRole(role) && currentUserRole !== 'superadmin') {
+      return res.status(403).json({ success: false, message: 'Seul le super-administrateur peut attribuer le rôle administrateur.' });
+    }
+
+    // Protection: only superadmin can demote an admin
+    if (targetUser.role === 'admin' && role && !isAdminRole(role) && currentUserRole !== 'superadmin') {
+      return res.status(403).json({ success: false, message: 'Seul le super-administrateur peut rétrograder un administrateur.' });
+    }
+
     let updateFields = [];
     let params = [];
 
@@ -113,6 +149,10 @@ router.put('/:id', auth, authorize('admin'), async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, salt);
       updateFields.push('password = ?');
       params.push(hashedPassword);
+    }
+
+    if (updateFields.length === 0) {
+      return res.status(400).json({ success: false, message: 'No fields to update' });
     }
 
     params.push(id);
@@ -133,21 +173,21 @@ router.put('/:id', auth, authorize('admin'), async (req, res) => {
 router.put('/:id/activate', auth, authorize('admin'), async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Check if user exists
-    const [users] = await db.query('SELECT id, email, first_name, username FROM users WHERE id = ?', [id]);
+    const [users] = await db.query('SELECT id, role FROM users WHERE id = ?', [id]);
     if (users.length === 0) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Activate the user
-    await db.query('UPDATE users SET is_active = TRUE, status = ? WHERE id = ?', ['active', id]);
+    // Admins cannot activate/deactivate other admins or superadmin
+    if (isAdminRole(users[0].role) && req.user.role !== 'superadmin') {
+      return res.status(403).json({ success: false, message: 'Seul le super-administrateur peut modifier le statut d\'un administrateur.' });
+    }
 
+    await db.query('UPDATE users SET is_active = TRUE, status = ? WHERE id = ?', ['active', id]);
     const [updated] = await db.query(
       'SELECT id, username, email, first_name, last_name, role, status, is_active, email_verified FROM users WHERE id = ?',
       [id]
     );
-
     res.json({ success: true, message: 'User activated', data: updated[0] });
   } catch (error) {
     console.error('Activate user error:', error);
@@ -160,25 +200,25 @@ router.put('/:id/deactivate', auth, authorize('admin'), async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Cannot deactivate yourself
     if (id === req.user.id.toString()) {
       return res.status(400).json({ success: false, message: 'Cannot deactivate yourself' });
     }
 
-    // Check if user exists
-    const [users] = await db.query('SELECT id FROM users WHERE id = ?', [id]);
+    const [users] = await db.query('SELECT id, role FROM users WHERE id = ?', [id]);
     if (users.length === 0) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Deactivate the user
-    await db.query('UPDATE users SET is_active = FALSE, status = ? WHERE id = ?', ['inactive', id]);
+    // Admins cannot deactivate other admins or superadmin
+    if (isAdminRole(users[0].role) && req.user.role !== 'superadmin') {
+      return res.status(403).json({ success: false, message: 'Seul le super-administrateur peut désactiver un administrateur.' });
+    }
 
+    await db.query('UPDATE users SET is_active = FALSE, status = ? WHERE id = ?', ['inactive', id]);
     const [updated] = await db.query(
       'SELECT id, username, email, first_name, last_name, role, status, is_active, email_verified FROM users WHERE id = ?',
       [id]
     );
-
     res.json({ success: true, message: 'User deactivated', data: updated[0] });
   } catch (error) {
     console.error('Deactivate user error:', error);
@@ -190,14 +230,11 @@ router.put('/:id/deactivate', auth, authorize('admin'), async (req, res) => {
 router.put('/:id/verify-email', auth, authorize('admin'), async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Check if user exists
     const [users] = await db.query('SELECT id, email_verified FROM users WHERE id = ?', [id]);
     if (users.length === 0) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Verify the email
     await db.query(
       'UPDATE users SET email_verified = TRUE, email_verification_token = NULL, email_verification_expires = NULL WHERE id = ?',
       [id]
@@ -207,7 +244,6 @@ router.put('/:id/verify-email', auth, authorize('admin'), async (req, res) => {
       'SELECT id, username, email, first_name, last_name, role, status, is_active, email_verified FROM users WHERE id = ?',
       [id]
     );
-
     res.json({ success: true, message: 'Email verified', data: updated[0] });
   } catch (error) {
     console.error('Verify email error:', error);
@@ -221,6 +257,22 @@ router.delete('/:id', auth, authorize('admin'), async (req, res) => {
     if (req.params.id === req.user.id.toString()) {
       return res.status(400).json({ success: false, message: 'Cannot delete yourself' });
     }
+
+    const [users] = await db.query('SELECT id, role FROM users WHERE id = ?', [req.params.id]);
+    if (users.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Cannot delete a superadmin
+    if (users[0].role === 'superadmin') {
+      return res.status(403).json({ success: false, message: 'Impossible de supprimer un super-administrateur.' });
+    }
+
+    // Only superadmin can delete admins
+    if (users[0].role === 'admin' && req.user.role !== 'superadmin') {
+      return res.status(403).json({ success: false, message: 'Seul le super-administrateur peut supprimer un administrateur.' });
+    }
+
     await db.query('DELETE FROM users WHERE id = ?', [req.params.id]);
     res.json({ success: true, message: 'User deleted' });
   } catch (error) {

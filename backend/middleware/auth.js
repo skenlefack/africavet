@@ -42,15 +42,17 @@ const auth = async (req, res, next) => {
 };
 
 // Check if user has required role (legacy support)
+// superadmin has access to everything that admin can access
 const authorize = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        success: false,
-        message: 'You do not have permission to perform this action.'
-      });
+    const userRole = req.user.role;
+    if (userRole === 'superadmin' || roles.includes(userRole)) {
+      return next();
     }
-    next();
+    return res.status(403).json({
+      success: false,
+      message: 'You do not have permission to perform this action.'
+    });
   };
 };
 

@@ -73,7 +73,7 @@ const UsersList = () => {
 
     // Compteurs
     const activeCount = users.filter(u => u.is_active).length;
-    const adminCount = users.filter(u => u.role === 'admin').length;
+    const adminCount = users.filter(u => u.role === 'admin' || u.role === 'superadmin').length;
     const editorCount = users.filter(u => u.role === 'editor').length;
 
     if (loading) {
@@ -185,9 +185,11 @@ const UsersList = () => {
                                 onChange={(e) => setRoleFilter(e.target.value)}
                             >
                                 <option value="all">Tous les rôles</option>
+                                <option value="superadmin">Super Admin</option>
                                 <option value="admin">Administrateurs</option>
                                 <option value="editor">Éditeurs</option>
-                                <option value="user">Utilisateurs</option>
+                                <option value="author">Auteurs</option>
+                                <option value="subscriber">Abonnés</option>
                             </select>
                         </div>
                         <div className="col-md-2">
@@ -259,11 +261,15 @@ const UsersList = () => {
                                             </td>
                                             <td>
                                                 <span className={`badge ${
+                                                    user.role === 'superadmin' ? 'bg-dark' :
                                                     user.role === 'admin' ? 'bg-danger' :
-                                                    user.role === 'editor' ? 'bg-warning text-dark' : 'bg-secondary'
+                                                    user.role === 'editor' ? 'bg-warning text-dark' :
+                                                    user.role === 'author' ? 'bg-info' : 'bg-secondary'
                                                 }`}>
-                                                    {user.role === 'admin' ? 'Admin' :
-                                                     user.role === 'editor' ? 'Éditeur' : 'Utilisateur'}
+                                                    {user.role === 'superadmin' ? 'Super Admin' :
+                                                     user.role === 'admin' ? 'Admin' :
+                                                     user.role === 'editor' ? 'Éditeur' :
+                                                     user.role === 'author' ? 'Auteur' : 'Abonné'}
                                                 </span>
                                             </td>
                                             <td>

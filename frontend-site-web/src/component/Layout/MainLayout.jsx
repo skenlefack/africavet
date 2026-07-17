@@ -100,7 +100,7 @@ const MainLayout = () => {
                 </li>
 
                 <li className="nav-item">
-                  <Link to="/categorie/opportunites" className="nav-link fw-semibold">Opportunités</Link>
+                  <Link to="/opportunites" className="nav-link fw-semibold">Opportunités</Link>
                 </li>
 
                 <li className="nav-item">
@@ -168,8 +168,8 @@ const MainLayout = () => {
                 <ul>
                   <li><Link to="/categorie/news"><i className="fa fa-newspaper-o"></i> S'informer</Link></li>
                   <li><Link to="/categorie/one-health"><i className="fa fa-globe"></i> One Health</Link></li>
-                  <li><Link to="/categorie/formations"><i className="fa fa-graduation-cap"></i> Se Former</Link></li>
-                  <li><Link to="/categorie/opportunites"><i className="fa fa-briefcase"></i> Opportunités</Link></li>
+                  <li><Link to="/formations"><i className="fa fa-graduation-cap"></i> Se Former</Link></li>
+                  <li><Link to="/opportunites"><i className="fa fa-briefcase"></i> Opportunités</Link></li>
                   <li><Link to="/annuaire"><i className="fa fa-address-book"></i> Annuaire Vétérinaire</Link></li>
                 </ul>
               </div>

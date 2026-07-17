@@ -8,6 +8,11 @@ const UserEditor = () => {
     const token = getToken();
     const isEditing = !!id;
 
+    // Get current user info from localStorage
+    const storedDetails = JSON.parse(localStorage.getItem('userDetails') || '{}');
+    const currentUser = storedDetails.user || storedDetails;
+    const isSuperAdmin = currentUser.role === 'superadmin';
+
     const [loading, setLoading] = useState(isEditing);
     const [saving, setSaving] = useState(false);
     const [toast, setToast] = useState(null);
@@ -350,13 +355,20 @@ const UserEditor = () => {
                                             className="form-select form-select-sm"
                                             value={form.role}
                                             onChange={(e) => setForm({ ...form, role: e.target.value })}
+                                            disabled={!isSuperAdmin && (form.role === 'superadmin' || form.role === 'admin')}
                                         >
+                                            {isSuperAdmin && <option value="superadmin">Super Administrateur</option>}
                                             <option value="admin">Administrateur</option>
                                             <option value="editor">Éditeur</option>
                                             <option value="author">Auteur</option>
-                                            <option value="contributor">Contributeur</option>
                                             <option value="subscriber">Abonné</option>
                                         </select>
+                                        {!isSuperAdmin && (form.role === 'superadmin' || form.role === 'admin') && (
+                                            <small className="text-warning d-block mt-1">
+                                                <i className="fas fa-lock me-1"></i>
+                                                Seul le super-admin peut modifier ce rôle
+                                            </small>
+                                        )}
                                     </div>
                                     <div className="col-6">
                                         <label className="form-label small mb-1">Statut</label>

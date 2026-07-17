@@ -42,8 +42,8 @@ const FooterArea = ({ className }) => {
               <ul>
                 <li><Link to="/categorie/news"><FontAwesome name="newspaper-o" /> S'informer</Link></li>
                 <li><Link to="/categorie/one-health"><FontAwesome name="globe" /> One Health</Link></li>
-                <li><Link to="/categorie/formations"><FontAwesome name="graduation-cap" /> Se Former</Link></li>
-                <li><Link to="/categorie/opportunites"><FontAwesome name="briefcase" /> Opportunités</Link></li>
+                <li><Link to="/formations"><FontAwesome name="graduation-cap" /> Se Former</Link></li>
+                <li><Link to="/opportunites"><FontAwesome name="briefcase" /> Opportunités</Link></li>
                 <li><Link to="/annuaire"><FontAwesome name="address-book" /> Annuaire Vétérinaire</Link></li>
               </ul>
             </div>
