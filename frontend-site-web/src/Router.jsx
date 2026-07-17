@@ -16,6 +16,7 @@ import ConnexionPage from "./pages/ConnexionPage";
 import About from "./pages/home/about";
 import Contact from "./pages/home/contact";
 import Error from "./pages/home/404";
+import SlugRedirect from "./pages/SlugRedirect";
 
 // E-Learning pages (lazy loaded)
 const CourseCatalogPage = lazy(() => import("./pages/elearning/CourseCatalogPage"));
@@ -144,6 +145,12 @@ const router = createBrowserRouter([
       { path: "profil", element: <Protected><ProfilePage /></Protected> },
       { path: "tableau-de-bord", element: <Protected><DashboardPage /></Protected> },
       { path: "notifications", element: <Protected><NotificationsPage /></Protected> },
+
+      // Publicité
+      { path: "publicite", element: <About /> },
+
+      // Old WordPress URL redirects (/:slug -> /article/:slug)
+      { path: ":slug", element: <SlugRedirect /> },
 
       // Fallback
       { path: "404", element: <Error /> },
