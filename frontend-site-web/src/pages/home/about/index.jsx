@@ -191,6 +191,102 @@ function About() {
                   </div>
                 ))}
               </div>
+
+              {/* RecallVET */}
+              <div style={{
+                marginTop: '25px',
+                background: 'linear-gradient(135deg, #fff8f0 0%, #fef3e8 50%, #fff5ee 100%)',
+                border: '2px solid #f0c27f',
+                borderRadius: '16px',
+                padding: '28px 30px',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  position: 'absolute', top: '-20px', right: '-20px',
+                  width: '120px', height: '120px', borderRadius: '50%',
+                  background: 'rgba(240, 194, 127, 0.15)'
+                }} />
+                <div style={{
+                  position: 'absolute', bottom: '-30px', left: '-15px',
+                  width: '80px', height: '80px', borderRadius: '50%',
+                  background: 'rgba(231, 76, 60, 0.08)'
+                }} />
+                <div style={{ position: 'relative' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+                    <div style={{
+                      width: '48px', height: '48px', borderRadius: '12px',
+                      background: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 4px 12px rgba(231, 76, 60, 0.3)', flexShrink: 0
+                    }}>
+                      <FontAwesome name="exclamation-circle" style={{ color: '#fff', fontSize: '22px' }} />
+                    </div>
+                    <div>
+                      <h4 style={{ margin: 0, fontWeight: 800, fontSize: '1.25rem', color: '#c0392b' }}>
+                        Recall<span style={{ color: '#354e84' }}>VET</span>
+                      </h4>
+                      <span style={{ fontSize: '0.78rem', color: '#e67e22', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Syst&egrave;me d'alerte panafricain
+                      </span>
+                    </div>
+                  </div>
+
+                  <p style={{ color: '#555', lineHeight: 1.7, fontSize: '0.92rem', marginBottom: '12px' }}>
+                    <strong>RecallVET</strong> est le syst&egrave;me de veille et d'alerte sanitaire d'AfricaVET.
+                    Il permet aux professionnels v&eacute;t&eacute;rinaires et aux &eacute;leveurs de <strong>signaler
+                    en temps r&eacute;el</strong> les foyers de maladies animales, les rappels de produits
+                    v&eacute;t&eacute;rinaires d&eacute;fectueux et les urgences sanitaires sur tout le continent.
+                  </p>
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+                    {[
+                      { icon: 'bell', text: 'Alertes en temps réel' },
+                      { icon: 'map-marker', text: 'Géolocalisation des foyers' },
+                      { icon: 'users', text: 'Réseau de sentinelles' },
+                      { icon: 'shield', text: 'Rappels de produits' },
+                    ].map((tag, i) => (
+                      <span key={i} style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '5px',
+                        background: '#fff', border: '1px solid #f0c27f', borderRadius: '20px',
+                        padding: '4px 12px', fontSize: '0.78rem', color: '#8b5e3c', fontWeight: 500
+                      }}>
+                        <FontAwesome name={tag.icon} style={{ fontSize: '11px', color: '#e74c3c' }} />
+                        {tag.text}
+                      </span>
+                    ))}
+                  </div>
+
+                  <p style={{ color: '#666', lineHeight: 1.7, fontSize: '0.88rem', marginBottom: '18px' }}>
+                    Gr&acirc;ce &agrave; RecallVET, les autorit&eacute;s v&eacute;t&eacute;rinaires, les chercheurs
+                    et les praticiens de terrain peuvent coordonner leurs efforts de surveillance
+                    &eacute;pid&eacute;miologique et prot&eacute;ger le cheptel africain contre les menaces
+                    sanitaires &eacute;mergentes comme la fi&egrave;vre aphteuse, la grippe aviaire,
+                    la peste des petits ruminants ou la fi&egrave;vre de la vall&eacute;e du Rift.
+                  </p>
+
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    <Link to="/recallvet" style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '8px',
+                      background: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
+                      color: '#fff', padding: '10px 22px', borderRadius: '10px',
+                      fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none',
+                      boxShadow: '0 4px 14px rgba(231, 76, 60, 0.3)',
+                      transition: 'transform 0.2s, box-shadow 0.2s'
+                    }}>
+                      <FontAwesome name="bell" /> Consulter RecallVET
+                    </Link>
+                    <Link to="/soumettre-alerte" style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '8px',
+                      background: '#fff', color: '#c0392b', padding: '10px 22px',
+                      borderRadius: '10px', fontWeight: 600, fontSize: '0.9rem',
+                      textDecoration: 'none', border: '2px solid #e74c3c'
+                    }}>
+                      <FontAwesome name="plus-circle" /> Signaler une alerte
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
