@@ -17,16 +17,123 @@ import 'tinymce/plugins/wordcount';
 import 'tinymce/plugins/table';
 import 'tinymce/plugins/code';
 
-const AFRICAN_COUNTRIES = [
-    'Algérie', 'Angola', 'Bénin', 'Botswana', 'Burkina Faso', 'Burundi', 'Cameroun',
-    'Cap-Vert', 'Centrafrique', 'Comores', 'Congo', 'Côte d\'Ivoire', 'Djibouti',
-    'Égypte', 'Érythrée', 'Eswatini', 'Éthiopie', 'Gabon', 'Gambie', 'Ghana',
-    'Guinée', 'Guinée-Bissau', 'Guinée équatoriale', 'Kenya', 'Lesotho', 'Libéria',
-    'Libye', 'Madagascar', 'Malawi', 'Mali', 'Maroc', 'Maurice', 'Mauritanie',
-    'Mozambique', 'Namibie', 'Niger', 'Nigéria', 'Ouganda', 'RD Congo', 'Rwanda',
-    'São Tomé-et-Príncipe', 'Sénégal', 'Seychelles', 'Sierra Leone', 'Somalie',
-    'Soudan', 'Soudan du Sud', 'Tanzanie', 'Tchad', 'Togo', 'Tunisie', 'Zambie', 'Zimbabwe',
+const ALL_COUNTRIES = [
+    // Afrique
+    'Afrique du Sud', 'Algérie', 'Angola', 'Bénin', 'Botswana', 'Burkina Faso', 'Burundi',
+    'Cameroun', 'Cap-Vert', 'Centrafrique', 'Comores', 'Congo', 'Côte d\'Ivoire', 'Djibouti',
+    'Égypte', 'Érythrée', 'Eswatini', 'Éthiopie', 'Gabon', 'Gambie', 'Ghana', 'Guinée',
+    'Guinée-Bissau', 'Guinée équatoriale', 'Kenya', 'Lesotho', 'Libéria', 'Libye',
+    'Madagascar', 'Malawi', 'Mali', 'Maroc', 'Maurice', 'Mauritanie', 'Mozambique',
+    'Namibie', 'Niger', 'Nigéria', 'Ouganda', 'RD Congo', 'Rwanda', 'São Tomé-et-Príncipe',
+    'Sénégal', 'Seychelles', 'Sierra Leone', 'Somalie', 'Soudan', 'Soudan du Sud',
+    'Tanzanie', 'Tchad', 'Togo', 'Tunisie', 'Zambie', 'Zimbabwe',
+    // Europe
+    'Albanie', 'Allemagne', 'Andorre', 'Arménie', 'Autriche', 'Azerbaïdjan', 'Belgique',
+    'Biélorussie', 'Bosnie-Herzégovine', 'Bulgarie', 'Chypre', 'Croatie', 'Danemark',
+    'Espagne', 'Estonie', 'Finlande', 'France', 'Géorgie', 'Grèce', 'Hongrie', 'Irlande',
+    'Islande', 'Italie', 'Kosovo', 'Lettonie', 'Liechtenstein', 'Lituanie', 'Luxembourg',
+    'Macédoine du Nord', 'Malte', 'Moldavie', 'Monaco', 'Monténégro', 'Norvège', 'Pays-Bas',
+    'Pologne', 'Portugal', 'République tchèque', 'Roumanie', 'Royaume-Uni', 'Russie',
+    'Saint-Marin', 'Serbie', 'Slovaquie', 'Slovénie', 'Suède', 'Suisse', 'Ukraine', 'Vatican',
+    // Amérique
+    'Antigua-et-Barbuda', 'Argentine', 'Bahamas', 'Barbade', 'Belize', 'Bolivie', 'Brésil',
+    'Canada', 'Chili', 'Colombie', 'Costa Rica', 'Cuba', 'Dominique', 'El Salvador',
+    'Équateur', 'États-Unis', 'Grenade', 'Guatemala', 'Guyana', 'Haïti', 'Honduras',
+    'Jamaïque', 'Mexique', 'Nicaragua', 'Panama', 'Paraguay', 'Pérou',
+    'République dominicaine', 'Saint-Kitts-et-Nevis', 'Saint-Vincent-et-les-Grenadines',
+    'Sainte-Lucie', 'Suriname', 'Trinité-et-Tobago', 'Uruguay', 'Venezuela',
+    // Asie
+    'Afghanistan', 'Arabie saoudite', 'Bahreïn', 'Bangladesh', 'Bhoutan', 'Birmanie',
+    'Brunei', 'Cambodge', 'Chine', 'Corée du Nord', 'Corée du Sud', 'Émirats arabes unis',
+    'Inde', 'Indonésie', 'Irak', 'Iran', 'Israël', 'Japon', 'Jordanie', 'Kazakhstan',
+    'Kirghizistan', 'Koweït', 'Laos', 'Liban', 'Malaisie', 'Maldives', 'Mongolie', 'Népal',
+    'Oman', 'Ouzbékistan', 'Pakistan', 'Palestine', 'Philippines', 'Qatar', 'Singapour',
+    'Sri Lanka', 'Syrie', 'Tadjikistan', 'Taïwan', 'Thaïlande', 'Timor oriental',
+    'Turkménistan', 'Turquie', 'Viêt Nam', 'Yémen',
+    // Océanie
+    'Australie', 'Fidji', 'Kiribati', 'Marshall', 'Micronésie', 'Nauru', 'Nouvelle-Zélande',
+    'Palaos', 'Papouasie-Nouvelle-Guinée', 'Salomon', 'Samoa', 'Tonga', 'Tuvalu', 'Vanuatu',
 ];
+
+// Searchable country select component
+const SearchableCountrySelect = ({ value, onChange, hasError }) => {
+    const [search, setSearch] = useState('');
+    const [isOpen, setIsOpen] = useState(false);
+    const wrapperRef = useRef(null);
+
+    const filtered = search
+        ? ALL_COUNTRIES.filter(c => c.toLowerCase().includes(search.toLowerCase()))
+        : ALL_COUNTRIES;
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    return (
+        <div ref={wrapperRef} style={{ position: 'relative' }}>
+            <div
+                className={`form-select ${hasError ? 'is-invalid' : ''}`}
+                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {value || '— Choisir un pays —'}
+                </span>
+                {value && (
+                    <i className="fas fa-times text-muted ms-2" style={{ fontSize: '0.75rem' }}
+                        onClick={(e) => { e.stopPropagation(); onChange(''); setSearch(''); }} />
+                )}
+            </div>
+            {isOpen && (
+                <div style={{
+                    position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 1050,
+                    background: 'white', border: '1px solid #dee2e6', borderRadius: '0 0 6px 6px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)', maxHeight: 280, display: 'flex', flexDirection: 'column'
+                }}>
+                    <div style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                        <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            placeholder="Rechercher un pays..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            autoFocus
+                            onClick={e => e.stopPropagation()}
+                        />
+                    </div>
+                    <div style={{ overflowY: 'auto', maxHeight: 220 }}>
+                        {filtered.length === 0 ? (
+                            <div className="text-muted text-center py-3" style={{ fontSize: '0.85rem' }}>Aucun pays trouvé</div>
+                        ) : (
+                            filtered.map(c => (
+                                <div
+                                    key={c}
+                                    className="px-3 py-2"
+                                    style={{
+                                        cursor: 'pointer', fontSize: '0.9rem',
+                                        background: c === value ? '#e8f5e9' : 'transparent',
+                                        fontWeight: c === value ? 600 : 400,
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = c === value ? '#e8f5e9' : '#f0f0f0'}
+                                    onMouseLeave={e => e.currentTarget.style.background = c === value ? '#e8f5e9' : 'transparent'}
+                                    onClick={() => { onChange(c); setIsOpen(false); setSearch(''); }}
+                                >
+                                    {c}
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 
 const TINYMCE_CONFIG = {
     license_key: 'gpl',
@@ -61,6 +168,7 @@ const OpportunityEditor = () => {
     const [currentStep, setCurrentStep] = useState(1);
     const [isDirty, setIsDirty] = useState(false);
     const autoSaveRef = useRef(null);
+    const [fieldErrors, setFieldErrors] = useState({});
 
     const STEPS = [
         { id: 1, label: 'Identification', icon: 'fa-tag', fields: ['opportunity_type', 'title_fr', 'title_en', 'organization_name', 'tender_reference', 'source_url', 'application_url'] },
@@ -193,6 +301,34 @@ const OpportunityEditor = () => {
     const handleChange = (key, value) => {
         setForm(prev => ({ ...prev, [key]: value }));
         setIsDirty(true);
+        if (fieldErrors[key]) {
+            setFieldErrors(prev => { const n = { ...prev }; delete n[key]; return n; });
+        }
+    };
+
+    const REQUIRED_FIELDS = {
+        title_fr: { label: 'Titre (FR)', step: 1 },
+        opportunity_type: { label: 'Type d\'opportunité', step: 1 },
+        organization_name: { label: 'Organisation', step: 2 },
+        description_fr: { label: 'Description (FR)', step: 2 },
+        country: { label: 'Pays', step: 3 },
+        deadline: { label: 'Date limite', step: 4 },
+    };
+
+    const validateForm = () => {
+        const errors = {};
+        const descFr = editorRefFr.current ? editorRefFr.current.getContent() : form.description_fr;
+        Object.entries(REQUIRED_FIELDS).forEach(([field, { label }]) => {
+            const val = field === 'description_fr' ? descFr : form[field];
+            if (!val || (typeof val === 'string' && !val.trim())) {
+                errors[field] = `${label} est obligatoire`;
+            }
+        });
+        // Email validation
+        if (form.contact_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.contact_email)) {
+            errors.contact_email = 'Email invalide';
+        }
+        return errors;
     };
 
     // Auto-save draft every 60 seconds
@@ -278,11 +414,20 @@ const OpportunityEditor = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!form.title_fr.trim()) {
-            setToast({ type: 'error', message: 'Le titre (FR) est obligatoire' });
+        if (e) e.preventDefault();
+        const errors = validateForm();
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            const firstErrorField = Object.keys(errors)[0];
+            const firstErrorStep = REQUIRED_FIELDS[firstErrorField]?.step;
+            if (firstErrorStep && firstErrorStep !== currentStep) {
+                setCurrentStep(firstErrorStep);
+            }
+            const errorCount = Object.keys(errors).length;
+            setToast({ type: 'error', message: `${errorCount} champ${errorCount > 1 ? 's' : ''} obligatoire${errorCount > 1 ? 's' : ''} manquant${errorCount > 1 ? 's' : ''}` });
             return;
         }
+        setFieldErrors({});
 
         setSaving(true);
 
@@ -442,6 +587,9 @@ const OpportunityEditor = () => {
                                     </span>
                                     <span className="d-none d-md-inline">
                                         <i className={`fas ${step.icon} me-1`}></i>{step.label}
+                                        {Object.keys(fieldErrors).some(f => REQUIRED_FIELDS[f]?.step === step.id) && (
+                                            <i className="fas fa-exclamation-circle text-danger ms-1" style={{ fontSize: '0.7rem' }}></i>
+                                        )}
                                     </span>
                                 </button>
                                 {idx < STEPS.length - 1 && (
@@ -465,18 +613,20 @@ const OpportunityEditor = () => {
                             </div>
                             <div className="card-body">
                                 <div className="mb-3">
-                                    <label className="form-label">Type d'opportunité *</label>
-                                    <select className="form-select" value={form.opportunity_type}
+                                    <label className="form-label">Type d'opportunité <span className="text-danger">*</span></label>
+                                    <select className={`form-select ${fieldErrors.opportunity_type ? 'is-invalid' : ''}`} value={form.opportunity_type}
                                         onChange={e => handleChange('opportunity_type', e.target.value)}>
                                         <option value="job">Emploi</option>
                                         <option value="tender">Appel d'offres</option>
                                         <option value="market">Marché</option>
                                     </select>
+                                    {fieldErrors.opportunity_type && <div className="invalid-feedback">{fieldErrors.opportunity_type}</div>}
                                 </div>
                                 <div className="mb-3">
-                                    <label className="form-label">Titre (FR) *</label>
-                                    <input type="text" className="form-control" value={form.title_fr}
-                                        onChange={e => handleChange('title_fr', e.target.value)} required />
+                                    <label className="form-label">Titre (FR) <span className="text-danger">*</span></label>
+                                    <input type="text" className={`form-control ${fieldErrors.title_fr ? 'is-invalid' : ''}`} value={form.title_fr}
+                                        onChange={e => handleChange('title_fr', e.target.value)} />
+                                    {fieldErrors.title_fr && <div className="invalid-feedback">{fieldErrors.title_fr}</div>}
                                 </div>
                                 <div>
                                     <label className="form-label">Titre (EN)</label>
@@ -493,7 +643,7 @@ const OpportunityEditor = () => {
                         {/* Description */}
                         <div className="card border-0 shadow-sm mb-4">
                             <div className="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                                <h5 className="mb-0"><i className="fas fa-align-left text-primary me-2"></i>Description</h5>
+                                <h5 className="mb-0"><i className="fas fa-align-left text-primary me-2"></i>Description <span className="text-danger">*</span></h5>
                                 <div className="btn-group btn-group-sm">
                                     <button type="button" className={`btn ${activeLang === 'fr' ? 'btn-primary' : 'btn-outline-primary'}`}
                                         onClick={() => setActiveLang('fr')}>FR</button>
@@ -502,13 +652,14 @@ const OpportunityEditor = () => {
                                 </div>
                             </div>
                             <div className="card-body">
-                                <div style={{ display: activeLang === 'fr' ? 'block' : 'none' }}>
+                                <div style={{ display: activeLang === 'fr' ? 'block' : 'none', border: fieldErrors.description_fr ? '2px solid #dc3545' : 'none', borderRadius: 6 }}>
                                     <Editor
                                         onInit={(evt, editor) => (editorRefFr.current = editor)}
                                         initialValue={form.description_fr}
                                         init={TINYMCE_CONFIG}
                                     />
                                 </div>
+                                {fieldErrors.description_fr && <div className="text-danger mt-1" style={{ fontSize: '0.875rem' }}>{fieldErrors.description_fr}</div>}
                                 <div style={{ display: activeLang === 'en' ? 'block' : 'none' }}>
                                     <Editor
                                         onInit={(evt, editor) => (editorRefEn.current = editor)}
@@ -527,9 +678,10 @@ const OpportunityEditor = () => {
                             <div className="card-body">
                                 <div className="row g-3">
                                     <div className="col-md-6">
-                                        <label className="form-label">Organisation</label>
-                                        <input type="text" className="form-control" value={form.organization_name}
+                                        <label className="form-label">Organisation <span className="text-danger">*</span></label>
+                                        <input type="text" className={`form-control ${fieldErrors.organization_name ? 'is-invalid' : ''}`} value={form.organization_name}
                                             onChange={e => handleChange('organization_name', e.target.value)} />
+                                        {fieldErrors.organization_name && <div className="invalid-feedback">{fieldErrors.organization_name}</div>}
                                     </div>
                                     <div className="col-md-6">
                                         <label className="form-label">Nom du contact</label>
@@ -538,8 +690,9 @@ const OpportunityEditor = () => {
                                     </div>
                                     <div className="col-md-4">
                                         <label className="form-label">Email contact</label>
-                                        <input type="email" className="form-control" value={form.contact_email}
+                                        <input type="email" className={`form-control ${fieldErrors.contact_email ? 'is-invalid' : ''}`} value={form.contact_email}
                                             onChange={e => handleChange('contact_email', e.target.value)} />
+                                        {fieldErrors.contact_email && <div className="invalid-feedback">{fieldErrors.contact_email}</div>}
                                     </div>
                                     <div className="col-md-4">
                                         <label className="form-label">Téléphone</label>
@@ -588,12 +741,13 @@ const OpportunityEditor = () => {
                             <div className="card-body">
                                 <div className="row g-3">
                                     <div className="col-md-4">
-                                        <label className="form-label">Pays</label>
-                                        <select className="form-select" value={form.country}
-                                            onChange={e => handleChange('country', e.target.value)}>
-                                            <option value="">— Choisir —</option>
-                                            {AFRICAN_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-                                        </select>
+                                        <label className="form-label">Pays <span className="text-danger">*</span></label>
+                                        <SearchableCountrySelect
+                                            value={form.country}
+                                            onChange={v => handleChange('country', v)}
+                                            hasError={!!fieldErrors.country}
+                                        />
+                                        {fieldErrors.country && <div className="text-danger mt-1" style={{ fontSize: '0.875rem' }}>{fieldErrors.country}</div>}
                                     </div>
                                     <div className="col-md-4">
                                         <label className="form-label">Région</label>
@@ -831,9 +985,10 @@ const OpportunityEditor = () => {
                                     </select>
                                 </div>
                                 <div className="mb-3">
-                                    <label className="form-label">Date limite</label>
-                                    <input type="date" className="form-control" value={form.deadline}
+                                    <label className="form-label">Date limite <span className="text-danger">*</span></label>
+                                    <input type="date" className={`form-control ${fieldErrors.deadline ? 'is-invalid' : ''}`} value={form.deadline}
                                         onChange={e => handleChange('deadline', e.target.value)} />
+                                    {fieldErrors.deadline && <div className="invalid-feedback">{fieldErrors.deadline}</div>}
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label">Fuseau horaire</label>
