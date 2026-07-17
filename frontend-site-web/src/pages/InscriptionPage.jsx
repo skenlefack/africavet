@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import FontAwesome from "../component/uiStyle/FontAwesome";
+import CountrySelect from "../component/CountrySelect";
 import { useAuth } from "../context/AuthContext";
 import "./inscription.scss";
 
@@ -149,19 +150,13 @@ const InscriptionPage = () => {
                   </div>
                   <div className="form-group">
                     <label htmlFor="pays">Pays</label>
-                    <select id="pays" name="pays" value={formData.pays} onChange={handleChange} required disabled={loading}>
-                      <option value="">Sélectionnez</option>
-                      <option value="Sénégal">Sénégal</option>
-                      <option value="Mali">Mali</option>
-                      <option value="Côte d'Ivoire">Côte d'Ivoire</option>
-                      <option value="Burkina Faso">Burkina Faso</option>
-                      <option value="Niger">Niger</option>
-                      <option value="Cameroun">Cameroun</option>
-                      <option value="Maroc">Maroc</option>
-                      <option value="Tunisie">Tunisie</option>
-                      <option value="Algérie">Algérie</option>
-                      <option value="Autre">Autre</option>
-                    </select>
+                    <CountrySelect
+                      value={formData.pays}
+                      onChange={handleChange}
+                      name="pays"
+                      required
+                      disabled={loading}
+                    />
                   </div>
                 </div>
                 <div className="form-group">
