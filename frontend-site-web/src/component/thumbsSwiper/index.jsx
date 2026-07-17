@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Slider from "../Slider";
 import FontAwesome from "../uiStyle/FontAwesome";
 import { Link } from "react-router-dom";
 import { useData } from "../../context/DataContext";
 import { useApp } from "../../context/AppContext";
 
-// Convertir hex en rgba
 const hexToRgba = (hex, alpha = 0.7) => {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -13,7 +12,26 @@ const hexToRgba = (hex, alpha = 0.7) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-// Skeleton placeholder while loading
+// Preload images and resolve when all are loaded (or timeout)
+const preloadImages = (urls, timeout = 6000) => {
+  return new Promise((resolve) => {
+    let loaded = 0;
+    const total = urls.length;
+    if (total === 0) { resolve(); return; }
+
+    const done = () => { loaded++; if (loaded >= total) resolve(); };
+    const timer = setTimeout(resolve, timeout);
+
+    urls.forEach((url) => {
+      if (!url) { done(); return; }
+      const img = new Image();
+      img.onload = done;
+      img.onerror = done;
+      img.src = url;
+    });
+  });
+};
+
 const SliderSkeleton = () => (
   <div className="thumbs_swiper_wrapper">
     <div className="slider_demo2">
@@ -38,10 +56,9 @@ const SliderSkeleton = () => (
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginBottom: '1.5rem',
-            backdropFilter: 'blur(10px)'
+            marginBottom: '1.5rem'
           }}>
-            <i className="fas fa-paw" style={{ fontSize: '36px', color: 'rgba(255,255,255,0.6)' }}></i>
+            <i className="fa fa-paw" style={{ fontSize: '36px', color: 'rgba(255,255,255,0.6)' }}></i>
           </div>
           <div style={{
             color: 'rgba(255,255,255,0.9)',
@@ -60,7 +77,6 @@ const SliderSkeleton = () => (
           }}>
             Chargement des articles...
           </div>
-          {/* Animated dots */}
           <div style={{ display: 'flex', gap: '6px', marginTop: '1.5rem' }}>
             {[0, 1, 2].map(i => (
               <div key={i} style={{
@@ -105,11 +121,23 @@ const SliderSkeleton = () => (
 
 function ThumbsSwiper() {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [imagesReady, setImagesReady] = useState(false);
   const { galleryPosts, loading } = useData();
   const { getCategoryColor } = useApp();
 
-  // Show skeleton while loading or no posts yet
-  if (loading || galleryPosts.length === 0) {
+  // Preload all slider images before showing
+  useEffect(() => {
+    if (galleryPosts.length === 0) {
+      setImagesReady(false);
+      return;
+    }
+    setImagesReady(false);
+    const allImages = galleryPosts.slice(0, 9).map(p => p.image);
+    preloadImages(allImages).then(() => setImagesReady(true));
+  }, [galleryPosts]);
+
+  // Show skeleton while data is loading OR images are not yet preloaded
+  if (loading || galleryPosts.length === 0 || !imagesReady) {
     return <SliderSkeleton />;
   }
 
@@ -117,7 +145,7 @@ function ThumbsSwiper() {
   const thumbs = postSlider.map(p => p.image);
 
   return (
-    <div className="thumbs_swiper_wrapper">
+    <div className="thumbs_swiper_wrapper" style={{ animation: 'fadeInSlider 0.4s ease' }}>
       <div className="slider_demo2">
         <Slider
           loop={true}
@@ -193,6 +221,12 @@ function ThumbsSwiper() {
           <FontAwesome name="angle-right" />
         </div>
       </div>
+      <style>{`
+        @keyframes fadeInSlider {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
