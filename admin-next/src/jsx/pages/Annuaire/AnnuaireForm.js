@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
+import AfricanCountrySelect from '../../components/AfricanCountrySelect';
 
 // Import TinyMCE self-hosted
 import 'tinymce/tinymce';
@@ -552,17 +553,15 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
                         <div className="row g-3">
                             <div className="col-md-6">
                                 <label className="form-label fw-semibold">Pays *</label>
-                                <select
-                                    className={`form-select ${errors.country ? 'is-invalid' : ''}`}
+                                <AfricanCountrySelect
                                     value={form.country}
-                                    onChange={(e) => handleCountryChange(e.target.value)}
-                                >
-                                    <option value="">Sélectionner un pays...</option>
-                                    {AFRICAN_COUNTRIES.map(c => (
-                                        <option key={c.code2} value={c.nom_fr}>{c.nom_fr}</option>
-                                    ))}
-                                </select>
-                                {errors.country && <div className="invalid-feedback">{errors.country}</div>}
+                                    onChange={(countryName, countryCode) => {
+                                        setForm(prev => ({ ...prev, country: countryName, country_code: countryCode || '' }));
+                                        if (errors.country) setErrors(prev => ({ ...prev, country: null }));
+                                    }}
+                                    hasError={!!errors.country}
+                                />
+                                {errors.country && <div className="text-danger small mt-1">{errors.country}</div>}
                             </div>
                             <div className="col-md-6">
                                 <label className="form-label fw-semibold">Ville</label>

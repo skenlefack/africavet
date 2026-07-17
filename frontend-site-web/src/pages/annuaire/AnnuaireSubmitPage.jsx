@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import FontAwesome from '../../component/uiStyle/FontAwesome';
 import FileUpload from '../../component/shared/FileUpload';
+import AfricanCountrySelect from '../../component/AfricanCountrySelect';
 import { useAuth } from '../../context/AuthContext';
 import { annuaireApi, apiUpload } from '../../services/api';
 
@@ -34,12 +35,6 @@ const ORGANIZATION_TYPES = [
   'Autre',
 ];
 
-const COUNTRIES = [
-  'Senegal', 'Cote d\'Ivoire', 'Cameroun', 'Mali', 'Burkina Faso',
-  'Guinee', 'Benin', 'Togo', 'Niger', 'RD Congo',
-  'Madagascar', 'Gabon', 'Tchad', 'Maroc', 'Tunisie', 'Algerie',
-  'Kenya', 'Nigeria', 'Ethiopie', 'Ghana', 'Afrique du Sud', 'Autre',
-];
 
 const AnnuaireSubmitPage = () => {
   const { user, token } = useAuth();
@@ -696,20 +691,13 @@ const AnnuaireSubmitPage = () => {
                       <label className="form-label" style={{ fontWeight: '600', fontSize: '14px' }}>
                         Pays <span style={{ color: '#e74c3c' }}>*</span>
                       </label>
-                      <select
-                        className="form-control"
-                        name="country"
+                      <AfricanCountrySelect
                         value={formData.country}
                         onChange={handleChange}
+                        name="country"
                         required
                         disabled={loading}
-                        style={{ borderRadius: '8px', padding: '10px 14px' }}
-                      >
-                        <option value="">Selectionner un pays</option>
-                        {COUNTRIES.map((c) => (
-                          <option key={c} value={c}>{c}</option>
-                        ))}
-                      </select>
+                      />
                     </div>
                     <div className="col-md-6 mb-3">
                       <label className="form-label" style={{ fontWeight: '600', fontSize: '14px' }}>
