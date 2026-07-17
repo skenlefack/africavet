@@ -38,8 +38,8 @@ services:
       DB_NAME: ${DB_NAME}
       JWT_SECRET: ${JWT_SECRET}
       CORS_ORIGINS: http://africavet.com,https://africavet.com,http://www.africavet.com,https://www.africavet.com,http://manager.africavet.com,https://manager.africavet.com,http://83.228.241.6,http://83.228.241.6:8080
-      FRONTEND_URL: http://www.africavet.com
-      ADMIN_URL: http://manager.africavet.com
+      FRONTEND_URL: https://www.africavet.com
+      ADMIN_URL: https://manager.africavet.com
       SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_SECURE: ${SMTP_SECURE:-false}

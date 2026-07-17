@@ -177,7 +177,7 @@ const templates = {
                 Votre compte a été vérifié et activé avec succès. Vous pouvez maintenant vous connecter et accéder à toutes les ressources de la plateforme AfricaVET.
               </p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${process.env.FRONTEND_URL || 'http://localhost:3002'}/fr/auth/login" style="display: inline-block; background: linear-gradient(135deg, #4CAF50 0%, #00BCD4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                <a href="${process.env.FRONTEND_URL || 'https://www.africavet.com'}/connexion" style="display: inline-block; background: linear-gradient(135deg, #4CAF50 0%, #00BCD4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
                   Se connecter
                 </a>
               </div>
@@ -208,7 +208,7 @@ const templates = {
                 Your account has been verified and activated successfully. You can now log in and access all the resources on the AfricaVET platform.
               </p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${process.env.FRONTEND_URL || 'http://localhost:3002'}/en/auth/login" style="display: inline-block; background: linear-gradient(135deg, #4CAF50 0%, #00BCD4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                <a href="${process.env.FRONTEND_URL || 'https://www.africavet.com'}/connexion" style="display: inline-block; background: linear-gradient(135deg, #4CAF50 0%, #00BCD4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
                   Log in
                 </a>
               </div>
@@ -229,8 +229,8 @@ const generateVerificationToken = () => {
 
 // Send verification email
 const sendVerificationEmail = async (email, userName, token, lang = 'fr') => {
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3002';
-  const verificationUrl = `${frontendUrl}/${lang}/auth/verify-email?token=${token}`;
+  const frontendUrl = process.env.FRONTEND_URL || 'https://www.africavet.com';
+  const verificationUrl = `${frontendUrl}/verification-email/${token}`;
 
   const template = templates.verifyEmail[lang] || templates.verifyEmail.fr;
   const { subject, html } = template(verificationUrl, userName);

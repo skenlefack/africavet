@@ -12,6 +12,7 @@ const SUBJECTS = [
   "E-learning / Formations",
   "Annuaire vétérinaire",
   "Opportunités professionnelles",
+  "RecallVet",
   "Publicité / Sponsoring",
   "Signaler un problème",
   "Autre",
