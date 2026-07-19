@@ -13,24 +13,70 @@ const UsersList = () => {
     const [statusFilter, setStatusFilter] = useState('all');
     const [roleFilter, setRoleFilter] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [itemsPerPage, setItemsPerPage] = useState(25);
+    const [totalItems, setTotalItems] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [stats, setStats] = useState({ total: 0, active: 0, admins: 0, editors: 0 });
 
-    const fetchUsers = async () => {
-        const res = await api.get('/users', token);
-        if (res.success) setUsers(res.data || []);
+    const fetchUsers = async (page, limit, search, role, status) => {
+        setLoading(true);
+        const params = new URLSearchParams();
+        params.set('page', page);
+        params.set('limit', limit);
+        if (search) params.set('search', search);
+        if (role && role !== 'all') params.set('role', role);
+        if (status && status !== 'all') params.set('status', status === 'active' ? 'active' : 'inactive');
+
+        const res = await api.get(`/users?${params.toString()}`, token);
+        if (res.success) {
+            setUsers(res.data || []);
+            if (res.pagination) {
+                setTotalItems(res.pagination.total);
+                setTotalPages(res.pagination.pages);
+            }
+        }
         setLoading(false);
     };
 
+    const fetchStats = async () => {
+        const res = await api.get('/users?limit=1000', token);
+        if (res.success && res.pagination) {
+            const total = res.pagination.total;
+            // Fetch counts per role/status via separate small queries
+            const [activeRes, adminRes, editorRes] = await Promise.all([
+                api.get('/users?status=active&limit=1', token),
+                api.get('/users?role=admin&limit=1', token),
+                api.get('/users?role=editor&limit=1', token),
+            ]);
+            setStats({
+                total,
+                active: activeRes.pagination?.total || 0,
+                admins: (adminRes.pagination?.total || 0),
+                editors: editorRes.pagination?.total || 0,
+            });
+        }
+    };
+
     useEffect(() => {
-        fetchUsers();
+        fetchUsers(currentPage, itemsPerPage, searchQuery, roleFilter, statusFilter);
+    }, [currentPage, itemsPerPage, searchQuery, roleFilter, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        fetchStats();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Reset page when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, statusFilter, roleFilter, itemsPerPage]);
 
     const handleDelete = async (id) => {
         if (window.confirm('Supprimer cet utilisateur ?')) {
             const res = await api.delete(`/users/${id}`, token);
             if (res.success) {
                 setToast({ message: 'Utilisateur supprimé', type: 'success' });
-                fetchUsers();
+                fetchUsers(currentPage, itemsPerPage, searchQuery, roleFilter, statusFilter);
+                fetchStats();
             } else {
                 setToast({ message: res.message || 'Erreur', type: 'error' });
             }
@@ -42,39 +88,10 @@ const UsersList = () => {
         const res = await api.post(endpoint, {}, token);
         if (res.success) {
             setToast({ message: user.is_active ? 'Utilisateur désactivé' : 'Utilisateur activé', type: 'success' });
-            fetchUsers();
+            fetchUsers(currentPage, itemsPerPage, searchQuery, roleFilter, statusFilter);
+            fetchStats();
         }
     };
-
-    // Filtrage
-    const filteredUsers = users.filter(user => {
-        const matchesSearch =
-            (user.username || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (user.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (user.first_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (user.last_name || '').toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesStatus = statusFilter === 'all' ||
-            (statusFilter === 'active' && user.is_active) ||
-            (statusFilter === 'inactive' && !user.is_active);
-        const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-        return matchesSearch && matchesStatus && matchesRole;
-    });
-
-    // Pagination
-    const totalItems = filteredUsers.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedUsers = filteredUsers.slice(startIndex, startIndex + itemsPerPage);
-
-    // Reset page when filters change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchQuery, statusFilter, roleFilter, itemsPerPage]);
-
-    // Compteurs
-    const activeCount = users.filter(u => u.is_active).length;
-    const adminCount = users.filter(u => u.role === 'admin' || u.role === 'superadmin').length;
-    const editorCount = users.filter(u => u.role === 'editor').length;
 
     if (loading) {
         return (
@@ -101,7 +118,7 @@ const UsersList = () => {
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 className="mb-1" style={{ fontWeight: '700' }}>Utilisateurs</h2>
-                    <p className="text-muted mb-0">{users.length} utilisateurs ({activeCount} actifs)</p>
+                    <p className="text-muted mb-0">{stats.total} utilisateurs ({stats.active} actifs)</p>
                 </div>
                 <Link
                     to="/users/new"
@@ -120,7 +137,7 @@ const UsersList = () => {
                 <div className="col-md-3">
                     <div className="card bg-light border-0">
                         <div className="card-body py-3 text-center">
-                            <h4 className="mb-0">{users.length}</h4>
+                            <h4 className="mb-0">{stats.total}</h4>
                             <small className="text-muted">Total</small>
                         </div>
                     </div>
@@ -128,7 +145,7 @@ const UsersList = () => {
                 <div className="col-md-3">
                     <div className="card bg-success bg-opacity-10 border-0">
                         <div className="card-body py-3 text-center">
-                            <h4 className="mb-0 text-success">{activeCount}</h4>
+                            <h4 className="mb-0 text-success">{stats.active}</h4>
                             <small className="text-muted">Actifs</small>
                         </div>
                     </div>
@@ -136,7 +153,7 @@ const UsersList = () => {
                 <div className="col-md-3">
                     <div className="card bg-danger bg-opacity-10 border-0">
                         <div className="card-body py-3 text-center">
-                            <h4 className="mb-0 text-danger">{adminCount}</h4>
+                            <h4 className="mb-0 text-danger">{stats.admins}</h4>
                             <small className="text-muted">Admins</small>
                         </div>
                     </div>
@@ -144,7 +161,7 @@ const UsersList = () => {
                 <div className="col-md-3">
                     <div className="card bg-warning bg-opacity-10 border-0">
                         <div className="card-body py-3 text-center">
-                            <h4 className="mb-0 text-warning">{editorCount}</h4>
+                            <h4 className="mb-0 text-warning">{stats.editors}</h4>
                             <small className="text-muted">Éditeurs</small>
                         </div>
                     </div>
@@ -205,7 +222,7 @@ const UsersList = () => {
                         </div>
                         <div className="col-md-2 text-end">
                             <span className="text-muted" style={{ fontSize: '0.875rem' }}>
-                                {filteredUsers.length} résultat{filteredUsers.length !== 1 ? 's' : ''}
+                                {totalItems} résultat{totalItems !== 1 ? 's' : ''}
                             </span>
                         </div>
                     </div>
@@ -228,8 +245,8 @@ const UsersList = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {paginatedUsers.length > 0 ? (
-                                    paginatedUsers.map((user) => (
+                                {users.length > 0 ? (
+                                    users.map((user) => (
                                         <tr key={user.id} className="align-middle">
                                             <td>
                                                 <div className="d-flex align-items-center">

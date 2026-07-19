@@ -21,8 +21,14 @@ router.get('/', auth, authorize('admin'), async (req, res) => {
       params.push(role);
     }
     if (status) {
-      whereConditions.push('status = ?');
-      params.push(status);
+      if (status === 'active') {
+        whereConditions.push('is_active = 1');
+      } else if (status === 'inactive') {
+        whereConditions.push('is_active = 0');
+      } else {
+        whereConditions.push('status = ?');
+        params.push(status);
+      }
     }
     if (search) {
       whereConditions.push('(username LIKE ? OR email LIKE ? OR first_name LIKE ? OR last_name LIKE ?)');
