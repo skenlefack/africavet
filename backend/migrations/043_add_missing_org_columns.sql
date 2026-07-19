@@ -16,3 +16,7 @@ ALTER TABLE organizations ADD COLUMN description_en TEXT NULL AFTER description;
 ALTER TABLE human_resources ADD COLUMN biography_en TEXT NULL AFTER biography;
 
 ALTER TABLE human_resources ADD COLUMN address TEXT NULL AFTER region;
+
+ALTER TABLE quizzes ADD COLUMN negative_marking BOOLEAN DEFAULT FALSE AFTER allow_retake;
+
+ALTER TABLE quizzes ADD COLUMN require_passing_to_proceed BOOLEAN DEFAULT FALSE AFTER negative_marking;

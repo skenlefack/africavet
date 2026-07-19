@@ -21,7 +21,7 @@ const QuizEditor = () => {
         description_fr: '',
         description_en: '',
         quiz_type: 'module',
-        time_limit: '',
+        time_limit_minutes: '',
         passing_score: 70,
         max_attempts: 0,
         shuffle_questions: false,
@@ -50,7 +50,7 @@ const QuizEditor = () => {
                 description_fr: q.description_fr || '',
                 description_en: q.description_en || '',
                 quiz_type: q.quiz_type || 'module',
-                time_limit: q.time_limit || '',
+                time_limit_minutes: q.time_limit_minutes || '',
                 passing_score: q.passing_score || 70,
                 max_attempts: q.max_attempts || 0,
                 shuffle_questions: q.shuffle_questions || false,
@@ -223,7 +223,7 @@ const QuizEditor = () => {
                                     </div>
                                     <div className="col-md-4">
                                         <label className="form-label">Temps limite (min)</label>
-                                        <input type="number" className="form-control" name="time_limit" value={form.time_limit}
+                                        <input type="number" className="form-control" name="time_limit_minutes" value={form.time_limit_minutes}
                                             onChange={handleChange} min="0" placeholder="0 = illimité" />
                                     </div>
                                     <div className="col-md-4">
@@ -295,7 +295,7 @@ const QuizEditor = () => {
                                         <small className="text-muted">Score min.</small>
                                     </div>
                                     <div className="col-6">
-                                        <h4 className="mb-0" style={{ color: '#27AE60' }}>{form.time_limit || '∞'}</h4>
+                                        <h4 className="mb-0" style={{ color: '#27AE60' }}>{form.time_limit_minutes || '∞'}</h4>
                                         <small className="text-muted">Minutes</small>
                                     </div>
                                     <div className="col-6">

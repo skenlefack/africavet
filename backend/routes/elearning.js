@@ -2308,13 +2308,15 @@ router.post('/quizzes', auth, authorize('admin', 'editor'), async (req, res) => 
         show_score_immediately,
         allow_review,
         allow_retake,
+        negative_marking,
+        require_passing_to_proceed,
         status,
         created_by,
         contributes_to_grade,
         grade_weight,
         question_count,
         random_selection
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       title_fr, title_en,
       description_fr, description_en,
@@ -2330,6 +2332,8 @@ router.post('/quizzes', auth, authorize('admin', 'editor'), async (req, res) => 
       show_score_immediately !== false,
       allow_review !== false,
       allow_retake !== false,
+      negative_marking || false,
+      require_passing_to_proceed || false,
       status || 'draft',
       req.user.id,
       contributes_to_grade !== false,
@@ -2375,7 +2379,6 @@ router.put('/quizzes/:id', auth, authorize('admin', 'editor'), async (req, res) 
       'allow_retake',
       'require_passing_to_proceed',
       'negative_marking',
-      'negative_marking_percent',
       'status',
       'is_active',
       'contributes_to_grade',
@@ -2769,7 +2772,7 @@ router.post('/attempts/:id/submit', auth, async (req, res) => {
              a.correct_count, a.total_questions, a.passed, a.question_order,
              q.title_fr, q.title_en, q.time_limit_minutes, q.passing_score,
              q.shuffle_questions, q.shuffle_options, q.show_correct_answers,
-             q.show_explanation
+             q.show_explanation, q.negative_marking
       FROM quiz_attempts a
       JOIN quizzes q ON a.quiz_id = q.id
       WHERE a.id = ? AND a.user_id = ?
@@ -2877,8 +2880,8 @@ router.post('/attempts/:id/submit', auth, async (req, res) => {
       if (isCorrect) {
         earnedPoints = points;
         correctCount++;
-      } else if (attempt.negative_marking) {
-        earnedPoints = -(points * (attempt.negative_marking_percent / 100));
+      } else if (attempt.negative_marking && question.negative_marking) {
+        earnedPoints = -(question.negative_points || 0);
       }
 
       totalScore += earnedPoints;
@@ -3965,7 +3968,7 @@ router.get('/courses/:id/calculate-grade/:userId', auth, async (req, res) => {
       SET weighted_score = ?,
           quiz_average = ?,
           certificate_eligible = ?
-      WHERE user_id = ? AND course_id = ?
+      WHERE user_id = ? AND enrollable_type = 'course' AND enrollable_id = ?
     `, [weightedScore, moduleQuizzesAverage, certificateEligible, userId, courseId]);
 
     res.json({
@@ -4098,7 +4101,7 @@ router.get('/paths/:id/calculate-grade/:userId', auth, async (req, res) => {
       SET weighted_score = ?,
           quiz_average = ?,
           certificate_eligible = ?
-      WHERE user_id = ? AND learning_path_id = ?
+      WHERE user_id = ? AND enrollable_type = 'learning_path' AND enrollable_id = ?
     `, [weightedScore, coursesAverage, certificateEligible, userId, pathId]);
 
     res.json({
