@@ -161,7 +161,7 @@ const AlertsList = () => {
             )}
 
             {/* Header */}
-            <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div className="d-flex justify-content-between align-items-center mb-4 pt-4 flex-wrap gap-2">
                 <div>
                     <h2 className="mb-1" style={{ fontWeight: 700 }}>
                         <i className="fas fa-bell me-2" style={{ color: '#d32f2f' }} />

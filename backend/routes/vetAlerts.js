@@ -168,6 +168,82 @@ router.get('/', optionalAuth, async (req, res) => {
   }
 });
 
+// GET alert statistics (MUST be before /:id to avoid route shadowing)
+router.get('/stats/summary', async (req, res) => {
+  try {
+    const [[totals]] = await db.query(`
+      SELECT
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
+        SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved,
+        SUM(CASE WHEN status = 'investigating' THEN 1 ELSE 0 END) as investigating,
+        SUM(CASE WHEN status = 'resolved' THEN 1 ELSE 0 END) as resolved,
+        SUM(CASE WHEN priority = 'critical' THEN 1 ELSE 0 END) as critical,
+        SUM(CASE WHEN priority = 'high' THEN 1 ELSE 0 END) as high,
+        SUM(affected_count) as total_affected,
+        SUM(dead_count) as total_deaths
+      FROM vet_alerts
+      WHERE status IN ('approved', 'investigating', 'resolved')
+    `);
+
+    const [byType] = await db.query(`
+      SELECT alert_type, COUNT(*) as count
+      FROM vet_alerts
+      WHERE status IN ('approved', 'investigating', 'resolved')
+      GROUP BY alert_type
+    `);
+
+    const [byRegion] = await db.query(`
+      SELECT region, COUNT(*) as count
+      FROM vet_alerts
+      WHERE status IN ('approved', 'investigating', 'resolved') AND region IS NOT NULL
+      GROUP BY region
+      ORDER BY count DESC
+      LIMIT 10
+    `);
+
+    const [recent] = await db.query(`
+      SELECT id, code, title_fr, title_en, alert_type, priority, status, region, created_at
+      FROM vet_alerts
+      WHERE status = 'approved'
+      ORDER BY created_at DESC
+      LIMIT 5
+    `);
+
+    res.json({
+      success: true,
+      data: {
+        totals,
+        byType: byType.reduce((acc, r) => ({ ...acc, [r.alert_type]: r.count }), {}),
+        byRegion,
+        recent
+      }
+    });
+  } catch (error) {
+    console.error('Get stats error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// GET pending alerts (admin) - MUST be before /:id
+router.get('/admin/pending', auth, authorize('admin'), async (req, res) => {
+  try {
+    const [alerts] = await db.query(`
+      SELECT a.*, u.username as reporter_username,
+             (SELECT COUNT(*) FROM vet_alert_photos WHERE alert_id = a.id) as photo_count
+      FROM vet_alerts a
+      LEFT JOIN users u ON a.user_id = u.id
+      WHERE a.status = 'pending'
+      ORDER BY a.priority DESC, a.created_at ASC
+    `);
+
+    res.json({ success: true, data: alerts });
+  } catch (error) {
+    console.error('Get pending alerts error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // GET single alert
 router.get('/:id', async (req, res) => {
   try {
@@ -230,63 +306,6 @@ router.get('/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Get alert error:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// GET alert statistics
-router.get('/stats/summary', async (req, res) => {
-  try {
-    const [[totals]] = await db.query(`
-      SELECT
-        COUNT(*) as total,
-        SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
-        SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved,
-        SUM(CASE WHEN status = 'investigating' THEN 1 ELSE 0 END) as investigating,
-        SUM(CASE WHEN status = 'resolved' THEN 1 ELSE 0 END) as resolved,
-        SUM(CASE WHEN priority = 'critical' THEN 1 ELSE 0 END) as critical,
-        SUM(CASE WHEN priority = 'high' THEN 1 ELSE 0 END) as high,
-        SUM(affected_count) as total_affected,
-        SUM(dead_count) as total_deaths
-      FROM vet_alerts
-      WHERE status IN ('approved', 'investigating', 'resolved')
-    `);
-
-    const [byType] = await db.query(`
-      SELECT alert_type, COUNT(*) as count
-      FROM vet_alerts
-      WHERE status IN ('approved', 'investigating', 'resolved')
-      GROUP BY alert_type
-    `);
-
-    const [byRegion] = await db.query(`
-      SELECT region, COUNT(*) as count
-      FROM vet_alerts
-      WHERE status IN ('approved', 'investigating', 'resolved') AND region IS NOT NULL
-      GROUP BY region
-      ORDER BY count DESC
-      LIMIT 10
-    `);
-
-    const [recent] = await db.query(`
-      SELECT id, code, title_fr, title_en, alert_type, priority, status, region, created_at
-      FROM vet_alerts
-      WHERE status = 'approved'
-      ORDER BY created_at DESC
-      LIMIT 5
-    `);
-
-    res.json({
-      success: true,
-      data: {
-        totals,
-        byType: byType.reduce((acc, r) => ({ ...acc, [r.alert_type]: r.count }), {}),
-        byRegion,
-        recent
-      }
-    });
-  } catch (error) {
-    console.error('Get stats error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -440,25 +459,6 @@ router.post('/admin', auth, authorize('admin'), async (req, res) => {
     res.status(201).json({ success: true, data: newAlert[0] });
   } catch (error) {
     console.error('Admin create alert error:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// GET pending alerts (admin)
-router.get('/admin/pending', auth, authorize('admin'), async (req, res) => {
-  try {
-    const [alerts] = await db.query(`
-      SELECT a.*, u.username as reporter_username,
-             (SELECT COUNT(*) FROM vet_alert_photos WHERE alert_id = a.id) as photo_count
-      FROM vet_alerts a
-      LEFT JOIN users u ON a.user_id = u.id
-      WHERE a.status = 'pending'
-      ORDER BY a.priority DESC, a.created_at ASC
-    `);
-
-    res.json({ success: true, data: alerts });
-  } catch (error) {
-    console.error('Get pending alerts error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

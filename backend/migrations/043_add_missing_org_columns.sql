@@ -20,3 +20,17 @@ ALTER TABLE human_resources ADD COLUMN address TEXT NULL AFTER region;
 ALTER TABLE quizzes ADD COLUMN negative_marking BOOLEAN DEFAULT FALSE AFTER allow_retake;
 
 ALTER TABLE quizzes ADD COLUMN require_passing_to_proceed BOOLEAN DEFAULT FALSE AFTER negative_marking;
+
+ALTER TABLE vet_alerts ADD COLUMN severity_level VARCHAR(50) DEFAULT 'informational';
+
+ALTER TABLE vet_alerts ADD COLUMN broadcast_status VARCHAR(50) DEFAULT 'inactive';
+
+ALTER TABLE vet_alerts ADD COLUMN verification_status VARCHAR(50) DEFAULT 'unverified';
+
+ALTER TABLE vet_alerts ADD COLUMN responsible_authority VARCHAR(255) NULL;
+
+ALTER TABLE vet_alerts ADD COLUMN contact_info TEXT NULL;
+
+ALTER TABLE vet_alerts ADD COLUMN affected_regions TEXT NULL;
+
+ALTER TABLE vet_alerts ADD COLUMN auto_expire_at DATETIME NULL;

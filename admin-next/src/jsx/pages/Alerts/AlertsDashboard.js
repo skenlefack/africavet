@@ -75,7 +75,7 @@ const AlertsDashboard = () => {
     return (
         <>
             {/* Header */}
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-4 pt-4">
                 <div>
                     <h2 className="mb-1" style={{ fontWeight: 700 }}>
                         <i className="fas fa-exclamation-triangle text-warning me-2"></i>

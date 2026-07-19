@@ -192,7 +192,7 @@ const AlertView = () => {
             )}
 
             {/* Header */}
-            <div className="d-flex justify-content-between align-items-start mb-4">
+            <div className="d-flex justify-content-between align-items-start mb-4 pt-4">
                 <div>
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb mb-1">

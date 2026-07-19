@@ -118,7 +118,7 @@ const AlertEditor = () => {
                 </div>
             )}
 
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-4 pt-4">
                 <div>
                     <h2 style={{ fontWeight: 700 }}>
                         <i className="fas fa-broadcast-tower me-2" style={{ color: '#d32f2f' }} />
