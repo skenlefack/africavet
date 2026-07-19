@@ -9,6 +9,34 @@ import ScrollTopButton from "../ScrollTopButton";
 
 const API_URL = import.meta.env.VITE_API_URL || "/api";
 
+// Load Google AdSense auto-ads script globally
+const AdSenseAutoAds = () => {
+  const loaded = useRef(false);
+
+  useEffect(() => {
+    if (loaded.current) return;
+    loaded.current = true;
+
+    fetch(`${API_URL}/ads/adsense-config`)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success || !data.data?.client) return;
+
+        // Check if script already loaded
+        if (document.querySelector('script[src*="pagead2.googlesyndication.com"]')) return;
+
+        const script = document.createElement('script');
+        script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${data.data.client}`;
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        document.head.appendChild(script);
+      })
+      .catch(() => {});
+  }, []);
+
+  return null;
+};
+
 // Generate or retrieve persistent visitor ID
 const getVisitorId = () => {
   let id = localStorage.getItem('av_visitor_id');
@@ -62,6 +90,7 @@ const PageTracker = () => {
 const LayoutTheme1 = ({ children }) => {
   return (
     <div className="theme-1">
+      <AdSenseAutoAds />
       <PageTracker />
       <ScrollTopButton />
       <TopBar className="white_bg" />

@@ -220,6 +220,27 @@ router.put('/providers/:id', auth, authorize('admin'), async (req, res) => {
 // ADVERTISEMENTS ENDPOINTS
 // =====================================================
 
+// @route   GET /api/ads/adsense-config
+// @desc    Get AdSense publisher ID for auto-ads (public)
+// @access  Public
+router.get('/adsense-config', async (req, res) => {
+  try {
+    const [providers] = await db.query(
+      "SELECT config FROM ad_providers WHERE type = 'adsense' AND is_active = 1 LIMIT 1"
+    );
+    if (providers.length === 0) {
+      return res.json({ success: true, data: null });
+    }
+    const rawConfig = providers[0].config;
+    const config = typeof rawConfig === 'string' ? JSON.parse(rawConfig || '{}') : (rawConfig || {});
+    const pubId = config.publisher_id || '';
+    const client = pubId.startsWith('ca-') ? pubId : (pubId ? `ca-${pubId}` : '');
+    res.json({ success: true, data: client ? { client } : null });
+  } catch (error) {
+    res.json({ success: true, data: null });
+  }
+});
+
 // @route   GET /api/ads
 // @desc    Get all advertisements (admin)
 // @access  Private (admin)

@@ -293,7 +293,10 @@ const AdvertisementEditor = () => {
                                                 const provider = providers.find(p => p.id === parseInt(e.target.value));
                                                 if (provider) {
                                                     if (provider.type === 'adsense') {
-                                                        setFormData(prev => ({ ...prev, type: 'adsense' }));
+                                                        const config = typeof provider.config === 'string' ? JSON.parse(provider.config || '{}') : (provider.config || {});
+                                                        const pubId = config.publisher_id || '';
+                                                        const client = pubId.startsWith('ca-') ? pubId : (pubId ? `ca-${pubId}` : '');
+                                                        setFormData(prev => ({ ...prev, type: 'adsense', adsense_client: prev.adsense_client || client }));
                                                     } else if (provider.type === 'network') {
                                                         setFormData(prev => ({ ...prev, type: 'html' }));
                                                     } else {
