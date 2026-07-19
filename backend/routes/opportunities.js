@@ -200,14 +200,26 @@ router.get('/', optionalAuth, async (req, res) => {
       }
     }
 
-    // Get total count - build same WHERE conditions
+    // Get total count - replicate all WHERE conditions from main query
     let countQuery = `SELECT COUNT(*) as total FROM opportunities o WHERE ${statusFilter}`;
     const countParams = [];
     if (isAdmin && status) { countQuery += ' AND o.status = ?'; countParams.push(status); }
     if (!isAdmin) { countQuery += ' AND (o.deadline IS NULL OR o.deadline >= NOW())'; }
     if (type) { countQuery += ' AND o.opportunity_type = ?'; countParams.push(type); }
     if (country) { countQuery += ' AND o.country = ?'; countParams.push(country); }
-    if (search) { countQuery += ' AND (o.title_fr LIKE ? OR o.title_en LIKE ?)'; countParams.push(`%${search}%`, `%${search}%`); }
+    if (region) { countQuery += ' AND o.region = ?'; countParams.push(region); }
+    if (remote === '1') { countQuery += ' AND o.is_remote = 1'; }
+    if (featured === '1') { countQuery += ' AND o.is_featured = 1'; }
+    if (urgent === '1') { countQuery += ' AND o.is_urgent = 1'; }
+    if (job_type) { countQuery += ' AND o.job_type = ?'; countParams.push(job_type); }
+    if (contract_type) { countQuery += ' AND o.contract_type = ?'; countParams.push(contract_type); }
+    if (work_mode) { countQuery += ' AND o.work_mode = ?'; countParams.push(work_mode); }
+    if (offer_status) { countQuery += ' AND o.offer_status = ?'; countParams.push(offer_status); }
+    if (search) {
+      countQuery += ' AND (o.title_fr LIKE ? OR o.title_en LIKE ? OR o.description_fr LIKE ? OR o.description_en LIKE ? OR o.organization_name LIKE ?)';
+      const searchTerm = `%${search}%`;
+      countParams.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
+    }
 
     const [countResult] = await db.query(countQuery, countParams);
     const total = countResult[0].total;
@@ -319,8 +331,8 @@ router.get('/:id', optionalAuth, async (req, res) => {
         org.website as org_website
       FROM opportunities o
       LEFT JOIN organizations org ON o.organization_id = org.id
-      WHERE o.id = ? AND (o.status = 'published' OR o.submitted_by = ?)
-    `, [id, req.user?.id || 0]);
+      WHERE o.id = ? AND (o.status = 'published' OR o.submitted_by = ? OR ? IN ('admin', 'superadmin', 'editor'))
+    `, [id, req.user?.id || 0, req.user?.role || '']);
 
     if (opportunities.length === 0) {
       return res.status(404).json({ success: false, message: 'Opportunity not found' });
@@ -356,7 +368,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
  * POST /api/opportunities
  * Create a new opportunity (requires authentication)
  */
-router.post('/', authenticate, upload.single('logo'), sanitizeFields('description_fr', 'description_en', 'submission_method', 'eligibility_criteria'), async (req, res) => {
+router.post('/', optionalAuth, upload.single('logo'), sanitizeFields('description_fr', 'description_en', 'submission_method', 'eligibility_criteria'), async (req, res) => {
   try {
     const {
       opportunity_type,
@@ -465,7 +477,7 @@ router.post('/', authenticate, upload.single('logo'), sanitizeFields('descriptio
         ?, ?, ?,
         ?, ?, ?,
         ?, ?, ?,
-        ?, ?, ?, 'draft', 'open'
+        ?, ?, ?, ?, 'open'
       )
     `, [
       opportunity_type, title_fr, title_en || null, description_fr || null, description_en || null,
@@ -483,7 +495,8 @@ router.post('/', authenticate, upload.single('logo'), sanitizeFields('descriptio
       submission_method || null, eligibility_criteria || null, required_documents ? JSON.stringify(required_documents) : null,
       market_category || null, quantity || null, unit_price || null,
       start_date || null, deadline || null, deadline_timezone || 'UTC',
-      tags ? JSON.stringify(tags) : null, attachments || null, req.user.id
+      tags ? JSON.stringify(tags) : null, attachments || null, req.user ? req.user.id : null,
+      req.user ? (req.body.status || 'draft') : 'pending'
     ]);
 
     const opportunityId = result.insertId;
@@ -663,9 +676,9 @@ router.put('/:id/reject', authenticate, isAdmin, async (req, res) => {
 
     await db.query(`
       UPDATE opportunities
-      SET status = 'cancelled', rejection_reason = ?
+      SET status = 'rejected', rejection_reason = ?, verified_by = ?, verified_at = NOW()
       WHERE id = ?
-    `, [reason || null, id]);
+    `, [reason || null, req.user.id, id]);
 
     res.json({ success: true, message: 'Opportunity rejected' });
   } catch (error) {
@@ -719,14 +732,21 @@ router.put('/:id', authenticate, sanitizeFields('description_fr', 'description_e
     const values = [];
 
     const jsonFields = ['skills_required', 'benefits', 'languages_required', 'languages_desired', 'tags'];
+    const enumFields = ['job_type', 'contract_type', 'work_rhythm', 'work_mode', 'salary_type', 'salary_period', 'salary_currency', 'recruitment_scope', 'tender_type', 'offer_status', 'deadline_timezone'];
     for (const field of allowedFields) {
       if (req.body[field] !== undefined) {
         updates.push(`${field} = ?`);
-        if (jsonFields.includes(field) && typeof req.body[field] !== 'string') {
-          values.push(JSON.stringify(req.body[field]));
-        } else {
-          values.push(req.body[field]);
+        let val = req.body[field];
+        if (jsonFields.includes(field) && typeof val !== 'string') {
+          val = JSON.stringify(val);
+        } else if (enumFields.includes(field) && val === '') {
+          val = null;
+        } else if (['salary_min', 'salary_max', 'budget_min', 'budget_max', 'positions_count', 'experience_min_years', 'experience_max_years'].includes(field) && val === '') {
+          val = null;
+        } else if (['deadline', 'contract_start_date', 'contract_end_date', 'start_date'].includes(field) && val === '') {
+          val = null;
         }
+        values.push(val);
       }
     }
 
@@ -765,33 +785,40 @@ router.post('/:id/duplicate', authenticate, async (req, res) => {
 
     const orig = originals[0];
 
+    // Check ownership or admin role
+    if (orig.submitted_by !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
     const [result] = await db.query(`
       INSERT INTO opportunities (
         opportunity_type, title_fr, title_en, description_fr, description_en,
-        organization_name, organization_id, contact_name, contact_email, contact_phone,
+        organization_name, organization_logo, organization_id, contact_name, contact_email, contact_phone,
         website_url, application_url, source_url,
         country, region, city, address, is_remote, work_mode,
-        job_type, contract_type, work_rhythm, contract_duration,
+        job_type, contract_type, work_rhythm, contract_duration, contract_start_date, contract_end_date,
         experience_required, experience_min_years, experience_max_years,
-        education_required, languages_required, nationality_required, recruitment_scope,
+        education_required, languages_required, languages_desired, nationality_required, recruitment_scope,
         salary_min, salary_max, salary_currency, salary_period, salary_type,
         positions_count, grade, department,
+        skills_required, benefits,
         tender_reference, tender_type, budget_min, budget_max, budget_currency,
-        submission_method, eligibility_criteria,
-        tags, submitted_by, status, offer_status
+        submission_method, eligibility_criteria, required_documents,
+        start_date, tags, attachments, submitted_by, status, offer_status
       ) SELECT
         opportunity_type, CONCAT('[COPIE] ', title_fr), title_en, description_fr, description_en,
-        organization_name, organization_id, contact_name, contact_email, contact_phone,
+        organization_name, organization_logo, organization_id, contact_name, contact_email, contact_phone,
         website_url, application_url, source_url,
         country, region, city, address, is_remote, work_mode,
-        job_type, contract_type, work_rhythm, contract_duration,
+        job_type, contract_type, work_rhythm, contract_duration, contract_start_date, contract_end_date,
         experience_required, experience_min_years, experience_max_years,
-        education_required, languages_required, nationality_required, recruitment_scope,
+        education_required, languages_required, languages_desired, nationality_required, recruitment_scope,
         salary_min, salary_max, salary_currency, salary_period, salary_type,
         positions_count, grade, department,
+        skills_required, benefits,
         tender_reference, tender_type, budget_min, budget_max, budget_currency,
-        submission_method, eligibility_criteria,
-        tags, ?, 'draft', 'open'
+        submission_method, eligibility_criteria, required_documents,
+        start_date, tags, attachments, ?, 'draft', 'open'
       FROM opportunities WHERE id = ?
     `, [req.user.id, req.params.id]);
 
@@ -856,7 +883,7 @@ router.get('/:id/applications', authenticate, async (req, res) => {
     }
 
     const [applications] = await db.query(`
-      SELECT oa.*, u.name as user_name, u.email as user_email
+      SELECT oa.*, CONCAT(COALESCE(u.first_name,''), ' ', COALESCE(u.last_name,'')) as user_name, u.email as user_email
       FROM opportunity_applications oa
       LEFT JOIN users u ON oa.user_id = u.id
       WHERE oa.opportunity_id = ?
