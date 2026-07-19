@@ -10,3 +10,9 @@ ALTER TABLE organizations ADD COLUMN domains JSON NULL AFTER social_links;
 ALTER TABLE organizations ADD COLUMN geolocation JSON NULL AFTER domains;
 
 ALTER TABLE organizations ADD COLUMN founded_year INT NULL AFTER coverage_area;
+
+ALTER TABLE organizations ADD COLUMN description_en TEXT NULL AFTER description;
+
+ALTER TABLE human_resources ADD COLUMN biography_en TEXT NULL AFTER biography;
+
+ALTER TABLE human_resources ADD COLUMN address TEXT NULL AFTER region;

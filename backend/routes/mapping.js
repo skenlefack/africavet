@@ -583,7 +583,7 @@ router.get('/countries', auth, async (req, res) => {
 // ==================== STATS & DASHBOARD ====================
 
 // GET /stats - Enhanced mapping statistics
-router.get('/stats', auth, async (req, res) => {
+router.get('/stats', optionalAuth, async (req, res) => {
   try {
     // --- Totals by type ---
     const [[orgTotal]] = await db.query('SELECT COUNT(*) as total FROM organizations WHERE is_active = 1');
@@ -801,7 +801,7 @@ router.get('/markers', auth, async (req, res) => {
 
 // ==================== REGIONS ====================
 
-router.get('/regions', auth, async (req, res) => {
+router.get('/regions', optionalAuth, async (req, res) => {
   try {
     const [regions] = await db.query('SELECT * FROM regions ORDER BY name');
     res.json({ success: true, data: regions });
@@ -1115,8 +1115,8 @@ router.post('/experts', auth, async (req, res) => {
   try {
     const {
       first_name, last_name, title, category, organization_id,
-      email, phone, photo, biography, expertise_domains, qualifications,
-      latitude, longitude, region, city, country, country_code, specialization,
+      email, phone, photo, biography, biography_en, expertise_domains, qualifications,
+      latitude, longitude, region, city, address, country, country_code, specialization,
       show_email, show_phone, submission_status,
       years_experience, cv_url, linkedin_url, twitter_url, orcid_id,
       google_scholar_url, researchgate_url, website, languages, education,
@@ -1127,19 +1127,19 @@ router.post('/experts', auth, async (req, res) => {
 
     const [result] = await db.query(`
       INSERT INTO human_resources
-      (first_name, last_name, title, category, organization_id, email, phone, photo, biography,
-       expertise_domains, qualifications, latitude, longitude, region, city, country, country_code,
+      (first_name, last_name, title, category, organization_id, email, phone, photo, biography, biography_en,
+       expertise_domains, qualifications, latitude, longitude, region, city, address, country, country_code,
        specialization, show_email, show_phone, submission_status, is_active,
        years_experience, cv_url, linkedin_url, twitter_url, orcid_id, google_scholar_url,
        researchgate_url, website, languages, education, certifications, publications_count,
        projects_count, awards, research_interests, available_for_collaboration, consultation_rate, expertise_summary)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       first_name, last_name, title, category, organization_id,
-      email, phone, photo, biography,
+      email, phone, photo, biography, biography_en || null,
       JSON.stringify(expertise_domains || []),
       JSON.stringify(qualifications || []),
-      latitude, longitude, region, city, country || null, country_code || null,
+      latitude, longitude, region, city, address || null, country || null, country_code || null,
       specialization || null, show_email !== false, show_phone !== false,
       submission_status || 'approved', true,
       years_experience || 0, cv_url, linkedin_url, twitter_url, orcid_id,
@@ -1184,9 +1184,9 @@ router.put('/experts/:id', auth, async (req, res) => {
     // Build dynamic update query
     const allowedFields = [
       'first_name', 'last_name', 'title', 'category', 'organization_id',
-      'email', 'phone', 'photo', 'biography', 'expertise_domains', 'qualifications',
-      'latitude', 'longitude', 'region', 'city', 'address', 'is_active', 'is_verified',
-      // New fields
+      'email', 'phone', 'photo', 'biography', 'biography_en', 'expertise_domains', 'qualifications',
+      'latitude', 'longitude', 'region', 'city', 'address', 'country', 'country_code',
+      'specialization', 'show_email', 'show_phone', 'is_active', 'is_verified', 'submission_status',
       'years_experience', 'cv_url', 'linkedin_url', 'twitter_url', 'orcid_id',
       'google_scholar_url', 'researchgate_url', 'website', 'languages', 'education',
       'certifications', 'publications_count', 'projects_count', 'awards',
@@ -1370,7 +1370,7 @@ router.get('/organizations/:id/opportunities', optionalAuth, async (req, res) =>
 router.post('/organizations', auth, async (req, res) => {
   try {
     const {
-      name, acronym, type, organization_type, description, mission, logo, website,
+      name, acronym, type, organization_type, description, description_en, mission, logo, website,
       parent_organization_id, latitude, longitude, region, city, address,
       country, country_code, contact_email, contact_phone, whatsapp,
       show_email, show_phone, available_24_7,
@@ -1384,14 +1384,14 @@ router.post('/organizations', auth, async (req, res) => {
 
     const [result] = await db.query(`
       INSERT INTO organizations
-      (name, acronym, type, description, mission, logo, website, parent_organization_id,
+      (name, acronym, type, description, description_en, mission, logo, website, parent_organization_id,
        latitude, longitude, region, city, address, country, country_code,
        contact_email, contact_phone, whatsapp, show_email, show_phone, available_24_7,
        social_links, domains, geolocation, services, species_treated, specialties,
        license_number, coverage_area, founded_year, submission_status, is_active)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
-      name, acronym, orgType, description, mission, logo, website,
+      name, acronym, orgType, description, description_en || null, mission, logo, website,
       parent_organization_id, latitude, longitude, region, city, address,
       country || null, country_code || null,
       contact_email, contact_phone, whatsapp || null,
@@ -1421,10 +1421,17 @@ router.put('/organizations/:id', auth, async (req, res) => {
     const fields = req.body;
 
     const allowedFields = [
-      'name', 'acronym', 'type', 'description', 'mission', 'logo', 'website',
+      'name', 'acronym', 'type', 'description', 'description_en', 'mission', 'logo', 'website',
       'parent_organization_id', 'latitude', 'longitude', 'region', 'city', 'address',
-      'contact_email', 'contact_phone', 'social_links', 'domains', 'is_active', 'geolocation'
+      'country', 'country_code', 'contact_email', 'contact_phone', 'whatsapp',
+      'show_email', 'show_phone', 'available_24_7',
+      'social_links', 'domains', 'geolocation',
+      'services', 'species_treated', 'specialties',
+      'license_number', 'coverage_area', 'founded_year',
+      'is_active', 'submission_status'
     ];
+
+    const jsonFields = ['social_links', 'domains', 'geolocation', 'services', 'species_treated', 'specialties'];
 
     const updates = [];
     const params = [];
@@ -1432,7 +1439,7 @@ router.put('/organizations/:id', auth, async (req, res) => {
     for (const [key, value] of Object.entries(fields)) {
       if (allowedFields.includes(key)) {
         updates.push(`${key} = ?`);
-        params.push(['social_links', 'domains', 'geolocation'].includes(key) ? JSON.stringify(value) : value);
+        params.push(jsonFields.includes(key) ? JSON.stringify(value) : value);
       }
     }
 
@@ -1447,6 +1454,40 @@ router.put('/organizations/:id', auth, async (req, res) => {
     res.json({ success: true, data: updated[0] });
   } catch (error) {
     console.error('Update organization error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// UPLOAD organization logo
+router.post('/organizations/:id/photo', auth, uploadOrganizationLogo, async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+    const logoPath = `/uploads/organizations/${req.file.filename}`;
+    await db.query('UPDATE organizations SET logo = ? WHERE id = ?', [logoPath, req.params.id]);
+    res.json({ success: true, data: { logo: logoPath } });
+  } catch (error) {
+    console.error('Upload organization logo error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// UPLOAD expert photo
+router.post('/experts/:id/photo', auth, multer({
+  storage: expertPhotoStorage,
+  fileFilter: imageFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }
+}).single('photo'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+    const photoPath = `/uploads/experts/${req.file.filename}`;
+    await db.query('UPDATE human_resources SET photo = ? WHERE id = ?', [photoPath, req.params.id]);
+    res.json({ success: true, data: { photo: photoPath } });
+  } catch (error) {
+    console.error('Upload expert photo error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

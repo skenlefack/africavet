@@ -93,6 +93,7 @@ const SERVICE_OPTIONS = [
 ];
 
 const TINYMCE_CONFIG = {
+    license_key: 'gpl',
     height: 300,
     menubar: false,
     plugins: 'advlist autolink lists link image charmap preview searchreplace visualblocks code fullscreen media table help wordcount autoresize',
@@ -349,6 +350,7 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
                 category: form.category,
                 specialization: form.specialization,
                 biography: descFr,
+                biography_en: descEn,
                 email: form.contact_email,
                 phone: form.contact_phone,
                 website: form.website,
@@ -667,13 +669,12 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
                 </div>
             )}
 
-            {/* Section 3: Description */}
-            {activeSection === 3 && (
-                <div className="card mb-4">
-                    <div className="card-header bg-white">
-                        <h5 className="mb-0"><i className="fas fa-align-left text-info me-2"></i>Description</h5>
-                    </div>
-                    <div className="card-body">
+            {/* Section 3: Description — always mounted to preserve TinyMCE refs */}
+            <div className="card mb-4" style={{ display: activeSection === 3 ? 'block' : 'none' }}>
+                <div className="card-header bg-white">
+                    <h5 className="mb-0"><i className="fas fa-align-left text-info me-2"></i>Description</h5>
+                </div>
+                <div className="card-body">
                         {/* Language tabs */}
                         <ul className="nav nav-tabs mb-3">
                             <li className="nav-item">
@@ -688,30 +689,26 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
                             </li>
                         </ul>
 
-                        {langTab === 'fr' && (
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">
-                                    {entryType === 'expert' ? 'Biographie (FR)' : 'Description (FR)'}
-                                </label>
-                                <Editor
-                                    onInit={(evt, editor) => descFrRef.current = editor}
-                                    initialValue={form.description}
-                                    init={TINYMCE_CONFIG}
-                                />
-                            </div>
-                        )}
-                        {langTab === 'en' && (
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">
-                                    {entryType === 'expert' ? 'Biography (EN)' : 'Description (EN)'}
-                                </label>
-                                <Editor
-                                    onInit={(evt, editor) => descEnRef.current = editor}
-                                    initialValue={form.description_en}
-                                    init={TINYMCE_CONFIG}
-                                />
-                            </div>
-                        )}
+                        <div className="mb-3" style={{ display: langTab === 'fr' ? 'block' : 'none' }}>
+                            <label className="form-label fw-semibold">
+                                {entryType === 'expert' ? 'Biographie (FR)' : 'Description (FR)'}
+                            </label>
+                            <Editor
+                                onInit={(evt, editor) => descFrRef.current = editor}
+                                initialValue={form.description}
+                                init={TINYMCE_CONFIG}
+                            />
+                        </div>
+                        <div className="mb-3" style={{ display: langTab === 'en' ? 'block' : 'none' }}>
+                            <label className="form-label fw-semibold">
+                                {entryType === 'expert' ? 'Biography (EN)' : 'Description (EN)'}
+                            </label>
+                            <Editor
+                                onInit={(evt, editor) => descEnRef.current = editor}
+                                initialValue={form.description_en}
+                                init={TINYMCE_CONFIG}
+                            />
+                        </div>
 
                         {entryType === 'organization' && (
                             <div className="mb-3">
@@ -725,9 +722,8 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
                                 />
                             </div>
                         )}
-                    </div>
                 </div>
-            )}
+            </div>
 
             {/* Section 4: Médias */}
             {activeSection === 4 && (
