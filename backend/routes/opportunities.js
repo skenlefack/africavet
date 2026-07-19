@@ -271,6 +271,27 @@ router.get('/categories', optionalAuth, async (req, res) => {
 });
 
 /**
+ * GET /api/opportunities/by-slug/:slug
+ * Lookup opportunity by slug (for URL redirects from old site)
+ */
+router.get('/by-slug/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const [rows] = await db.query(
+      'SELECT id, title_fr, slug, opportunity_type FROM opportunities WHERE slug = ? LIMIT 1',
+      [slug]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Not found' });
+    }
+    res.json({ success: true, data: { id: rows[0].id, slug: rows[0].slug, type: rows[0].opportunity_type } });
+  } catch (error) {
+    console.error('Error looking up opportunity by slug:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+/**
  * GET /api/opportunities/stats
  * Get opportunity statistics
  */

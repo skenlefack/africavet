@@ -6,7 +6,9 @@ const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 /**
  * Handles old WordPress-style URLs (/:slug) by checking if the slug
- * matches an existing article, then redirecting to /article/:slug.
+ * matches an existing article or opportunity, then redirecting accordingly.
+ * - Articles → /article/:slug
+ * - Opportunities (old job posts) → /opportunites/:id (requires login)
  * Falls back to the 404 page if no match is found.
  */
 const SlugRedirect = () => {
@@ -22,13 +24,23 @@ const SlugRedirect = () => {
 
     const cleanSlug = slug.replace(/\/$/, "");
 
+    // First try posts
     fetch(`${API_URL}/posts/${encodeURIComponent(cleanSlug)}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data) {
           navigate(`/article/${cleanSlug}`, { replace: true });
         } else {
-          setNotFound(true);
+          // Not a post — try opportunities by slug
+          return fetch(`${API_URL}/opportunities/by-slug/${encodeURIComponent(cleanSlug)}`)
+            .then((res) => res.json())
+            .then((oppData) => {
+              if (oppData.success && oppData.data) {
+                navigate(`/opportunites/${oppData.data.id}`, { replace: true });
+              } else {
+                setNotFound(true);
+              }
+            });
         }
       })
       .catch(() => {
