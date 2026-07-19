@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api, getToken } from '../../../services/api';
-import WorldMap from 'react-svg-worldmap';
+import { MapContainer, TileLayer, CircleMarker, Tooltip as LTooltip } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -55,6 +56,31 @@ const chartColors = [
     colors.success, colors.danger, colors.orange, colors.purple,
     colors.teal, colors.pink
 ];
+
+// Country capital coordinates for map markers
+const countryCoords = {
+    DZ:[36.75,3.04],AO:[-8.84,13.23],BJ:[6.36,2.43],BW:[-24.65,25.91],BF:[12.37,-1.52],BI:[-3.38,29.36],
+    CV:[14.93,-23.51],CM:[3.87,11.52],CF:[4.36,18.56],TD:[12.11,15.04],KM:[-11.7,43.25],CG:[-4.27,15.28],
+    CD:[-4.32,15.31],CI:[6.81,-5.28],DJ:[11.59,43.15],EG:[30.04,31.24],GQ:[3.75,8.78],ER:[15.33,38.93],
+    SZ:[-26.31,31.13],ET:[9.02,38.75],GA:[0.39,9.45],GM:[13.45,-16.58],GH:[5.56,-0.19],GN:[9.64,-13.58],
+    GW:[11.86,-15.6],KE:[-1.29,36.82],LS:[-29.31,27.48],LR:[6.3,-10.8],LY:[32.9,13.18],MG:[-18.91,47.54],
+    MW:[-13.97,33.79],ML:[12.64,-8],MR:[18.09,-15.98],MU:[-20.16,57.5],MA:[34.02,-6.83],MZ:[-25.97,32.57],
+    NA:[-22.56,17.08],NE:[13.51,2.11],NG:[9.06,7.49],RW:[-1.94,29.87],ST:[0.34,6.73],SN:[14.69,-17.44],
+    SC:[-4.62,55.45],SL:[8.48,-13.23],SO:[2.05,45.34],ZA:[-25.75,28.19],SS:[4.85,31.58],SD:[15.55,32.53],
+    TZ:[-6.16,35.74],TG:[6.17,1.23],TN:[36.81,10.18],UG:[0.35,32.58],ZM:[-15.39,28.32],ZW:[-17.83,31.05],
+    FR:[48.86,2.35],DE:[52.52,13.41],GB:[51.51,-0.13],ES:[40.42,-3.7],IT:[41.9,12.5],PT:[38.72,-9.14],
+    BE:[50.85,4.35],NL:[52.37,4.9],CH:[46.95,7.45],US:[38.9,-77.04],CA:[45.42,-75.7],BR:[-15.79,-47.88],
+    MX:[19.43,-99.13],AR:[-34.6,-58.38],CO:[4.71,-74.07],IN:[28.61,77.21],CN:[39.9,116.4],JP:[35.68,139.69],
+    KR:[37.57,126.98],AU:[-35.28,149.13],RU:[55.76,37.62],TR:[39.93,32.86],SA:[24.69,46.72],AE:[24.45,54.65],
+    IL:[31.77,35.22],PK:[33.69,73.04],BD:[23.81,90.41],ID:[-6.21,106.85],PH:[14.6,120.98],VN:[21.03,105.85],
+    TH:[13.76,100.5],MY:[3.14,101.69],SG:[1.35,103.82],QA:[25.29,51.53],KW:[29.38,47.99],JO:[31.95,35.93],
+};
+
+// Get radius based on visits (scaled)
+const getRadius = (visits, maxVisits) => {
+    const min = 6, max = 35;
+    return min + ((visits / (maxVisits || 1)) * (max - min));
+};
 
 const AnalyticsDashboard = () => {
     const token = getToken();
@@ -253,11 +279,15 @@ const AnalyticsDashboard = () => {
         }]
     } : null;
 
-    // WorldMap data
-    const worldMapData = (countries.countries || []).map(c => ({
-        country: (c.country_code || '').toLowerCase(),
-        value: c.visits
-    })).filter(c => c.country);
+    // Map markers data
+    const maxVisits = Math.max(...(countries.countries || []).map(c => c.visits), 1);
+    const mapMarkers = (countries.countries || [])
+        .filter(c => c.country_code && countryCoords[c.country_code.toUpperCase()])
+        .map(c => ({
+            ...c,
+            coords: countryCoords[c.country_code.toUpperCase()],
+            radius: getRadius(c.visits, maxVisits),
+        }));
 
     // Country table sort
     const sortedCountries = [...(countries.countries || [])].sort((a, b) => {
@@ -425,30 +455,41 @@ const AnalyticsDashboard = () => {
                         <div className="card-header">
                             <h5 className="mb-0"><i className="fas fa-globe-africa me-2" style={{ color: colors.primary }}></i>Carte du monde</h5>
                         </div>
-                        <div className="card-body d-flex align-items-center justify-content-center" style={{ minHeight: 350 }}>
-                            {worldMapData.length > 0 ? (
-                                <WorldMap
-                                    color={colors.primary}
-                                    valueSuffix="visites"
-                                    size="responsive"
-                                    data={worldMapData}
-                                    styleFunction={({ countryValue, minValue, maxValue, color }) => ({
-                                        fill: countryValue
-                                            ? color
-                                            : '#f0f0f0',
-                                        fillOpacity: countryValue
-                                            ? 0.2 + 0.8 * ((countryValue - minValue) / ((maxValue - minValue) || 1))
-                                            : 0.3,
-                                        stroke: '#ddd',
-                                        strokeWidth: 0.5,
-                                        cursor: countryValue ? 'pointer' : 'default',
-                                    })}
-                                    tooltipTextFunction={(countryName, isoCode, value) =>
-                                        `${countryFlag(isoCode)} ${countryName}: ${fmtNum(value)} visites`
-                                    }
+                        <div className="card-body p-0" style={{ height: 380 }}>
+                            <MapContainer
+                                center={[5, 20]}
+                                zoom={2}
+                                style={{ height: '100%', width: '100%', borderRadius: '0 0 8px 8px' }}
+                                scrollWheelZoom={true}
+                                minZoom={2}
+                            >
+                                <TileLayer
+                                    url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                                    attribution='&copy; <a href="https://carto.com/">CARTO</a>'
                                 />
-                            ) : (
-                                <p className="text-muted">Aucune donnee geographique</p>
+                                {mapMarkers.map(c => (
+                                    <CircleMarker
+                                        key={c.country_code}
+                                        center={c.coords}
+                                        radius={c.radius}
+                                        pathOptions={{
+                                            fillColor: colors.primary,
+                                            fillOpacity: 0.6,
+                                            color: colors.secondary,
+                                            weight: 1.5,
+                                        }}
+                                    >
+                                        <LTooltip direction="top" offset={[0, -5]}>
+                                            <strong>{countryFlag(c.country_code)} {c.country_name || c.country_code}</strong><br />
+                                            {fmtNum(c.visits)} visites ({c.percentage}%)
+                                        </LTooltip>
+                                    </CircleMarker>
+                                ))}
+                            </MapContainer>
+                            {mapMarkers.length === 0 && (
+                                <div className="position-absolute top-50 start-50 translate-middle text-muted">
+                                    Aucune donnee geographique
+                                </div>
                             )}
                         </div>
                     </div>
