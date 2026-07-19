@@ -390,7 +390,7 @@ router.post('/', auth, authorize('admin', 'editor'), async (req, res) => {
         status || 'draft', start_date || null, end_date || null,
         priority || 5, weight || 100,
         advertiser_name, advertiser_email, advertiser_phone,
-        budget_type || 'unlimited', budget_value,
+        budget_type || 'unlimited', budget_value === '' ? null : budget_value,
         target_countries ? JSON.stringify(target_countries) : null,
         target_devices ? JSON.stringify(target_devices) : null,
         notes, req.user.id
@@ -468,9 +468,9 @@ router.put('/:id', auth, authorize('admin', 'editor'), async (req, res) => {
         image_url, image_url_mobile, target_url, alt_text, ad_code,
         adsense_client, adsense_slot,
         status, start_date || null, end_date || null,
-        priority, weight,
+        priority === '' ? null : priority, weight === '' ? null : weight,
         advertiser_name, advertiser_email, advertiser_phone,
-        budget_type, budget_value,
+        budget_type, budget_value === '' ? null : budget_value,
         target_countries ? JSON.stringify(target_countries) : null,
         target_devices ? JSON.stringify(target_devices) : null,
         notes, id
