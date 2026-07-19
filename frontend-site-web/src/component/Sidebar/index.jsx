@@ -4,11 +4,8 @@ import { postsApi, getImageUrl as resolveImageUrl } from "../../services/api";
 import { useApp } from "../../context/AppContext";
 import FontAwesome from "../uiStyle/FontAwesome";
 import NewsLetter from "../NewsLetter";
+import AdBanner from "../AdBanner";
 import "./style.scss";
-
-// Images publicitaires par défaut
-import adImg1 from "../../assets/img/ad/ad-1.png";
-import adImg2 from "../../assets/img/ad/ad-2.jpg";
 
 const Sidebar = ({ categorySlug = null }) => {
   const { categories, getCategoryColor, settings } = useApp();
@@ -64,12 +61,7 @@ const Sidebar = ({ categorySlug = null }) => {
   return (
     <aside className="modern-sidebar">
       {/* Ad Space Top */}
-      <div className="sidebar-ad sidebar-ad-top">
-        <a href="#" target="_blank" rel="noopener noreferrer">
-          <img src={adImg1} alt="Publicité" />
-        </a>
-        <span className="ad-label">Publicité</span>
-      </div>
+      <AdBanner placement="sidebar-top" className="sidebar-ad sidebar-ad-top" />
 
       {/* Follow Us */}
       <div className="sidebar-widget follow-widget">
@@ -118,7 +110,7 @@ const Sidebar = ({ categorySlug = null }) => {
               <div key={post.id} className="post-item">
                 <Link to={`/article/${post.slug}`} className="post-thumb">
                   <img
-                    src={resolveImageUrl(post.featured_image, adImg2)}
+                    src={resolveImageUrl(post.featured_image, null)}
                     alt={post.title_fr || post.title}
                   />
                 </Link>
@@ -170,7 +162,7 @@ const Sidebar = ({ categorySlug = null }) => {
               <div key={post.id} className="interview-item">
                 <div className="interview-img">
                   <Link to={`/article/${post.slug}`}>
-                    <img src={resolveImageUrl(post.featured_image, adImg2)} alt={post.title_fr || post.title} />
+                    <img src={resolveImageUrl(post.featured_image, null)} alt={post.title_fr || post.title} />
                   </Link>
                   <span className="play-icon">
                     <FontAwesome name="play" />
@@ -193,12 +185,7 @@ const Sidebar = ({ categorySlug = null }) => {
       </div>
 
       {/* Ad Space Bottom */}
-      <div className="sidebar-ad sidebar-ad-bottom">
-        <a href="#" target="_blank" rel="noopener noreferrer">
-          <img src={adImg2} alt="Publicité" />
-        </a>
-        <span className="ad-label">Publicité</span>
-      </div>
+      <AdBanner placement="sidebar-bottom" className="sidebar-ad sidebar-ad-bottom" />
     </aside>
   );
 };
