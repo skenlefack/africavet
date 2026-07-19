@@ -567,21 +567,39 @@ router.get('/serve/:placement', async (req, res) => {
       }
     });
 
+    // Get provider configs for AdSense fallback
+    let providerConfigs = {};
+    try {
+      const [providers] = await db.query('SELECT id, config FROM ad_providers WHERE type = "adsense"');
+      providers.forEach(p => {
+        try { providerConfigs[p.id] = JSON.parse(p.config || '{}'); } catch(e) {}
+      });
+    } catch(e) {}
+
     // Format response
-    const formattedAds = filteredAds.map(ad => ({
-      id: ad.id,
-      type: ad.type,
-      provider_type: ad.provider_type,
-      image_url: ad.image_url,
-      image_url_mobile: ad.image_url_mobile,
-      target_url: ad.target_url,
-      alt_text: ad.alt_text,
-      ad_code: ad.ad_code,
-      adsense_client: ad.adsense_client,
-      adsense_slot: ad.adsense_slot,
-      width: placementData.width,
-      height: placementData.height
-    }));
+    const formattedAds = filteredAds.map(ad => {
+      // For adsense type, inject publisher_id from provider if adsense_client is empty
+      let adsenseClient = ad.adsense_client;
+      if (ad.type === 'adsense' && !adsenseClient && providerConfigs[ad.provider_id]?.publisher_id) {
+        const pubId = providerConfigs[ad.provider_id].publisher_id;
+        adsenseClient = pubId.startsWith('ca-') ? pubId : `ca-${pubId}`;
+      }
+
+      return {
+        id: ad.id,
+        type: ad.type,
+        provider_type: ad.provider_type,
+        image_url: ad.image_url,
+        image_url_mobile: ad.image_url_mobile,
+        target_url: ad.target_url,
+        alt_text: ad.alt_text,
+        ad_code: ad.ad_code,
+        adsense_client: adsenseClient,
+        adsense_slot: ad.adsense_slot,
+        width: placementData.width,
+        height: placementData.height
+      };
+    });
 
     res.json({
       success: true,

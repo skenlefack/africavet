@@ -144,26 +144,32 @@ const AdBanner = ({
     };
   }, [ads.length, rotationInterval]);
 
-  // Render AdSense
-  const renderAdSense = (ad) => {
-    useEffect(() => {
-      // Load AdSense script if not already loaded
-      if (!window.adsbygoogle) {
-        const script = document.createElement("script");
-        script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
-        script.async = true;
-        script.crossOrigin = "anonymous";
-        document.head.appendChild(script);
-      }
+  // Load AdSense script once when an adsense ad is present
+  useEffect(() => {
+    const hasAdSense = ads.some(ad => ad.type === 'adsense');
+    if (!hasAdSense) return;
 
-      // Initialize ad
+    if (!document.querySelector('script[src*="pagead2.googlesyndication.com"]')) {
+      const script = document.createElement("script");
+      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      document.head.appendChild(script);
+    }
+  }, [ads]);
+
+  // Push adsense ad on render/rotation
+  useEffect(() => {
+    const ad = ads[currentAdIndex];
+    if (ad?.type === 'adsense' && ad.adsense_client && ad.adsense_slot) {
       try {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (e) {
-        console.error("AdSense error:", e);
-      }
-    }, []);
+      } catch (e) { /* already initialized */ }
+    }
+  }, [currentAdIndex, ads]);
 
+  // Render AdSense
+  const renderAdSense = (ad) => {
     return (
       <ins
         className="adsbygoogle"
