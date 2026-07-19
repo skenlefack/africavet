@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import FontAwesome from "../uiStyle/FontAwesome";
-import { vetAlertsApi } from "../../services/api";
+import { opportunitiesApi } from "../../services/api";
 import "./pillars.scss";
 
 const pillars = [
@@ -12,30 +12,50 @@ const pillars = [
   { id: 5, icon: "address-book", title: "Annuaire", description: "Annuaire Vétérinaire Panafricain", link: "/annuaire", color: "#EC4899", colorRgb: "236, 72, 153", stat: "5000+", statLabel: "pros" },
 ];
 
-const severityConfig = {
-  critical: { icon: "exclamation-circle", color: "#d32f2f", bg: "rgba(211,47,47,0.1)", label: "CRITIQUE" },
-  high: { icon: "exclamation-triangle", color: "#e65100", bg: "rgba(230,81,0,0.1)", label: "ÉLEVÉE" },
-  informational: { icon: "info-circle", color: "#1565c0", bg: "rgba(21,101,192,0.1)", label: "INFO" },
+const typeConfig = {
+  job: { icon: "briefcase", color: "#8B5CF6", label: "Emploi" },
+  tender: { icon: "file-text", color: "#1091FF", label: "Appel d'offres" },
+  market: { icon: "shopping-cart", color: "#00AB6C", label: "Marché" },
 };
 
 const PillarsSection = () => {
   const [hoveredId, setHoveredId] = useState(null);
-  const [alerts, setAlerts] = useState([]);
+  const [opportunities, setOpportunities] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const slideInterval = useRef(null);
 
   useEffect(() => {
-    loadAlerts();
+    loadOpportunities();
   }, []);
 
-  const loadAlerts = async () => {
+  const loadOpportunities = async () => {
     try {
-      const res = await vetAlertsApi.getAll({ limit: 6 });
-      if (res.success) setAlerts(res.data || []);
+      const res = await opportunitiesApi.getAll({ limit: 8, sort: 'newest', public: 1 });
+      if (res.success) setOpportunities(res.data || []);
     } catch (e) { /* silent */ }
   };
 
-  const formatDate = (d) => {
-    if (!d) return '';
-    return new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  const startAutoSlide = useCallback(() => {
+    if (slideInterval.current) clearInterval(slideInterval.current);
+    slideInterval.current = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % Math.max(1, opportunities.length));
+    }, 4000);
+  }, [opportunities.length]);
+
+  useEffect(() => {
+    if (opportunities.length > 1) startAutoSlide();
+    return () => { if (slideInterval.current) clearInterval(slideInterval.current); };
+  }, [opportunities.length, startAutoSlide]);
+
+  const goToSlide = (idx) => {
+    setCurrentSlide(idx);
+    startAutoSlide();
+  };
+
+  const getDaysRemaining = (deadline) => {
+    if (!deadline) return null;
+    const days = Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24));
+    return days > 0 ? days : null;
   };
 
   return (
@@ -77,42 +97,59 @@ const PillarsSection = () => {
             </div>
           </div>
 
-          {/* Alerts Sidebar (replaces auth) */}
-          <div className="alerts-sidebar">
-            <div className="alerts-card">
-              <div className="alerts-header">
-                <div className="alerts-icon-pulse">
-                  <FontAwesome name="exclamation-triangle" />
+          {/* Opportunities Slider Sidebar */}
+          <div className="opps-sidebar">
+            <div className="opps-card">
+              <div className="opps-header">
+                <div className="opps-icon-pulse">
+                  <FontAwesome name="briefcase" />
                 </div>
-                <h3>Alertes sanitaires</h3>
+                <div>
+                  <h3>Opportunités</h3>
+                  <span className="opps-count">{opportunities.length} récentes</span>
+                </div>
               </div>
-              {alerts.length > 0 ? (
-                <div className="alerts-ticker">
-                  {alerts.slice(0, 4).map((alert, i) => {
-                    const sev = severityConfig[alert.severity_level] || severityConfig.informational;
-                    return (
-                      <Link to={`/alertes-veterinaires/${alert.id}`} key={alert.id} className="alert-ticker-item"
-                            style={{ animationDelay: `${i * 0.1}s` }}>
-                        <span className="alert-sev-dot" style={{ background: sev.color }} />
-                        <div className="alert-ticker-text">
-                          <span className="alert-ticker-title">{(alert.title_fr || '').substring(0, 50)}{(alert.title_fr || '').length > 50 ? '...' : ''}</span>
-                          <span className="alert-ticker-meta">
-                            <span style={{ color: sev.color, fontWeight: 600, fontSize: '9px' }}>{sev.label}</span>
-                            {alert.country && <> · {alert.country}</>}
-                          </span>
+
+              {opportunities.length > 0 ? (
+                <div className="opps-slider">
+                  <div className="opps-slide-track" style={{ transform: `translateY(-${currentSlide * 230}px)` }}>
+                    {opportunities.map((opp) => {
+                      const type = typeConfig[opp.opportunity_type] || typeConfig.job;
+                      const title = opp.title_fr || opp.title_en || 'Opportunité';
+                      const days = getDaysRemaining(opp.deadline);
+                      return (
+                        <div className="opps-slide" key={opp.id}>
+                          <div className="opps-slide-top">
+                            <span className="opps-type-badge" style={{ background: type.color }}>
+                              <FontAwesome name={type.icon} /> {type.label}
+                            </span>
+                            {days && <span className={`opps-deadline ${days <= 7 ? 'urgent' : ''}`}>{days}j</span>}
+                          </div>
+                          <h4 className="opps-title">{title}</h4>
+                          <div className="opps-meta">
+                            {opp.organization_name && <span><FontAwesome name="building" /> {opp.organization_name}</span>}
+                            {opp.country && <span><FontAwesome name="map-marker" /> {opp.country}</span>}
+                          </div>
                         </div>
-                      </Link>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
+                  <div className="opps-dots">
+                    {opportunities.map((_, idx) => (
+                      <button key={idx} className={`opps-dot ${idx === currentSlide ? 'active' : ''}`}
+                        onClick={() => goToSlide(idx)} />
+                    ))}
+                  </div>
                 </div>
               ) : (
-                <div className="alerts-empty">
-                  <FontAwesome name="check-circle" />
-                  <span>Aucune alerte en cours</span>
+                <div className="opps-empty">
+                  <FontAwesome name="briefcase" />
+                  <span>Chargement...</span>
                 </div>
               )}
-              <Link to="/alertes-veterinaires" className="alerts-see-all">
-                Voir toutes les alertes <FontAwesome name="arrow-right" />
+
+              <Link to="/opportunites" className="opps-see-all">
+                Voir toutes les opportunités <FontAwesome name="arrow-right" />
               </Link>
             </div>
           </div>
