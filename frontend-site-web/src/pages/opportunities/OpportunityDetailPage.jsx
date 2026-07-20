@@ -6,6 +6,7 @@ import FontAwesome from '../../component/uiStyle/FontAwesome';
 import LoadingSpinner from '../../component/shared/LoadingSpinner';
 import OpportunityCard from '../../component/opportunities/OpportunityCard';
 import SEO from '../../component/SEO';
+import { OpportunityDetailGate } from '../../component/opportunities/OpportunityAccessGate';
 
 const TYPE_CONFIG = {
   job: { label: 'Emploi', color: '#2196F3', icon: 'briefcase' },
@@ -164,6 +165,7 @@ const OpportunityDetailPage = () => {
   } : null;
 
   return (
+    <OpportunityDetailGate opportunityId={opp.id}>
     <div className="opportunity-detail-page">
       <SEO
         title={displayTitle}
@@ -464,6 +466,7 @@ const OpportunityDetailPage = () => {
         </div>
       </section>
     </div>
+    </OpportunityDetailGate>
   );
 };
 

@@ -110,9 +110,9 @@ const router = createBrowserRouter([
       { path: "parcours/:slug", element: <Protected><LearningPathDetailPage /></Protected> },
       { path: "certificat/verification/:code", element: <Lazy><CertificateVerifyPage /></Lazy> },
 
-      // Opportunities (requires login)
-      { path: "opportunites", element: <Protected><OpportunitiesPage /></Protected> },
-      { path: "opportunites/:id", element: <Protected><OpportunityDetailPage /></Protected> },
+      // Opportunities (public with freemium access gate on detail pages)
+      { path: "opportunites", element: <Lazy><OpportunitiesPage /></Lazy> },
+      { path: "opportunites/:id", element: <Lazy><OpportunityDetailPage /></Lazy> },
       { path: "opportunites/:id/postuler", element: <Protected><OpportunityApplyPage /></Protected> },
 
       // Vet Alerts

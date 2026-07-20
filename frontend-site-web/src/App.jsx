@@ -4,16 +4,19 @@ import { AppProvider } from "./context/AppContext";
 import { DataProvider } from "./context/DataContext";
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import { OpportunityAccessProvider } from "./component/opportunities/OpportunityAccessGate";
 
 function App() {
   return (
     <AppProvider>
       <AuthProvider>
-        <NotificationProvider>
-          <DataProvider>
-            <Router />
-          </DataProvider>
-        </NotificationProvider>
+        <OpportunityAccessProvider>
+          <NotificationProvider>
+            <DataProvider>
+              <Router />
+            </DataProvider>
+          </NotificationProvider>
+        </OpportunityAccessProvider>
       </AuthProvider>
     </AppProvider>
   );

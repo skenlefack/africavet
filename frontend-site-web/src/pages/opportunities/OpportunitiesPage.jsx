@@ -6,6 +6,7 @@ import LoadingSpinner from '../../component/shared/LoadingSpinner';
 import Pagination from '../../component/shared/Pagination';
 import OpportunityCard from '../../component/opportunities/OpportunityCard';
 import SEO from '../../component/SEO';
+import { useOpportunityAccess } from '../../component/opportunities/OpportunityAccessGate';
 
 const TYPE_TABS = [
   { value: '', label: 'Tous', icon: 'th-large' },
@@ -26,6 +27,12 @@ const OpportunitiesPage = () => {
   const searchQuery = searchParams.get('search') || '';
   const countryFilter = searchParams.get('country') || '';
   const currentPage = parseInt(searchParams.get('page') || '1');
+  const { remaining, isAuthenticated, trackAccess } = useOpportunityAccess();
+
+  // Track listing view once
+  useEffect(() => {
+    trackAccess('listing');
+  }, []);
 
   // Load stats
   useEffect(() => {
@@ -94,6 +101,27 @@ const OpportunitiesPage = () => {
 
   return (
     <div className="opportunities-page">
+      {/* Free access warning banner */}
+      {!isAuthenticated && remaining <= 5 && remaining > 0 && (
+        <div style={{
+          background: '#fff3e0', borderBottom: '1px solid #ffe0b2',
+          padding: '10px 20px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: '10px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#e65100' }}>
+            <FontAwesome name="exclamation-triangle" />
+            <span style={{ fontSize: '14px', fontWeight: '500' }}>
+              Il vous reste {remaining} consultation{remaining > 1 ? 's' : ''} gratuite{remaining > 1 ? 's' : ''} de détails d'opportunités.
+              Créez un compte pour un accès illimité.
+            </span>
+          </div>
+          <Link to="/inscription" className="btn btn-sm"
+            style={{ background: '#e65100', color: '#fff', borderRadius: '6px', fontSize: '13px', fontWeight: '600' }}>
+            <FontAwesome name="user-plus" /> Créer un compte
+          </Link>
+        </div>
+      )}
       <SEO
         title="Opportunités - Emplois, Appels d'offres et Marchés"
         description="Découvrez les dernières offres d'emploi, appels d'offres, marchés et bourses dans le domaine vétérinaire en Afrique."
