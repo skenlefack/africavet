@@ -70,6 +70,7 @@ const MIGRATIONS = [
   '040_cleanup_wp_categories.sql',
   '041_subscriber_preferences.sql',
   '043_add_missing_org_columns.sql',
+  '046_create_opportunity_access_tracking.sql',
   'create_homepage_sections.sql',
   'update_pillars_partners.sql',
   'fix_encoding.sql'

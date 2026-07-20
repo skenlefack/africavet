@@ -11,6 +11,7 @@ const { sanitizeFields } = require('../middleware/sanitizeHtml');
 const { auditFromReq } = require('../middleware/auditLog');
 const { validateOpportunityPublish, getOpportunityCompleteness } = require('../middleware/qualityChecks');
 const isAdmin = authorize('admin');
+const crypto = require('crypto');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -335,6 +336,136 @@ router.get('/stats', optionalAuth, async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
+
+// =========================================
+// ACCESS TRACKING ROUTES (freemium gating)
+// Must be declared BEFORE /:id to avoid route collision
+// =========================================
+
+function getVisitorFingerprint(req) {
+  const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress || 'unknown';
+  const ua = req.headers['user-agent'] || 'unknown';
+  return crypto.createHash('sha256').update(`${ip}::${ua}`).digest('hex');
+}
+
+function getIpHash(req) {
+  const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress || 'unknown';
+  return crypto.createHash('sha256').update(ip).digest('hex');
+}
+
+/**
+ * GET /api/opportunities/check-access
+ * Check if the current visitor still has free access
+ */
+router.get('/check-access', optionalAuth, async (req, res) => {
+  try {
+    // Authenticated users always have access
+    if (req.user) {
+      return res.json({
+        success: true,
+        data: {
+          detail_views: 0,
+          limit: 10,
+          remaining: 999,
+          access_blocked: false,
+          is_authenticated: true
+        }
+      });
+    }
+
+    const fingerprint = getVisitorFingerprint(req);
+
+    const [counts] = await db.query(
+      `SELECT detail_views FROM opportunity_access_counts WHERE visitor_fingerprint = ?`,
+      [fingerprint]
+    );
+
+    const detailViews = counts.length > 0 ? counts[0].detail_views : 0;
+
+    res.json({
+      success: true,
+      data: {
+        detail_views: detailViews,
+        limit: 10,
+        remaining: Math.max(0, 10 - detailViews),
+        access_blocked: detailViews >= 10,
+        is_authenticated: false
+      }
+    });
+  } catch (error) {
+    console.error('Error checking opportunity access:', error);
+    res.json({ success: true, data: { detail_views: 0, limit: 10, remaining: 10, access_blocked: false, is_authenticated: false } });
+  }
+});
+
+/**
+ * POST /api/opportunities/track-access
+ * Track a visit to opportunities (listing or detail page)
+ */
+router.post('/track-access', optionalAuth, async (req, res) => {
+  try {
+    const { page_type = 'detail', opportunity_id = null } = req.body;
+    const fingerprint = getVisitorFingerprint(req);
+    const ipHash = getIpHash(req);
+    const userId = req.user?.id || null;
+
+    // Log the access
+    await db.query(
+      `INSERT INTO opportunity_access_log (visitor_fingerprint, ip_hash, user_id, opportunity_id, page_type)
+       VALUES (?, ?, ?, ?, ?)`,
+      [fingerprint, ipHash, userId, opportunity_id, page_type]
+    );
+
+    // Upsert the access count
+    if (page_type === 'detail') {
+      await db.query(
+        `INSERT INTO opportunity_access_counts (visitor_fingerprint, ip_hash, user_id, total_views, detail_views)
+         VALUES (?, ?, ?, 1, 1)
+         ON DUPLICATE KEY UPDATE
+           detail_views = detail_views + 1,
+           total_views = total_views + 1,
+           user_id = COALESCE(VALUES(user_id), user_id),
+           last_access = NOW()`,
+        [fingerprint, ipHash, userId]
+      );
+    } else {
+      await db.query(
+        `INSERT INTO opportunity_access_counts (visitor_fingerprint, ip_hash, user_id, total_views, detail_views)
+         VALUES (?, ?, ?, 1, 0)
+         ON DUPLICATE KEY UPDATE
+           total_views = total_views + 1,
+           user_id = COALESCE(VALUES(user_id), user_id),
+           last_access = NOW()`,
+        [fingerprint, ipHash, userId]
+      );
+    }
+
+    // Return the current count
+    const [counts] = await db.query(
+      `SELECT detail_views FROM opportunity_access_counts WHERE visitor_fingerprint = ?`,
+      [fingerprint]
+    );
+
+    const detailViews = counts.length > 0 ? counts[0].detail_views : 0;
+
+    res.json({
+      success: true,
+      data: {
+        detail_views: detailViews,
+        limit: 10,
+        remaining: Math.max(0, 10 - detailViews),
+        access_blocked: detailViews >= 10
+      }
+    });
+  } catch (error) {
+    console.error('Error tracking opportunity access:', error);
+    res.json({ success: true, data: { detail_views: 0, limit: 10, remaining: 10, access_blocked: false } });
+  }
+});
+
+// =========================================
+// DETAIL & CRUD ROUTES
+// =========================================
 
 /**
  * GET /api/opportunities/:id

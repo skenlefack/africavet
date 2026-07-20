@@ -5,10 +5,11 @@ import Link from 'next/link';
 import {
   Briefcase, FileText, ShoppingBag, Search, Filter, MapPin,
   Calendar, Clock, DollarSign, Building, ChevronRight, Loader2,
-  Star, Zap, Globe, Users, TrendingUp
+  Star, Zap, Globe, Users, TrendingUp, AlertTriangle, LogIn
 } from 'lucide-react';
 import { Language } from '@/lib/types';
 import { cn, formatDate } from '@/lib/utils';
+import { useOpportunityAccess } from '@/components/opportunities/OpportunityAccessGate';
 
 interface Opportunity {
   id: number;
@@ -90,6 +91,12 @@ export default function OpportunitiesPage({ params }: PageProps) {
   const [filterWorkMode, setFilterWorkMode] = useState('');
   const [filterContractType, setFilterContractType] = useState('');
   const [filterScope, setFilterScope] = useState('');
+  const { remaining, isAuthenticated, trackAccess } = useOpportunityAccess();
+
+  // Track listing page view once
+  useEffect(() => {
+    trackAccess('listing');
+  }, []);
 
   const t = {
     title: lang === 'fr' ? 'Opportunités' : 'Opportunities',
@@ -440,6 +447,29 @@ export default function OpportunitiesPage({ params }: PageProps) {
           )}
         </div>
       </div>
+
+      {/* Free access info banner */}
+      {!isAuthenticated && remaining <= 5 && remaining > 0 && (
+        <div className="max-w-6xl mx-auto px-[5%] mt-4">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-2 text-amber-800">
+              <AlertTriangle size={18} className="flex-shrink-0" />
+              <span className="text-sm font-medium">
+                {lang === 'fr'
+                  ? `Il vous reste ${remaining} consultation${remaining > 1 ? 's' : ''} gratuite${remaining > 1 ? 's' : ''} de détails d'opportunités.`
+                  : `You have ${remaining} free opportunity detail view${remaining > 1 ? 's' : ''} remaining.`}
+              </span>
+            </div>
+            <Link
+              href={`/${lang}/auth/login?register=true`}
+              className="flex items-center gap-1.5 text-sm px-4 py-1.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium whitespace-nowrap"
+            >
+              <LogIn size={14} />
+              {lang === 'fr' ? 'Créer un compte' : 'Create account'}
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Opportunities List */}
       <div className="max-w-6xl mx-auto px-[5%] py-8">

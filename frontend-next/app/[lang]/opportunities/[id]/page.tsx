@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Language } from '@/lib/types';
 import { cn, formatDate } from '@/lib/utils';
+import { OpportunityDetailGate } from '@/components/opportunities/OpportunityAccessGate';
 
 interface OpportunityDetail {
   id: number;
@@ -286,6 +287,7 @@ export default function OpportunityDetailPage({ params }: PageProps) {
                     opportunity.opportunity_type === 'tender' ? 'purple' : 'green';
 
   return (
+    <OpportunityDetailGate lang={lang} opportunityId={opportunity.id}>
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Header */}
       <div className={cn(
@@ -791,5 +793,6 @@ export default function OpportunityDetailPage({ params }: PageProps) {
         </div>
       )}
     </div>
+    </OpportunityDetailGate>
   );
 }
