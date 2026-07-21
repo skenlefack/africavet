@@ -193,7 +193,7 @@ const templates = {
         </head>
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-            <div style="background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
@@ -202,7 +202,7 @@ const templates = {
                 Merci de vous etre inscrit a notre newsletter! Pour finaliser votre inscription et commencer a recevoir nos actualites, veuillez confirmer votre adresse email.
               </p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
                   Confirmer mon inscription
                 </a>
               </div>
@@ -233,7 +233,7 @@ const templates = {
         </head>
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-            <div style="background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
@@ -242,7 +242,7 @@ const templates = {
                 Thank you for subscribing to our newsletter! To complete your subscription and start receiving our news, please confirm your email address.
               </p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
                   Confirm my subscription
                 </a>
               </div>
@@ -276,7 +276,7 @@ const templates = {
         </head>
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-            <div style="background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
@@ -314,7 +314,7 @@ const templates = {
         </head>
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
           <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-            <div style="background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
             </div>
             <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">

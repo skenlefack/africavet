@@ -1,6 +1,6 @@
 /**
  * NEWSLETTER MODULE API ROUTES
- * One Health CMS
+ * AfricaVET CMS
  *
  * Routes pour la gestion de newsletter:
  * - Abonnements publics (inscription, confirmation, desabonnement)
@@ -189,8 +189,21 @@ router.post('/subscribe', async (req, res) => {
       VALUES (?, 'subscribe', ?, ?)
     `, [subscriberId, JSON.stringify({ list_id: listId, is_new: isNew }), req.ip]);
 
-    // TODO: Send confirmation email if double opt-in enabled
-    // This would be handled by newsletterEmailService
+    // Send confirmation email if double opt-in enabled
+    if (needsConfirmation) {
+      try {
+        const [subData] = await db.query(
+          'SELECT * FROM newsletter_subscribers WHERE id = ?', [subscriberId]
+        );
+        if (subData.length > 0) {
+          const emailService = require('../services/newsletterEmailService');
+          await emailService.sendConfirmationEmail(subData[0]);
+        }
+      } catch (emailError) {
+        console.error('Failed to send confirmation email:', emailError);
+        // Don't fail the subscription if email fails
+      }
+    }
 
     res.status(201).json({
       success: true,

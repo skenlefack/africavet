@@ -58,12 +58,12 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health Cameroon">
-      <h1>One Health Cameroon</h1>
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
+      <h1>AfricaVET</h1>
       <p>Actualites et informations</p>
     </div>
     <div class="content">
-      <p class="intro">Bonjour {{first_name}}, voici les dernieres actualites de One Health Cameroon.</p>
+      <p class="intro">Bonjour {{first_name}}, voici les dernieres actualites de AfricaVET.</p>
       {{articles}}
       {{custom_content}}
       <div class="cta-section">
@@ -73,7 +73,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       </div>
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon. Tous droits reserves.</p>
+      <p>&copy; {{year}} AfricaVET. Tous droits reserves.</p>
       <p class="unsubscribe">Vous recevez cet email car vous etes abonne a notre newsletter.<br><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -89,17 +89,17 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health Cameroon">
-      <h1>One Health Cameroon</h1>
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
+      <h1>AfricaVET</h1>
       <p>News and updates</p>
     </div>
     <div class="content">
-      <p class="intro">Hello {{first_name}}, here are the latest news from One Health Cameroon.</p>
+      <p class="intro">Hello {{first_name}}, here are the latest news from AfricaVET.</p>
       {{articles}}
       {{custom_content}}
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon. All rights reserved.</p>
+      <p>&copy; {{year}} AfricaVET. All rights reserved.</p>
       <p><a href="{{unsubscribe_url}}">Unsubscribe</a></p>
     </div>
   </div>
@@ -140,7 +140,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
   <div class="wrapper">
     <div class="header">
       <div class="header-inner">
-        <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+        <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
         <h1>Digest Hebdomadaire</h1>
       </div>
     </div>
@@ -150,7 +150,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       {{custom_content}}
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -195,7 +195,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
   <div class="wrapper">
     <div class="alert-bar">BULLETIN DE SANTE - {{month}} {{year}}</div>
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
       <h1>Bulletin de Sante</h1>
     </div>
     <div class="hero">
@@ -207,7 +207,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       {{custom_content}}
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -250,7 +250,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
       <h1>Vous etes invites!</h1>
       <p>{{subject}}</p>
       <div class="event-date">
@@ -275,7 +275,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       </div>
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -317,7 +317,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
       <h1>Resume Hebdomadaire</h1>
       <p>Semaine du {{week_start}} au {{week_end}}</p>
     </div>
@@ -327,7 +327,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       {{custom_content}}
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -366,7 +366,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
       <h1>Annonce Officielle</h1>
       <span class="badge">Communication</span>
     </div>
@@ -375,11 +375,11 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       {{custom_content}}
       <div class="signature">
         <p>Cordialement,</p>
-        <p><strong>L''equipe One Health Cameroon</strong></p>
+        <p><strong>L''equipe AfricaVET</strong></p>
       </div>
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -420,7 +420,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
       <div>
         <h1>Recherche & Publications</h1>
         <p>Dernieres mises a jour</p>
@@ -431,7 +431,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       {{custom_content}}
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -475,7 +475,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
     </div>
     <div class="hero">
       <span class="hero-badge">Formation</span>
@@ -492,7 +492,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       </div>
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -535,7 +535,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
       <h1>Focus Partenaire</h1>
     </div>
     <div class="content">
@@ -557,7 +557,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       <a href="{{site_url}}/partners">Voir tous nos partenaires</a>
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -598,7 +598,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
     </div>
     <img class="hero-image" src="{{hero_image}}" alt="Success Story">
     <div class="content">
@@ -624,7 +624,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       </div>
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -671,7 +671,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       <h2>ALERTE SANITAIRE</h2>
     </div>
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
     </div>
     <div class="content">
       <span class="alert-level">Niveau: {{alert_level}}</span>
@@ -690,7 +690,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       </div>
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon - Communication urgente</p>
+      <p>&copy; {{year}} AfricaVET - Communication urgente</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -734,7 +734,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
       <h1>Rapport Mensuel</h1>
       <p>{{month}} {{year}}</p>
     </div>
@@ -764,7 +764,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       {{articles}}
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -814,7 +814,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
       <h1>Nouvelles de la Communaute</h1>
     </div>
     <div class="content">
@@ -829,7 +829,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       </div>
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -873,7 +873,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
     </div>
     <div class="hero">
       <span class="hero-badge">Nouveau</span>
@@ -891,7 +891,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       <a href="{{product_url}}">Decouvrir maintenant</a>
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>
@@ -933,8 +933,8 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
 <body>
   <div class="wrapper">
     <div class="header">
-      <img src="{{site_url}}/images/one-health.jpg" alt="One Health">
-      <h1>One Health Cameroon</h1>
+      <img src="{{site_url}}/images/africavet-logo.png" alt="AfricaVET">
+      <h1>AfricaVET</h1>
     </div>
     <div class="content">
       <h2>{{subject}}</h2>
@@ -943,7 +943,7 @@ INSERT INTO newsletter_templates (name, slug, category, layout, preview_gradient
       {{articles_minimal}}
     </div>
     <div class="footer">
-      <p>&copy; {{year}} One Health Cameroon</p>
+      <p>&copy; {{year}} AfricaVET</p>
       <p><a href="{{unsubscribe_url}}">Se desabonner</a></p>
     </div>
   </div>

@@ -224,7 +224,7 @@ CREATE TABLE IF NOT EXISTS newsletter_activity_log (
 
 -- Liste par défaut
 INSERT INTO newsletter_lists (name, slug, description, color, is_public, is_default, double_optin, welcome_email_enabled)
-VALUES ('Newsletter Générale', 'newsletter-generale', 'Liste principale pour les actualités One Health', '#27AE60', TRUE, TRUE, TRUE, TRUE)
+VALUES ('Newsletter Générale', 'newsletter-generale', 'Liste principale de la newsletter AfricaVET', '#27AE60', TRUE, TRUE, TRUE, TRUE)
 ON DUPLICATE KEY UPDATE name = name;
 
 -- Template par défaut
@@ -236,7 +236,7 @@ INSERT INTO newsletter_templates (
 )
 VALUES (
   'Template Standard', 'template-standard', 'newsletter', TRUE, TRUE,
-  'Newsletter One Health - {{date}}', 'One Health Newsletter - {{date}}',
+  'Newsletter AfricaVET - {{date}}', 'One Health Newsletter - {{date}}',
   '<!DOCTYPE html>
 <html>
 <head>
@@ -247,7 +247,7 @@ VALUES (
 <body style="font-family: ''Segoe UI'', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
   <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
     <div style="background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-      <h1 style="color: white; margin: 0; font-size: 24px;">One Health Cameroun</h1>
+      <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
     </div>
     <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
       <h2 style="color: #263238; margin-top: 0;">Bonjour {{first_name}},</h2>
@@ -271,7 +271,7 @@ VALUES (
 <body style="font-family: ''Segoe UI'', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
   <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
     <div style="background: linear-gradient(135deg, #27AE60 0%, #00BCD4 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-      <h1 style="color: white; margin: 0; font-size: 24px;">One Health Cameroon</h1>
+      <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
     </div>
     <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
       <h2 style="color: #263238; margin-top: 0;">Hello {{first_name}},</h2>
@@ -291,9 +291,9 @@ ON DUPLICATE KEY UPDATE name = name;
 
 -- Paramètres par défaut
 INSERT INTO newsletter_settings (`key`, value) VALUES
-('sender_name', '"One Health Cameroun"'),
-('sender_email', '"newsletter@onehealth.cm"'),
-('reply_to', '"contact@onehealth.cm"'),
+('sender_name', '"AfricaVET"'),
+('sender_email', '"newsletter@africavet.com"'),
+('reply_to', '"contact@africavet.com"'),
 ('batch_size', '50'),
 ('batch_delay_ms', '1000'),
 ('tracking_enabled', 'true'),
