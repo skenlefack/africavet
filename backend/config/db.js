@@ -20,9 +20,15 @@ const pool = mysql.createPool({
   }
 });
 
+// Force UTF-8 on every new connection
+pool.on('connection', (connection) => {
+  connection.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
+});
+
 // Test connection
 pool.getConnection()
-  .then(conn => {
+  .then(async conn => {
+    await conn.query("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
     console.log('✅ Database connected successfully');
     conn.release();
   })
