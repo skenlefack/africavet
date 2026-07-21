@@ -123,7 +123,7 @@ const CategorySection = ({
   // Layout: Featured (2 grands à gauche + liste à droite)
   if (layout === "featured") {
     const mainPosts = posts.slice(0, 2);
-    const sidePosts = posts.slice(2, 6);
+    const sidePosts = posts.slice(2, 7);
 
     return (
       <div className={`category_section ${className} ${dark ? 'dark_bg' : ''}`}>

@@ -201,7 +201,7 @@ function HomePage() {
               categoryName="Faune Sauvage"
               categoryIcon="paw"
               layout="featured"
-              limit={6}
+              limit={7}
             />
           </div>
           <div className="col-lg-4">
