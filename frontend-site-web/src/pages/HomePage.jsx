@@ -39,6 +39,15 @@ function HomePage() {
       {/* Espace après le menu */}
       <div className="space-20" />
 
+      {/* Tagline */}
+      <div style={{ background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)', padding: '14px 0', textAlign: 'center' }}>
+        <div className="container">
+          <p style={{ margin: 0, color: '#fff', fontSize: '16px', fontWeight: '500', letterSpacing: '0.3px' }}>
+            Accédez à tous les outils et ressources pour les professionnels de la santé animale en Afrique
+          </p>
+        </div>
+      </div>
+
       {/* Gallery + Recent Posts */}
       <PostGallery className="fifth_bg" />
 
