@@ -27,6 +27,13 @@ WHERE description_fr REGEXP 'Ã©|Ã¨|Ãª|Ã |Ã¢|Ã®|Ã´|Ã¹|Ã§|Ã‰|�
 UPDATE categories SET description_en = CONVERT(BINARY CONVERT(description_en USING latin1) USING utf8mb4)
 WHERE description_en REGEXP 'Ã©|Ã¨|Ãª|Ã |Ã¢|Ã®|Ã´|Ã¹|Ã§|Ã‰|Ã«|Ã¯|Ã»|Ãˆ';
 
+UPDATE categories SET name = CONVERT(BINARY CONVERT(name USING latin1) USING utf8mb4)
+WHERE name REGEXP 'Ã©|Ã¨|Ãª|Ã |Ã¢|Ã®|Ã´|Ã¹|Ã§|Ã‰|Ã«|Ã¯|Ã»|Ãˆ';
+
+-- Sync name with name_fr for any remaining mismatches
+UPDATE categories SET name = name_fr
+WHERE name_fr IS NOT NULL AND name != name_fr AND name_fr NOT REGEXP 'Ã©|Ã¨|Ãª|Ã |Ã¢|Ã®|Ã´|Ã¹|Ã§|Ã‰|Ã«|Ã¯|Ã»|Ãˆ';
+
 UPDATE categories SET description = CONVERT(BINARY CONVERT(description USING latin1) USING utf8mb4)
 WHERE description REGEXP 'Ã©|Ã¨|Ãª|Ã |Ã¢|Ã®|Ã´|Ã¹|Ã§|Ã‰|Ã«|Ã¯|Ã»|Ãˆ';
 
