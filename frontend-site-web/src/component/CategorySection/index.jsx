@@ -120,10 +120,10 @@ const CategorySection = ({
     );
   }
 
-  // Layout: Featured (1 grand + liste)
+  // Layout: Featured (2 grands à gauche + liste à droite)
   if (layout === "featured") {
-    const mainPost = posts[0];
-    const sidePosts = posts.slice(1, 5);
+    const mainPosts = posts.slice(0, 2);
+    const sidePosts = posts.slice(2, 6);
 
     return (
       <div className={`category_section ${className} ${dark ? 'dark_bg' : ''}`}>
@@ -143,30 +143,32 @@ const CategorySection = ({
             )}
           </div>
           <div className="row">
-            <div className="col-lg-6">
-              <div className="single_post post_type3 mb30">
-                <div className="post_img">
-                  <div className="img_wrap">
-                    <Link to={`/article/${mainPost.slug}`}>
-                      <img src={getImageUrl(mainPost.featured_image)} alt={mainPost.title_fr || mainPost.title} />
+            <div className="col-lg-6 d-flex flex-column gap-3">
+              {mainPosts.map((mainPost) => (
+                <div key={mainPost.id} className="single_post post_type3" style={{ flex: 1 }}>
+                  <div className="post_img">
+                    <div className="img_wrap">
+                      <Link to={`/article/${mainPost.slug}`}>
+                        <img src={getImageUrl(mainPost.featured_image)} alt={mainPost.title_fr || mainPost.title} />
+                      </Link>
+                    </div>
+                    <Link to={`/categorie/${categorySlug}`} className="category_badge" style={{ backgroundColor: getCategoryColor(categorySlug) }}>
+                      {categoryName}
                     </Link>
                   </div>
-                  <Link to={`/categorie/${categorySlug}`} className="category_badge" style={{ backgroundColor: getCategoryColor(categorySlug) }}>
-                    {categoryName}
-                  </Link>
+                  <div className="single_post_text">
+                    <h4>
+                      <Link to={`/article/${mainPost.slug}`}>
+                        {truncate(mainPost.title_fr || mainPost.title, 80)}
+                      </Link>
+                    </h4>
+                    <p className="post-p">
+                      {truncate(mainPost.excerpt_fr || mainPost.excerpt || '', 120)}
+                    </p>
+                    <span className="post_date">{formatDate(mainPost.created_at)}</span>
+                  </div>
                 </div>
-                <div className="single_post_text">
-                  <h4>
-                    <Link to={`/article/${mainPost.slug}`}>
-                      {truncate(mainPost.title_fr || mainPost.title, 80)}
-                    </Link>
-                  </h4>
-                  <p className="post-p">
-                    {truncate(mainPost.excerpt_fr || mainPost.excerpt || '', 150)}
-                  </p>
-                  <span className="post_date">{formatDate(mainPost.created_at)}</span>
-                </div>
-              </div>
+              ))}
             </div>
             <div className="col-lg-6">
               {sidePosts.map((post, i) => (
