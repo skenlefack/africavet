@@ -182,85 +182,77 @@ const processTrackingLinks = async (html, newsletterId, subscriberId, baseUrl) =
 
 const templates = {
   confirmation: {
-    fr: (confirmUrl, firstName) => ({
-      subject: 'Confirmez votre inscription - AfricaVET',
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
-          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-            <div style="background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
-            </div>
-            <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-              <h2 style="color: #263238; margin-top: 0;">Bonjour ${firstName || 'cher abonne'},</h2>
-              <p style="color: #607D8B; line-height: 1.6;">
-                Merci de vous etre inscrit a notre newsletter! Pour finaliser votre inscription et commencer a recevoir nos actualites, veuillez confirmer votre adresse email.
-              </p>
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                  Confirmer mon inscription
-                </a>
-              </div>
-              <p style="color: #607D8B; line-height: 1.6; font-size: 14px;">
-                Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur:
-              </p>
-              <p style="color: #2196F3; word-break: break-all; font-size: 14px;">
-                ${confirmUrl}
-              </p>
-              <hr style="border: none; border-top: 1px solid #E0E0E0; margin: 30px 0;">
-              <p style="color: #9E9E9E; font-size: 12px; text-align: center;">
-                Si vous n'avez pas demande cette inscription, ignorez simplement cet email.
-              </p>
-            </div>
-          </div>
-        </body>
-        </html>
-      `
+    fr: (confirmUrl) => ({
+      subject: 'Confirmez votre inscription à la newsletter AfricaVET',
+      html: `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+    <div style="background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
+      <h1 style="color: white; margin: 0; font-size: 26px; letter-spacing: 1px;">AfricaVET</h1>
+    </div>
+    <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+      <h2 style="color: #354e84; margin-top: 0; font-size: 20px;">Bonjour,</h2>
+      <p style="color: #555; line-height: 1.7; font-size: 15px;">
+        Merci de votre inscription à la newsletter <strong>AfricaVET</strong>.
+      </p>
+      <p style="color: #555; line-height: 1.7; font-size: 15px;">
+        Pour finaliser votre inscription et recevoir nos actualités sur la santé animale, l'élevage, les opportunités professionnelles, les formations et les événements vétérinaires en Afrique, veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous.
+      </p>
+      <div style="text-align: center; margin: 32px 0;">
+        <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); color: white; text-decoration: none; padding: 15px 36px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+          Confirmer mon inscription
+        </a>
+      </div>
+      <p style="color: #888; line-height: 1.6; font-size: 13px;">
+        Si le bouton ne fonctionne pas, copiez et collez le lien suivant dans votre navigateur :
+      </p>
+      <p style="color: #2196F3; word-break: break-all; font-size: 13px;">${confirmUrl}</p>
+      <hr style="border: none; border-top: 1px solid #E0E0E0; margin: 30px 0;">
+      <p style="color: #555; font-size: 14px; margin-bottom: 4px;">À très bientôt sur AfricaVET,</p>
+      <p style="color: #354e84; font-size: 14px; font-weight: 600; margin-top: 0;">L'équipe AfricaVET</p>
+      <p style="color: #9E9E9E; font-size: 12px; text-align: center; margin-top: 20px;">
+        La plateforme panafricaine d'information et de services vétérinaires
+      </p>
+    </div>
+  </div>
+</body></html>`
     }),
-    en: (confirmUrl, firstName) => ({
-      subject: 'Confirm your subscription - AfricaVET',
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
-          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-            <div style="background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">AfricaVET</h1>
-            </div>
-            <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-              <h2 style="color: #263238; margin-top: 0;">Hello ${firstName || 'dear subscriber'},</h2>
-              <p style="color: #607D8B; line-height: 1.6;">
-                Thank you for subscribing to our newsletter! To complete your subscription and start receiving our news, please confirm your email address.
-              </p>
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                  Confirm my subscription
-                </a>
-              </div>
-              <p style="color: #607D8B; line-height: 1.6; font-size: 14px;">
-                If the button doesn't work, copy and paste this link into your browser:
-              </p>
-              <p style="color: #2196F3; word-break: break-all; font-size: 14px;">
-                ${confirmUrl}
-              </p>
-              <hr style="border: none; border-top: 1px solid #E0E0E0; margin: 30px 0;">
-              <p style="color: #9E9E9E; font-size: 12px; text-align: center;">
-                If you didn't request this subscription, simply ignore this email.
-              </p>
-            </div>
-          </div>
-        </body>
-        </html>
-      `
+    en: (confirmUrl) => ({
+      subject: 'Confirm your subscription to the AfricaVET newsletter',
+      html: `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f7fa;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+    <div style="background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
+      <h1 style="color: white; margin: 0; font-size: 26px; letter-spacing: 1px;">AfricaVET</h1>
+    </div>
+    <div style="background: white; padding: 40px 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+      <h2 style="color: #354e84; margin-top: 0; font-size: 20px;">Hello,</h2>
+      <p style="color: #555; line-height: 1.7; font-size: 15px;">
+        Thank you for subscribing to the <strong>AfricaVET</strong> newsletter.
+      </p>
+      <p style="color: #555; line-height: 1.7; font-size: 15px;">
+        To complete your registration and start receiving updates on animal health, livestock, professional opportunities, training programmes and veterinary events across Africa, please confirm your email address by clicking the button below.
+      </p>
+      <div style="text-align: center; margin: 32px 0;">
+        <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #7ac142 0%, #354e84 100%); color: white; text-decoration: none; padding: 15px 36px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+          Confirm my subscription
+        </a>
+      </div>
+      <p style="color: #888; line-height: 1.6; font-size: 13px;">
+        If the button does not work, copy and paste the following link into your browser:
+      </p>
+      <p style="color: #2196F3; word-break: break-all; font-size: 13px;">${confirmUrl}</p>
+      <hr style="border: none; border-top: 1px solid #E0E0E0; margin: 30px 0;">
+      <p style="color: #555; font-size: 14px; margin-bottom: 4px;">We look forward to keeping you informed.</p>
+      <p style="color: #354e84; font-size: 14px; font-weight: 600; margin-top: 0;">The AfricaVET Team</p>
+      <p style="color: #9E9E9E; font-size: 12px; text-align: center; margin-top: 20px;">
+        The Pan-African platform for veterinary information and services
+      </p>
+    </div>
+  </div>
+</body></html>`
     })
   },
 
@@ -355,7 +347,7 @@ const sendConfirmationEmail = async (subscriber) => {
   try {
     const settings = await getSettings();
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3002';
-    const confirmUrl = `${frontendUrl}/${subscriber.language}/newsletter/confirm/${subscriber.confirmation_token}`;
+    const confirmUrl = `${frontendUrl}/newsletter/confirmation/${subscriber.confirmation_token}`;
 
     const template = templates.confirmation[subscriber.language] || templates.confirmation.fr;
     const { subject, html } = template(confirmUrl, subscriber.first_name);
@@ -384,7 +376,7 @@ const sendWelcomeEmail = async (subscriber) => {
   try {
     const settings = await getSettings();
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3002';
-    const unsubscribeUrl = `${frontendUrl}/${subscriber.language}/newsletter/unsubscribe?token=${subscriber.unsubscribe_token}`;
+    const unsubscribeUrl = `${frontendUrl}/newsletter/desinscription?token=${subscriber.unsubscribe_token}&email=${encodeURIComponent(subscriber.email)}`;
 
     const template = templates.welcome[subscriber.language] || templates.welcome.fr;
     const { subject, html } = template(subscriber.first_name, unsubscribeUrl);
@@ -414,7 +406,7 @@ const sendNewsletter = async (newsletter, subscriber) => {
     const settings = await getSettings();
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3002';
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
-    const unsubscribeUrl = `${frontendUrl}/${subscriber.language}/newsletter/unsubscribe?token=${subscriber.unsubscribe_token}`;
+    const unsubscribeUrl = `${frontendUrl}/newsletter/desinscription?token=${subscriber.unsubscribe_token}&email=${encodeURIComponent(subscriber.email)}`;
 
     // Select content based on language
     const subject = subscriber.language === 'en' && newsletter.subject_en
