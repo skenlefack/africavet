@@ -1,5 +1,5 @@
 /**
- * ONE HEALTH E-LEARNING API ROUTES
+ * AFRICAVET E-LEARNING API ROUTES
  *
  * Routes pour la gestion du module e-learning:
  * - Catégories
@@ -67,7 +67,7 @@ const generateSlug = async (title, table) => {
 const generateCertificateNumber = () => {
   const year = new Date().getFullYear();
   const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-  return `CERT-OH-${year}-${random}`;
+  return `CERT-AV-${year}-${random}`;
 };
 
 const generateVerificationCode = () => {
