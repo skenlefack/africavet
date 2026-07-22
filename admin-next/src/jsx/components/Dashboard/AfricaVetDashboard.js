@@ -2,8 +2,21 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { axiosInstance } from '../../../services/AuthService';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { MapContainer, TileLayer, CircleMarker, Tooltip as LTooltip } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+
+// Lazy load react-leaflet to avoid production build issues
+let MapContainer, TileLayer, CircleMarker, LTooltip;
+let leafletLoaded = false;
+try {
+    const rl = require('react-leaflet');
+    MapContainer = rl.MapContainer;
+    TileLayer = rl.TileLayer;
+    CircleMarker = rl.CircleMarker;
+    LTooltip = rl.Tooltip;
+    require('leaflet/dist/leaflet.css');
+    leafletLoaded = true;
+} catch (e) {
+    console.warn('Leaflet not available:', e.message);
+}
 
 // African country coordinates + name normalization
 const COUNTRY_COORDS = {
@@ -149,7 +162,7 @@ function AfricaVetDashboard() {
                         <span style={{ background: '#354e84', color: '#fff', padding: '3px 10px', borderRadius: '12px', fontSize: '0.7rem' }}>{geoData.length} pays</span>
                     </div>
                     <div style={{ ...cardBody, padding: 0, overflow: 'hidden', borderRadius: '0 0 12px 12px' }}>
-                        {geoData.length > 0 ? (
+                        {geoData.length > 0 && leafletLoaded && MapContainer ? (
                             <>
                                 <div style={{ height: '340px' }}>
                                     <MapContainer
