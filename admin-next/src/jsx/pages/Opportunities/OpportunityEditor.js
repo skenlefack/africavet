@@ -433,6 +433,7 @@ const OpportunityEditor = () => {
 
         const data = {
             ...form,
+            status: isEditing ? form.status : 'published',
             attachments: files.length > 0 ? JSON.stringify(files) : null,
             description_fr: editorRefFr.current ? editorRefFr.current.getContent() : form.description_fr,
             description_en: editorRefEn.current ? editorRefEn.current.getContent() : form.description_en,
@@ -455,7 +456,7 @@ const OpportunityEditor = () => {
         }
 
         if (res.success) {
-            setToast({ type: 'success', message: isEditing ? 'Opportunité mise à jour' : 'Opportunité créée' });
+            setToast({ type: 'success', message: isEditing ? 'Opportunité mise à jour' : 'Opportunité publiée' });
             const newId = res.data?.id || id;
             setTimeout(() => navigate(`/opportunities/view/${newId}`), 1000);
         } else {
@@ -654,6 +655,7 @@ const OpportunityEditor = () => {
                             <div className="card-body">
                                 <div style={{ display: activeLang === 'fr' ? 'block' : 'none', border: fieldErrors.description_fr ? '2px solid #dc3545' : 'none', borderRadius: 6 }}>
                                     <Editor
+                                        key={`desc-fr-${loading}`}
                                         onInit={(evt, editor) => (editorRefFr.current = editor)}
                                         initialValue={form.description_fr}
                                         init={TINYMCE_CONFIG}
@@ -662,6 +664,7 @@ const OpportunityEditor = () => {
                                 {fieldErrors.description_fr && <div className="text-danger mt-1" style={{ fontSize: '0.875rem' }}>{fieldErrors.description_fr}</div>}
                                 <div style={{ display: activeLang === 'en' ? 'block' : 'none' }}>
                                     <Editor
+                                        key={`desc-en-${loading}`}
                                         onInit={(evt, editor) => (editorRefEn.current = editor)}
                                         initialValue={form.description_en}
                                         init={TINYMCE_CONFIG}

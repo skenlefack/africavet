@@ -21,7 +21,7 @@ const DANGEROUS_EXTENSIONS = [
 // Allowed extensions whitelist per category
 const ALLOWED_EXTENSIONS = {
   image: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'],
-  document: ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'],
+  document: ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.jpg', '.jpeg', '.png'],
   video: ['.mp4', '.webm', '.mov', '.avi', '.mkv'],
   audio: ['.mp3', '.wav', '.ogg'],
 };
