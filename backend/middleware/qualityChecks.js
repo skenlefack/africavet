@@ -10,13 +10,24 @@ function validateOpportunityPublish(req, res, next) {
   // Only check when publishing
   if (req.body.status !== 'published') return next();
 
+  // For updates (PUT), skip validation of fields not present in body
+  // because they're already stored in the database
+  const isUpdate = req.method === 'PUT' && req.params.id;
+
   const errors = [];
   const d = req.body;
 
-  if (!d.title_fr || !d.title_fr.trim()) errors.push('Titre (FR) requis');
-  if (!d.organization_name || !d.organization_name.trim()) errors.push('Organisation requise');
-  if (!d.country || !d.country.trim()) errors.push('Pays requis');
-  if (!d.description_fr || !d.description_fr.trim()) errors.push('Description (FR) requise');
+  if (d.title_fr !== undefined && !d.title_fr?.trim()) errors.push('Titre (FR) requis');
+  else if (!isUpdate && !d.title_fr?.trim()) errors.push('Titre (FR) requis');
+
+  if (d.organization_name !== undefined && !d.organization_name?.trim()) errors.push('Organisation requise');
+  else if (!isUpdate && !d.organization_name?.trim()) errors.push('Organisation requise');
+
+  if (d.country !== undefined && !d.country?.trim()) errors.push('Pays requis');
+  else if (!isUpdate && !d.country?.trim()) errors.push('Pays requis');
+
+  if (d.description_fr !== undefined && !d.description_fr?.trim()) errors.push('Description (FR) requise');
+  else if (!isUpdate && !d.description_fr?.trim()) errors.push('Description (FR) requise');
 
   // Job-specific
   if (d.opportunity_type === 'job') {

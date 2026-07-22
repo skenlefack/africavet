@@ -12,7 +12,9 @@ RUN npm ci --legacy-peer-deps
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the application (limit memory for small servers)
+ENV NODE_OPTIONS=--max-old-space-size=768
+ENV GENERATE_SOURCEMAP=false
 RUN npm run build
 
 # Production stage
