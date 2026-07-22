@@ -92,11 +92,23 @@ const CourseDetailPage = () => {
 
   const getLevelLabel = (level) => {
     const labels = {
-      debutant: 'Debutant',
-      intermediaire: 'Intermediaire',
-      avance: 'Avance',
+      beginner: 'Débutant',
+      intermediate: 'Intermédiaire',
+      advanced: 'Avancé',
     };
     return labels[level] || level || '';
+  };
+
+  // Build instructor display name
+  const instructorName = course
+    ? [course.instructor_first_name, course.instructor_last_name].filter(Boolean).join(' ') || course.instructor_name || null
+    : null;
+
+  // Parse JSON fields safely
+  const parseJSON = (val) => {
+    if (!val) return [];
+    if (Array.isArray(val)) return val;
+    try { return JSON.parse(val); } catch { return []; }
   };
 
   const isLessonCompleted = (lessonId) => {
@@ -173,10 +185,10 @@ const CourseDetailPage = () => {
               )}
 
               <div className="course-hero__meta">
-                {course.instructor_name && (
+                {instructorName && (
                   <div className="meta-item">
                     <FontAwesome name="user" />
-                    <span>{course.instructor_name}</span>
+                    <span>{instructorName}</span>
                   </div>
                 )}
                 {course.level && (
@@ -185,20 +197,26 @@ const CourseDetailPage = () => {
                     <span>{getLevelLabel(course.level)}</span>
                   </div>
                 )}
-                {course.duration && (
+                {(course.duration_hours || course.duration) && (
                   <div className="meta-item">
                     <FontAwesome name="clock-o" />
-                    <span>{formatDuration(course.duration)}</span>
+                    <span>{course.duration_hours || course.duration}h de formation</span>
                   </div>
                 )}
                 <div className="meta-item">
                   <FontAwesome name="book" />
-                  <span>{totalLessons} lecons</span>
+                  <span>{totalLessons} leçons</span>
                 </div>
-                {course.enrollment_count !== undefined && (
+                {course.modules && (
+                  <div className="meta-item">
+                    <FontAwesome name="th-list" />
+                    <span>{course.modules.length} modules</span>
+                  </div>
+                )}
+                {(course.enrolled_count > 0 || course.enrollment_count > 0) && (
                   <div className="meta-item">
                     <FontAwesome name="users" />
-                    <span>{course.enrollment_count} inscrits</span>
+                    <span>{course.enrolled_count || course.enrollment_count} inscrits</span>
                   </div>
                 )}
               </div>
@@ -210,8 +228,124 @@ const CourseDetailPage = () => {
       {/* Main Content */}
       <div className="container">
         <div className="row">
-          {/* Left Column - Curriculum */}
+          {/* Left Column */}
           <div className="col-lg-8">
+            {/* Ce que vous apprendrez */}
+            {parseJSON(course.what_you_will_learn).length > 0 && (
+              <section className="course-info-section" style={{ background: '#f0faf0', border: '1px solid #d4edda', borderRadius: 12, padding: '24px 28px', marginBottom: 24 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: '#354e84', marginBottom: 16 }}>
+                  <FontAwesome name="check-circle" style={{ color: '#7ac142', marginRight: 8 }} />
+                  Ce que vous apprendrez
+                </h2>
+                <div className="row">
+                  {parseJSON(course.what_you_will_learn).map((item, i) => (
+                    <div key={i} className="col-md-6" style={{ marginBottom: 10 }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                        <FontAwesome name="check" style={{ color: '#7ac142', marginTop: 4, flexShrink: 0 }} />
+                        <span style={{ fontSize: 14, color: '#444' }}>{item}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Prérequis + Public cible + Durée/Matériel en cards */}
+            <div className="row" style={{ marginBottom: 24 }}>
+              {/* Prérequis */}
+              {parseJSON(course.requirements).length > 0 && (
+                <div className="col-md-6" style={{ marginBottom: 16 }}>
+                  <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 12, padding: '20px 24px', height: '100%' }}>
+                    <h3 style={{ fontSize: 17, fontWeight: 700, color: '#354e84', marginBottom: 14 }}>
+                      <FontAwesome name="graduation-cap" style={{ color: '#e67e22', marginRight: 8 }} />
+                      Prérequis
+                    </h3>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                      {parseJSON(course.requirements).map((item, i) => (
+                        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8, fontSize: 14, color: '#555' }}>
+                          <FontAwesome name="angle-right" style={{ color: '#e67e22', marginTop: 3, flexShrink: 0 }} />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* Public cible */}
+              {parseJSON(course.target_audience).length > 0 && (
+                <div className="col-md-6" style={{ marginBottom: 16 }}>
+                  <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 12, padding: '20px 24px', height: '100%' }}>
+                    <h3 style={{ fontSize: 17, fontWeight: 700, color: '#354e84', marginBottom: 14 }}>
+                      <FontAwesome name="users" style={{ color: '#3498db', marginRight: 8 }} />
+                      Public cible
+                    </h3>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                      {parseJSON(course.target_audience).map((item, i) => (
+                        <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8, fontSize: 14, color: '#555' }}>
+                          <FontAwesome name="angle-right" style={{ color: '#3498db', marginTop: 3, flexShrink: 0 }} />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Durée et Matériel */}
+            <div className="row" style={{ marginBottom: 24 }}>
+              <div className="col-md-6" style={{ marginBottom: 16 }}>
+                <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 12, padding: '20px 24px', height: '100%' }}>
+                  <h3 style={{ fontSize: 17, fontWeight: 700, color: '#354e84', marginBottom: 14 }}>
+                    <FontAwesome name="clock-o" style={{ color: '#9b59b6', marginRight: 8 }} />
+                    Durée et rythme
+                  </h3>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 14, color: '#555' }}>
+                    <li style={{ marginBottom: 8 }}>
+                      <strong>Durée totale :</strong> {course.duration_hours || course.duration || '—'}h
+                    </li>
+                    {course.estimated_weeks && (
+                      <li style={{ marginBottom: 8 }}>
+                        <strong>Durée estimée :</strong> {course.estimated_weeks} semaines
+                      </li>
+                    )}
+                    <li style={{ marginBottom: 8 }}>
+                      <strong>Modules :</strong> {course.modules?.length || 0}
+                    </li>
+                    <li style={{ marginBottom: 8 }}>
+                      <strong>Leçons :</strong> {totalLessons}
+                    </li>
+                    <li>
+                      <strong>Rythme :</strong> À votre propre rythme, 100% en ligne
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="col-md-6" style={{ marginBottom: 16 }}>
+                <div style={{ background: '#fff', border: '1px solid #e8e8e8', borderRadius: 12, padding: '20px 24px', height: '100%' }}>
+                  <h3 style={{ fontSize: 17, fontWeight: 700, color: '#354e84', marginBottom: 14 }}>
+                    <FontAwesome name="laptop" style={{ color: '#2ecc71', marginRight: 8 }} />
+                    Matériel requis
+                  </h3>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 14, color: '#555' }}>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <FontAwesome name="check" style={{ color: '#2ecc71' }} /> Ordinateur, tablette ou smartphone
+                    </li>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <FontAwesome name="check" style={{ color: '#2ecc71' }} /> Connexion internet stable
+                    </li>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <FontAwesome name="check" style={{ color: '#2ecc71' }} /> Navigateur web à jour
+                    </li>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <FontAwesome name="check" style={{ color: '#2ecc71' }} /> De quoi prendre des notes
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
             {/* Curriculum */}
             {course.modules && course.modules.length > 0 && (
               <section className="curriculum-section">
@@ -283,15 +417,15 @@ const CourseDetailPage = () => {
             )}
 
             {/* Instructor Bio */}
-            {(course.instructor_name || course.instructor_bio) && (
+            {(instructorName || course.instructor_bio_fr || course.instructor_bio) && (
               <section className="instructor-section">
                 <h2 className="section-title" style={{ marginBottom: 20 }}>
                   <FontAwesome name="user-circle" /> Formateur
                 </h2>
                 <div className="instructor-card">
                   <div className="instructor-avatar">
-                    {course.instructor_name
-                      ? course.instructor_name
+                    {instructorName
+                      ? instructorName
                           .split(' ')
                           .map((n) => n[0])
                           .join('')
@@ -300,9 +434,9 @@ const CourseDetailPage = () => {
                       : 'F'}
                   </div>
                   <div className="instructor-info">
-                    <h4>{course.instructor_name || 'Formateur AfricaVET'}</h4>
-                    {course.instructor_title && (
-                      <p className="instructor-title">{course.instructor_title}</p>
+                    <h4>{instructorName || 'Formateur AfricaVET'}</h4>
+                    {(course.instructor_title_fr || course.instructor_title) && (
+                      <p className="instructor-title">{course.instructor_title_fr || course.instructor_title}</p>
                     )}
                     {(course.instructor_bio_fr || course.instructor_bio) && (
                       <p className="instructor-bio">
@@ -398,10 +532,16 @@ const CourseDetailPage = () => {
                     <span><FontAwesome name="book" /> Lecons</span>
                     <span>{totalLessons}</span>
                   </li>
-                  {course.duration && (
+                  {(course.duration_hours || course.duration) && (
                     <li>
-                      <span><FontAwesome name="clock-o" /> Duree</span>
-                      <span>{formatDuration(course.duration)}</span>
+                      <span><FontAwesome name="clock-o" /> Durée</span>
+                      <span>{course.duration_hours || course.duration}h</span>
+                    </li>
+                  )}
+                  {course.estimated_weeks && (
+                    <li>
+                      <span><FontAwesome name="calendar" /> Semaines</span>
+                      <span>{course.estimated_weeks}</span>
                     </li>
                   )}
                   {course.language && (
