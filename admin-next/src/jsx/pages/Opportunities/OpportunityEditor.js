@@ -431,12 +431,20 @@ const OpportunityEditor = () => {
 
         setSaving(true);
 
+        // Get description from TinyMCE or fallback to form state
+        const descFr = editorRefFr.current ? editorRefFr.current.getContent() : form.description_fr;
+        const descEn = editorRefEn.current ? editorRefEn.current.getContent() : form.description_en;
+
+        // Also try to get from TinyMCE global if ref lost
+        const finalDescFr = descFr || (window.tinymce?.get?.('desc-fr')?.getContent?.()) || form.description_fr;
+        const finalDescEn = descEn || (window.tinymce?.get?.('desc-en')?.getContent?.()) || form.description_en;
+
         const data = {
             ...form,
             status: isEditing ? form.status : 'published',
             attachments: files.length > 0 ? JSON.stringify(files) : null,
-            description_fr: editorRefFr.current ? editorRefFr.current.getContent() : form.description_fr,
-            description_en: editorRefEn.current ? editorRefEn.current.getContent() : form.description_en,
+            description_fr: finalDescFr,
+            description_en: finalDescEn,
             is_remote: form.work_mode === 'remote' || form.work_mode === 'home_based' ? 1 : 0,
             is_featured: form.is_featured ? 1 : 0,
             is_urgent: form.is_urgent ? 1 : 0,
@@ -486,11 +494,13 @@ const OpportunityEditor = () => {
     // Save as draft (quick save without navigation)
     const handleSaveDraft = async () => {
         setSaving(true);
+        const draftDescFr = editorRefFr.current ? editorRefFr.current.getContent() : (window.tinymce?.get?.('desc-fr')?.getContent?.()) || form.description_fr;
+        const draftDescEn = editorRefEn.current ? editorRefEn.current.getContent() : (window.tinymce?.get?.('desc-en')?.getContent?.()) || form.description_en;
         const data = {
             ...form,
             status: form.status === 'published' ? form.status : 'draft',
-            description_fr: editorRefFr.current ? editorRefFr.current.getContent() : form.description_fr,
-            description_en: editorRefEn.current ? editorRefEn.current.getContent() : form.description_en,
+            description_fr: draftDescFr,
+            description_en: draftDescEn,
             is_remote: form.work_mode === 'remote' || form.work_mode === 'home_based' ? 1 : 0,
             is_featured: form.is_featured ? 1 : 0,
             is_urgent: form.is_urgent ? 1 : 0,
@@ -655,19 +665,23 @@ const OpportunityEditor = () => {
                             <div className="card-body">
                                 <div style={{ display: activeLang === 'fr' ? 'block' : 'none', border: fieldErrors.description_fr ? '2px solid #dc3545' : 'none', borderRadius: 6 }}>
                                     <Editor
+                                        id="desc-fr"
                                         key={`desc-fr-${loading}`}
                                         onInit={(evt, editor) => (editorRefFr.current = editor)}
                                         initialValue={form.description_fr}
                                         init={TINYMCE_CONFIG}
+                                        onEditorChange={(content) => setForm(prev => ({ ...prev, description_fr: content }))}
                                     />
                                 </div>
                                 {fieldErrors.description_fr && <div className="text-danger mt-1" style={{ fontSize: '0.875rem' }}>{fieldErrors.description_fr}</div>}
                                 <div style={{ display: activeLang === 'en' ? 'block' : 'none' }}>
                                     <Editor
+                                        id="desc-en"
                                         key={`desc-en-${loading}`}
                                         onInit={(evt, editor) => (editorRefEn.current = editor)}
                                         initialValue={form.description_en}
                                         init={TINYMCE_CONFIG}
+                                        onEditorChange={(content) => setForm(prev => ({ ...prev, description_en: content }))}
                                     />
                                 </div>
                             </div>
