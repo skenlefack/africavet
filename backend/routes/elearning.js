@@ -102,8 +102,8 @@ const calculateCourseProgress = async (userId, courseId, enrollmentId) => {
 // CATÉGORIES E-LEARNING
 // ============================================
 
-// GET /api/elearning/categories - Liste des catégories
-router.get('/categories', auth, async (req, res) => {
+// GET /api/elearning/categories - Liste des catégories (public)
+router.get('/categories', optionalAuth, async (req, res) => {
   try {
     const [categories] = await db.query(`
       SELECT c.*,
@@ -203,8 +203,8 @@ router.delete('/categories/:id', auth, authorize('admin'), async (req, res) => {
 // COURS
 // ============================================
 
-// GET /api/elearning/courses - Liste des cours
-router.get('/courses', auth, async (req, res) => {
+// GET /api/elearning/courses - Liste des cours (public)
+router.get('/courses', optionalAuth, async (req, res) => {
   try {
     const {
       page = 1,
@@ -306,7 +306,7 @@ router.get('/courses', auth, async (req, res) => {
 });
 
 // GET /api/elearning/courses/featured - Cours en vedette
-router.get('/courses/featured', auth, async (req, res) => {
+router.get('/courses/featured', optionalAuth, async (req, res) => {
   try {
     const { limit = 6 } = req.query;
 
@@ -336,7 +336,7 @@ router.get('/courses/featured', auth, async (req, res) => {
 });
 
 // GET /api/elearning/courses/:slug - Détail d'un cours
-router.get('/courses/:slug', auth, async (req, res) => {
+router.get('/courses/:slug', optionalAuth, async (req, res) => {
   try {
     const { slug } = req.params;
 
@@ -420,7 +420,7 @@ router.get('/courses/:slug', auth, async (req, res) => {
 });
 
 // GET /api/elearning/courses/:id/curriculum - Programme complet
-router.get('/courses/:id/curriculum', auth, async (req, res) => {
+router.get('/courses/:id/curriculum', optionalAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.id;

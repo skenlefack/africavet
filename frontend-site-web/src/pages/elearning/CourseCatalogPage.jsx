@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { elearningApi } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../../component/shared/LoadingSpinner';
 import Pagination from '../../component/shared/Pagination';
 import CourseCard from '../../component/elearning/CourseCard';
@@ -9,9 +10,9 @@ import './elearning.scss';
 
 const LEVELS = [
   { value: '', label: 'Tous les niveaux' },
-  { value: 'debutant', label: 'Debutant' },
-  { value: 'intermediaire', label: 'Intermediaire' },
-  { value: 'avance', label: 'Avance' },
+  { value: 'beginner', label: 'Débutant' },
+  { value: 'intermediate', label: 'Intermédiaire' },
+  { value: 'advanced', label: 'Avancé' },
 ];
 
 const CourseCatalogPage = () => {
