@@ -382,8 +382,11 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
         { title: 'Options', icon: 'fa-sliders-h' },
     ];
 
+    const compactCard = { minHeight: 'auto', height: 'auto' };
+
     return (
-        <>
+        <div style={{ '--card-min-height': 'auto' }} className="annuaire-form-compact">
+            <style>{`.annuaire-form-compact .card { min-height: auto !important; } .annuaire-form-compact .card-body { min-height: auto !important; }`}</style>
             {/* Draft restored banner */}
             {draftRestored && !isEditing && (
                 <div className="alert alert-info alert-dismissible fade show d-flex align-items-center justify-content-between mb-3" role="alert">
@@ -863,7 +866,7 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 
