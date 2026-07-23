@@ -1451,6 +1451,9 @@ router.get('/stats', auth, authorize('admin'), async (req, res) => {
     const [[{ totalCertificates }]] = await db.query("SELECT COUNT(*) as totalCertificates FROM certificates WHERE status = 'active'");
     const [[{ totalLessons }]] = await db.query("SELECT COUNT(*) as totalLessons FROM lessons WHERE is_active = 1");
     const [[{ totalQuestions }]] = await db.query("SELECT COUNT(*) as totalQuestions FROM questions WHERE is_active = 1");
+    const [[{ totalModules }]] = await db.query("SELECT COUNT(*) as totalModules FROM course_modules WHERE is_active = 1");
+    const [[{ totalQuizzes }]] = await db.query("SELECT COUNT(*) as totalQuizzes FROM quizzes WHERE is_active = 1");
+    const [[{ totalStudents }]] = await db.query("SELECT COUNT(DISTINCT user_id) as totalStudents FROM enrollments");
 
     // Inscriptions récentes
     const [recentEnrollments] = await db.query(`
@@ -1482,10 +1485,13 @@ router.get('/stats', auth, authorize('admin'), async (req, res) => {
         totals: {
           courses: totalCourses,
           publishedCourses,
+          modules: totalModules,
+          quizzes: totalQuizzes,
           paths: totalPaths,
           enrollments: totalEnrollments,
           activeEnrollments,
           completedEnrollments,
+          students: totalStudents,
           certificates: totalCertificates,
           lessons: totalLessons,
           questions: totalQuestions

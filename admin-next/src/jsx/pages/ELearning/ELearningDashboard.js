@@ -21,13 +21,14 @@ const ELearningDashboard = () => {
         setLoading(false);
     };
 
+    const t = stats?.totals || stats || {};
     const modules = [
-        { key: 'courses', label: 'Cours', icon: '📚', color: '#3498DB', path: '/elearning/courses', count: stats?.totalCourses || 0 },
-        { key: 'modules', label: 'Modules', icon: '📖', color: '#9B59B6', path: '/elearning/modules', count: stats?.totalModules || 0 },
-        { key: 'quizzes', label: 'Quiz', icon: '❓', color: '#E67E22', path: '/elearning/quizzes', count: stats?.totalQuizzes || 0 },
-        { key: 'students', label: 'Étudiants', icon: '👨‍🎓', color: '#27AE60', path: '/elearning/students', count: stats?.totalStudents || 0 },
-        { key: 'certificates', label: 'Certificats', icon: '🎓', color: '#F39C12', path: '/elearning/certificates', count: stats?.totalCertificates || 0 },
-        { key: 'paths', label: 'Parcours', icon: '🛤️', color: '#1ABC9C', path: '/elearning/paths', count: stats?.totalPaths || 0 },
+        { key: 'courses', label: 'Cours', icon: '📚', color: '#3498DB', path: '/elearning/courses', count: t.courses || t.totalCourses || 0 },
+        { key: 'modules', label: 'Modules', icon: '📖', color: '#9B59B6', path: '/elearning/modules', count: t.modules || t.totalModules || 0 },
+        { key: 'quizzes', label: 'Quiz', icon: '❓', color: '#E67E22', path: '/elearning/quizzes', count: t.quizzes || t.totalQuizzes || 0 },
+        { key: 'students', label: 'Étudiants', icon: '👨‍🎓', color: '#27AE60', path: '/elearning/students', count: t.enrollments || t.totalStudents || 0 },
+        { key: 'certificates', label: 'Certificats', icon: '🎓', color: '#F39C12', path: '/elearning/certificates', count: t.certificates || t.totalCertificates || 0 },
+        { key: 'paths', label: 'Parcours', icon: '🛤️', color: '#1ABC9C', path: '/elearning/paths', count: t.paths || t.totalPaths || 0 },
     ];
 
     if (loading) {
