@@ -335,10 +335,11 @@ router.get('/courses/featured', optionalAuth, async (req, res) => {
   }
 });
 
-// GET /api/elearning/courses/:slug - Détail d'un cours
+// GET /api/elearning/courses/:slug - Détail d'un cours (by slug or ID)
 router.get('/courses/:slug', optionalAuth, async (req, res) => {
   try {
     const { slug } = req.params;
+    const isNumeric = /^\d+$/.test(slug);
 
     let query = `
       SELECT c.*,
@@ -360,10 +361,10 @@ router.get('/courses/:slug', optionalAuth, async (req, res) => {
       LEFT JOIN elearning_categories cat ON c.category_id = cat.id
       LEFT JOIN instructors i ON c.instructor_id = i.id
       LEFT JOIN users u ON i.user_id = u.id
-      WHERE c.slug = ? AND c.is_active = 1
+      WHERE ${isNumeric ? 'c.id = ?' : 'c.slug = ?'} AND c.is_active = 1
     `;
 
-    const params = [slug];
+    const params = [isNumeric ? parseInt(slug) : slug];
 
     // Vérifier les permissions
     if (!req.user || !['admin', 'editor'].includes(req.user.role)) {

@@ -79,7 +79,7 @@ const CourseEditor = () => {
 
     const fetchCurriculum = async () => {
         const res = await api.get(`/elearning/courses/${id}/curriculum`, token);
-        if (res.success) setCurriculum(res.data || []);
+        if (res.success) setCurriculum(res.data?.modules || res.data || []);
     };
 
     const handleChange = (e) => {
