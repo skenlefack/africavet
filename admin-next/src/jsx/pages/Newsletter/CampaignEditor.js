@@ -188,10 +188,20 @@ const CampaignEditor = () => {
             return;
         }
 
+        // Build payload matching backend expected fields
+        const payload = {
+            ...form,
+            name: form.subject_fr.substring(0, 100), // Backend requires 'name'
+            target_lists: form.list_ids.length > 0 ? form.list_ids : lists.map(l => l.id), // Backend expects 'target_lists'
+            content_html_fr: editorRefFr.current ? editorRefFr.current.getContent() : form.content_html_fr,
+            content_html_en: editorRefEn.current ? editorRefEn.current.getContent() : form.content_html_en,
+            attachments: form.attachments.length > 0 ? JSON.stringify(form.attachments) : null,
+        };
+
         setSaving(true);
         const res = isEditing
-            ? await api.put(`/newsletter/campaigns/${id}`, form, token)
-            : await api.post('/newsletter/campaigns', form, token);
+            ? await api.put(`/newsletter/campaigns/${id}`, payload, token)
+            : await api.post('/newsletter/campaigns', payload, token);
 
         if (res.success) {
             setToast({ message: isEditing ? 'Campagne modifiée' : 'Campagne créée', type: 'success' });
@@ -206,7 +216,7 @@ const CampaignEditor = () => {
 
     const handleSendTest = async () => {
         if (!testEmail.trim()) { setToast({ message: 'Entrez un email', type: 'error' }); return; }
-        const res = await api.post(`/newsletter/campaigns/${id}/test`, { email: testEmail }, token);
+        const res = await api.post(`/newsletter/campaigns/${id}/test`, { test_email: testEmail }, token);
         if (res.success) setToast({ message: `Email test envoyé à ${testEmail}`, type: 'success' });
         else setToast({ message: res.message || 'Erreur', type: 'error' });
     };
