@@ -103,6 +103,7 @@ const TINYMCE_CONFIG = {
     content_css: false,
     promotion: false,
     branding: false,
+    allowedTags: ['h1','h2','h3','h4','h5','h6','p','div','span','br','strong','em','b','i','u','ul','ol','li','a','table','thead','tbody','tr','th','td','blockquote','pre','code','img','hr'],
 };
 
 const TagInput = ({ value = [], onChange, options = [], placeholder = 'Ajouter...' }) => {
@@ -304,8 +305,8 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
             return;
         }
 
-        const descFr = descFrRef.current?.getContent() || form.description;
-        const descEn = descEnRef.current?.getContent() || form.description_en;
+        const descFr = descFrRef.current?.getContent() || window.tinymce?.get?.('annuaire-desc-fr')?.getContent?.() || form.description;
+        const descEn = descEnRef.current?.getContent() || window.tinymce?.get?.('annuaire-desc-en')?.getContent?.() || form.description_en;
 
         const data = {
             type: entryType,
@@ -694,9 +695,11 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
                                 {entryType === 'expert' ? 'Biographie (FR)' : 'Description (FR)'}
                             </label>
                             <Editor
+                                id="annuaire-desc-fr"
                                 onInit={(evt, editor) => descFrRef.current = editor}
                                 initialValue={form.description}
                                 init={TINYMCE_CONFIG}
+                                onEditorChange={(content) => setForm(prev => ({ ...prev, description: content }))}
                             />
                         </div>
                         <div className="mb-3" style={{ display: langTab === 'en' ? 'block' : 'none' }}>
@@ -704,9 +707,11 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
                                 {entryType === 'expert' ? 'Biography (EN)' : 'Description (EN)'}
                             </label>
                             <Editor
+                                id="annuaire-desc-en"
                                 onInit={(evt, editor) => descEnRef.current = editor}
                                 initialValue={form.description_en}
                                 init={TINYMCE_CONFIG}
+                                onEditorChange={(content) => setForm(prev => ({ ...prev, description_en: content }))}
                             />
                         </div>
 
