@@ -129,7 +129,8 @@ const DocumentCategoryEditor = () => {
     }
 
     return (
-        <>
+        <div className="doc-editor-compact">
+            <style>{`.doc-editor-compact .card { min-height: auto !important; } .doc-editor-compact .card-body { min-height: auto !important; }`}</style>
             {/* Toast */}
             {toast && (
                 <div className={`alert alert-${toast.type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`}
@@ -399,7 +400,7 @@ const DocumentCategoryEditor = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 
