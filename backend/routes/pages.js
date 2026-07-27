@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { auth, adminOnly } = require('../middleware/auth');
+const { auth, authorize } = require('../middleware/auth');
 
 // @route   GET /api/pages
 // @desc    Get all pages
@@ -67,7 +67,7 @@ router.get('/slug/:slug', async (req, res) => {
 
 // @route   POST /api/pages
 // @desc    Create page
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, authorize('admin', 'editor'), async (req, res) => {
   try {
     const {
       title, slug, content, sections, template, parent_id,
@@ -106,7 +106,7 @@ router.post('/', auth, async (req, res) => {
 
 // @route   PUT /api/pages/:id
 // @desc    Update page
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', auth, authorize('admin', 'editor'), async (req, res) => {
   try {
     const {
       title, slug, content, sections, template, parent_id,
@@ -145,7 +145,7 @@ router.put('/:id', auth, async (req, res) => {
 
 // @route   DELETE /api/pages/:id
 // @desc    Delete page
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', auth, authorize('admin'), async (req, res) => {
   try {
     // Update children to have no parent
     await db.query('UPDATE pages SET parent_id = NULL WHERE parent_id = ?', [req.params.id]);
@@ -160,7 +160,7 @@ router.delete('/:id', auth, async (req, res) => {
 
 // @route   PUT /api/pages/:id/duplicate
 // @desc    Duplicate page
-router.put('/:id/duplicate', auth, async (req, res) => {
+router.put('/:id/duplicate', auth, authorize('admin', 'editor'), async (req, res) => {
   try {
     const [pages] = await db.query('SELECT * FROM pages WHERE id = ?', [req.params.id]);
     if (pages.length === 0) {

@@ -1,9 +1,24 @@
 // Script pour créer un utilisateur administrateur
-// Exécuter avec: node create-admin.js
+// Usage: node create-admin.js <email> <password>
+// Example: node create-admin.js admin@africavet.com "MyStr0ngP@ss!"
 
 const bcrypt = require('bcryptjs');
 const mysql = require('mysql2/promise');
 require('dotenv').config();
+
+const email = process.argv[2];
+const password = process.argv[3];
+
+if (!email || !password) {
+  console.error('Usage: node create-admin.js <email> <password>');
+  console.error('Example: node create-admin.js admin@africavet.com "MyStr0ngP@ss!"');
+  process.exit(1);
+}
+
+if (password.length < 8) {
+  console.error('Error: Password must be at least 8 characters.');
+  process.exit(1);
+}
 
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
@@ -12,85 +27,48 @@ const dbConfig = {
   database: process.env.DB_NAME || 'africavet_cms'
 };
 
-const adminUser = {
-  username: 'admin',
-  email: 'admin@africavet.com',
-  password: 'Admin@2024',  // Ce mot de passe sera hashé
-  first_name: 'Admin',
-  last_name: 'AfricaVET',
-  role: 'admin',
-  status: 'active'
-};
-
 async function createAdmin() {
   let connection;
-  
+
   try {
-    console.log('🔌 Connexion à la base de données...');
+    console.log('Connexion a la base de donnees...');
     connection = await mysql.createConnection(dbConfig);
-    console.log('✅ Connecté à MySQL');
 
-    // Hasher le mot de passe
-    console.log('🔐 Hashage du mot de passe...');
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(adminUser.password, salt);
+    // Hash password
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Vérifier si l'utilisateur existe déjà
+    // Check if user already exists
     const [existing] = await connection.query(
-      'SELECT id FROM users WHERE email = ? OR username = ?',
-      [adminUser.email, adminUser.username]
+      'SELECT id FROM users WHERE email = ?',
+      [email]
     );
 
     if (existing.length > 0) {
-      console.log('⚠️  L\'utilisateur existe déjà, mise à jour...');
+      console.log('User exists, updating password and role...');
       await connection.query(
         'UPDATE users SET password = ?, status = ?, role = ? WHERE email = ?',
-        [hashedPassword, adminUser.status, adminUser.role, adminUser.email]
+        [hashedPassword, 'active', 'admin', email]
       );
-      console.log('✅ Utilisateur mis à jour');
+      console.log('Admin user updated.');
     } else {
-      console.log('📝 Création de l\'utilisateur admin...');
+      console.log('Creating admin user...');
       await connection.query(
-        `INSERT INTO users (username, email, password, first_name, last_name, role, status, created_at) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
-        [
-          adminUser.username,
-          adminUser.email,
-          hashedPassword,
-          adminUser.first_name,
-          adminUser.last_name,
-          adminUser.role,
-          adminUser.status
-        ]
+        `INSERT INTO users (username, email, password, first_name, last_name, role, status, email_verified, is_active, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 1, 1, NOW())`,
+        ['admin', email, hashedPassword, 'Admin', 'AfricaVET', 'admin', 'active']
       );
-      console.log('✅ Utilisateur admin créé');
+      console.log('Admin user created.');
     }
 
-    // Afficher les informations de connexion
-    console.log('\n========================================');
-    console.log('🎉 UTILISATEUR ADMIN CRÉÉ AVEC SUCCÈS !');
-    console.log('========================================');
-    console.log('📧 Email:    admin@africavet.com');
-    console.log('🔑 Password: Admin@2024');
-    console.log('========================================\n');
+    console.log(`\nAdmin email: ${email}`);
+    console.log('Password set successfully (not displayed for security).');
 
   } catch (error) {
-    console.error('❌ Erreur:', error.message);
-    
-    if (error.code === 'ER_NO_SUCH_TABLE') {
-      console.log('\n⚠️  La table "users" n\'existe pas.');
-      console.log('Veuillez d\'abord exécuter le script database.sql');
-    } else if (error.code === 'ECONNREFUSED') {
-      console.log('\n⚠️  Impossible de se connecter à MySQL.');
-      console.log('Vérifiez que MySQL est bien lancé.');
-    } else if (error.code === 'ER_ACCESS_DENIED_ERROR') {
-      console.log('\n⚠️  Accès refusé à MySQL.');
-      console.log('Vérifiez vos identifiants dans le fichier .env');
-    }
+    console.error('Error:', error.message);
   } finally {
     if (connection) {
       await connection.end();
-      console.log('🔌 Connexion fermée');
     }
   }
 }

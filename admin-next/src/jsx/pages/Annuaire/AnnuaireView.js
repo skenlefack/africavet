@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { api, getToken, API_BASE_URL } from '../../../services/api';
+import { sanitizeHtml } from '../../utils/sanitize';
 
 const COUNTRY_FLAGS = {
     'DZ': '🇩🇿', 'AO': '🇦🇴', 'BJ': '🇧🇯', 'BW': '🇧🇼', 'BF': '🇧🇫', 'BI': '🇧🇮',
@@ -456,7 +457,7 @@ const AnnuaireView = () => {
                                         </label>
                                         <div
                                             style={{ lineHeight: 1.7, whiteSpace: 'pre-line' }}
-                                            dangerouslySetInnerHTML={{ __html: entry.description || entry.biography }}
+                                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(entry.description || entry.biography) }}
                                         />
                                     </div>
                                 )}
@@ -468,7 +469,7 @@ const AnnuaireView = () => {
                                         </label>
                                         <div
                                             style={{ lineHeight: 1.7, whiteSpace: 'pre-line' }}
-                                            dangerouslySetInnerHTML={{ __html: entry.description_en }}
+                                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(entry.description_en) }}
                                         />
                                     </div>
                                 )}

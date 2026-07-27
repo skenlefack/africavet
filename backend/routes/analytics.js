@@ -1,8 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
+const rateLimit = require('express-rate-limit');
 const db = require('../config/db');
 const { auth, authorize } = require('../middleware/auth');
+
+// Rate limiter for public tracking endpoint
+const trackingLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 60, // max 60 requests per minute per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // =====================================================
 // HELPERS
@@ -10,7 +19,7 @@ const { auth, authorize } = require('../middleware/auth');
 
 // Hash IP for privacy (same pattern as ads.js)
 const hashIP = (ip) => {
-  return crypto.createHash('sha256').update(ip + (process.env.JWT_SECRET || 'secret')).digest('hex').substring(0, 16);
+  return crypto.createHash('sha256').update(ip + process.env.JWT_SECRET).digest('hex').substring(0, 16);
 };
 
 // Detect browser from user agent
@@ -84,7 +93,7 @@ const getDateFilter = (period, column = 'created_at') => {
 // @route   POST /api/analytics/track
 // @desc    Track a page visit (called by public frontend)
 // @access  Public
-router.post('/track', async (req, res) => {
+router.post('/track', trackingLimiter, async (req, res) => {
   try {
     const { page_url, page_title, page_type, referrer_url, visitor_id, session_id, country_code, country_name } = req.body;
 

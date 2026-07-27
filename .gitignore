@@ -8,12 +8,15 @@ admin-next/build/
 frontend-next/build/
 frontend-site-web/build/
 
-# Environment variables
+# Environment variables (NEVER commit real secrets)
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+backend/.env
+admin/.env
+admin-next/.env
 
 # Logs
 npm-debug.log*

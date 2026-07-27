@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api, getToken, API_BASE_URL } from '../../../services/api';
 import { Editor } from '@tinymce/tinymce-react';
+import { sanitizeHtml } from '../../utils/sanitize';
 
 // Import TinyMCE self-hosted
 import 'tinymce/tinymce';
@@ -613,7 +614,7 @@ const CampaignEditor = () => {
                                     </div>
                                     <small className="text-muted">Contenu:</small>
                                     <div className="small" style={{ maxHeight: '150px', overflow: 'hidden' }}
-                                        dangerouslySetInnerHTML={{ __html: form[`content_html_${activeLang}`] ? form[`content_html_${activeLang}`].substring(0, 500) : '<em>Aucun contenu</em>' }}>
+                                        dangerouslySetInnerHTML={{ __html: form[`content_html_${activeLang}`] ? sanitizeHtml(form[`content_html_${activeLang}`].substring(0, 500)) : '<em>Aucun contenu</em>' }}>
                                     </div>
                                 </div>
                             </div>

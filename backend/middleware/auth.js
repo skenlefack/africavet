@@ -1,6 +1,14 @@
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
+// Require JWT_SECRET — refuse to start without it
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+  console.error('FATAL: JWT_SECRET environment variable must be set (min 32 characters).');
+  process.exit(1);
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
 // Verify JWT token
 const auth = async (req, res, next) => {
   try {
@@ -10,7 +18,7 @@ const auth = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Access denied. No token provided.' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    const decoded = jwt.verify(token, JWT_SECRET);
 
     const [users] = await db.query('SELECT id, username, email, role, status FROM users WHERE id = ?', [decoded.id]);
 
@@ -76,7 +84,7 @@ const optionalAuth = async (req, res, next) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     
     if (token) {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+      const decoded = jwt.verify(token, JWT_SECRET);
       const [users] = await db.query('SELECT id, username, email, role FROM users WHERE id = ?', [decoded.id]);
       
       if (users.length > 0) {

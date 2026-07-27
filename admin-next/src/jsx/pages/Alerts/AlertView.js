@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { api, getToken, API_BASE_URL } from '../../../services/api';
+import { sanitizeHtml } from '../../utils/sanitize';
 
 const PRIORITY_CONFIG = {
     critical: { label: 'Critique', color: '#d32f2f', bg: '#ffebee', icon: 'fa-exclamation-circle' },
@@ -235,13 +236,13 @@ const AlertView = () => {
                             {alert.description_fr && (
                                 <div className="mb-3">
                                     <small className="badge bg-light text-dark mb-2">FR</small>
-                                    <div dangerouslySetInnerHTML={{ __html: alert.description_fr }} />
+                                    <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(alert.description_fr) }} />
                                 </div>
                             )}
                             {alert.description_en && (
                                 <div>
                                     <small className="badge bg-light text-dark mb-2">EN</small>
-                                    <div dangerouslySetInnerHTML={{ __html: alert.description_en }} />
+                                    <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(alert.description_en) }} />
                                 </div>
                             )}
                             {!alert.description_fr && !alert.description_en && (

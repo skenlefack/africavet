@@ -3,12 +3,38 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
+const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const db = require('../config/db');
 const { auth } = require('../middleware/auth');
 const { generateVerificationToken, sendVerificationEmail, sendAccountActivatedEmail } = require('../services/emailService');
+
+// Rate limiters for auth endpoints
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // max 10 attempts per window
+  message: { success: false, message: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // max 5 registrations per hour per IP
+  message: { success: false, message: 'Trop d\'inscriptions. Réessayez plus tard.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const passwordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { success: false, message: 'Trop de tentatives. Réessayez dans 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // CV upload configuration
 const cvUploadDir = path.join(__dirname, '..', 'uploads', 'cvs');
@@ -28,9 +54,15 @@ const cvUpload = multer({
   storage: cvStorage,
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const allowed = /pdf|doc|docx/;
+    // Validate both extension AND MIME type
+    const allowedExts = ['.pdf', '.doc', '.docx'];
+    const allowedMimes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
     const ext = path.extname(file.originalname).toLowerCase();
-    if (allowed.test(ext.replace('.', ''))) {
+    if (allowedExts.includes(ext) && allowedMimes.includes(file.mimetype)) {
       cb(null, true);
     } else {
       cb(new Error('Only PDF, DOC, DOCX files are allowed'), false);
@@ -42,18 +74,18 @@ const cvUpload = multer({
 const generateToken = (user) => {
   return jwt.sign(
     { id: user.id, email: user.email, role: user.role },
-    process.env.JWT_SECRET || 'your-secret-key',
-    { expiresIn: '7d' }
+    process.env.JWT_SECRET,
+    { expiresIn: '2h' }
   );
 };
 
 // @route   POST /api/auth/register
 // @desc    Register new user
 // @access  Public
-router.post('/register', [
+router.post('/register', registerLimiter, [
   body('username').trim().isLength({ min: 3 }).escape(),
   body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 6 })
+  body('password').isLength({ min: 8 }).withMessage('Le mot de passe doit contenir au moins 8 caractères')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -111,7 +143,7 @@ router.post('/register', [
 // @route   POST /api/auth/login
 // @desc    Login user
 // @access  Public
-router.post('/login', [
+router.post('/login', loginLimiter, [
   body('email').isEmail().normalizeEmail(),
   body('password').exists()
 ], async (req, res) => {
@@ -279,9 +311,9 @@ router.put('/profile', auth, async (req, res) => {
 // @route   PUT /api/auth/password
 // @desc    Change password
 // @access  Private
-router.put('/password', auth, [
+router.put('/password', auth, passwordLimiter, [
   body('currentPassword').exists(),
-  body('newPassword').isLength({ min: 6 })
+  body('newPassword').isLength({ min: 8 }).withMessage('Le mot de passe doit contenir au moins 8 caractères')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -358,7 +390,7 @@ router.get('/verify-email/:token', async (req, res) => {
 // @route   POST /api/auth/resend-verification
 // @desc    Resend verification email
 // @access  Public
-router.post('/resend-verification', [
+router.post('/resend-verification', passwordLimiter, [
   body('email').isEmail().normalizeEmail()
 ], async (req, res) => {
   try {

@@ -10,39 +10,51 @@ const app = express();
 
 // Liste des origines autorisées
 const allowedOrigins = [
-  // Development
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:3002',
-  'http://localhost:3003',
-  'http://127.0.0.1:3000',
-  'http://127.0.0.1:3001',
-  'http://127.0.0.1:3002',
-  'http://127.0.0.1:3003',
-  // Production - add from environment variable
-  ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : []),
-  // Default production domains
+  // Production domains (HTTPS only)
   'https://africavet.com',
   'https://www.africavet.com',
   'https://admin.africavet.com',
   'https://manager.africavet.com',
-  'http://www.africavet.com',
-  'http://manager.africavet.com',
-  // Temporary IP-based access
-  'http://83.228.241.6',
-  'http://83.228.241.6:8080'
+  // Additional origins from environment variable
+  ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',').map(s => s.trim()) : []),
 ];
 
-// Security middleware
-app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+// In development, also allow localhost
+if (process.env.NODE_ENV !== 'production') {
+  allowedOrigins.push(
+    'http://localhost:3000', 'http://localhost:3001',
+    'http://localhost:3002', 'http://localhost:3003',
+    'http://127.0.0.1:3000', 'http://127.0.0.1:3001',
+    'http://127.0.0.1:3002', 'http://127.0.0.1:3003'
+  );
+}
 
-// Configuration CORS dynamique
+// Security middleware with hardened headers
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "blob:", "https:"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      connectSrc: ["'self'"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+    },
+  },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+}));
+
+// Configuration CORS stricte
 app.use(cors({
   origin: function(origin, callback) {
+    // Allow server-to-server requests (no origin)
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else if (process.env.NODE_ENV !== 'production') {
       callback(null, true);
     } else {
       callback(new Error('CORS not allowed'));

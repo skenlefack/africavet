@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken');
 
+// Set JWT_SECRET before importing auth middleware
+const TEST_SECRET = 'test-secret-key-that-is-at-least-32-characters-long-for-testing';
+process.env.JWT_SECRET = TEST_SECRET;
+
 // Mock db before requiring auth middleware
 jest.mock('../config/db', () => ({
     query: jest.fn(),
@@ -8,7 +12,7 @@ jest.mock('../config/db', () => ({
 const db = require('../config/db');
 const { auth, authorize } = require('../middleware/auth');
 
-const SECRET = 'your-secret-key';
+const SECRET = TEST_SECRET;
 
 const mockRes = () => {
     const res = {};

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { api, getToken, API_BASE_URL } from '../../../services/api';
+import { sanitizeHtml } from '../../utils/sanitize';
 
 const TYPE_CONFIG = {
     job: { label: 'Emploi', icon: 'fa-briefcase', color: '#1565c0', bg: '#e3f2fd' },
@@ -245,13 +246,13 @@ const OpportunityView = () => {
                             {opp.description_fr && (
                                 <div className="mb-3">
                                     <small className="badge bg-light text-dark mb-2">FR</small>
-                                    <div dangerouslySetInnerHTML={{ __html: opp.description_fr }} />
+                                    <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(opp.description_fr) }} />
                                 </div>
                             )}
                             {opp.description_en && (
                                 <div>
                                     <small className="badge bg-light text-dark mb-2">EN</small>
-                                    <div dangerouslySetInnerHTML={{ __html: opp.description_en }} />
+                                    <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(opp.description_en) }} />
                                 </div>
                             )}
                         </div>

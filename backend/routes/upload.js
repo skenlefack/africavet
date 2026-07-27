@@ -480,8 +480,25 @@ router.post('/elearning/thumbnail', auth, uploadImage.single('file'), async (req
 router.delete('/:type/:filename', auth, async (req, res) => {
   try {
     const { type, filename } = req.params;
-    const filePath = path.join(__dirname, '..', 'uploads', type, filename);
-    const thumbPath = path.join(__dirname, '..', 'uploads', 'thumbnails', filename);
+
+    // Security: validate type and filename to prevent path traversal
+    const allowedTypes = ['images', 'documents', 'media', 'thumbnails', 'cvs', 'ads', 'elearning'];
+    if (!allowedTypes.includes(type)) {
+      return res.status(400).json({ success: false, message: 'Type de fichier invalide' });
+    }
+    // Reject any path traversal characters
+    if (/[\/\\]|\.\./.test(filename)) {
+      return res.status(400).json({ success: false, message: 'Nom de fichier invalide' });
+    }
+
+    const uploadsDir = path.resolve(__dirname, '..', 'uploads');
+    const filePath = path.join(uploadsDir, type, filename);
+    const thumbPath = path.join(uploadsDir, 'thumbnails', filename);
+
+    // Double-check resolved path stays within uploads directory
+    if (!path.resolve(filePath).startsWith(uploadsDir)) {
+      return res.status(400).json({ success: false, message: 'Chemin invalide' });
+    }
 
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);

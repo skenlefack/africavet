@@ -4,12 +4,17 @@ const nodemailer = require('nodemailer');
 const db = require('../config/db');
 const { auth, authorize } = require('../middleware/auth');
 
-// GET all settings (public)
+// GET all settings (public) - excludes sensitive keys
 router.get('/public', async (req, res) => {
   try {
+    const sensitiveKeys = ['smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_secure', 'smtp_from', 'jwt_secret', 'db_password'];
     const [settings] = await db.query('SELECT setting_key, setting_value FROM settings');
     const settingsObj = {};
-    settings.forEach(s => { settingsObj[s.setting_key] = s.setting_value; });
+    settings.forEach(s => {
+      if (!sensitiveKeys.includes(s.setting_key.toLowerCase())) {
+        settingsObj[s.setting_key] = s.setting_value;
+      }
+    });
     res.json({ success: true, data: settingsObj });
   } catch (error) {
     console.error('Settings public error:', error);
@@ -116,8 +121,8 @@ router.post('/smtp/test', auth, authorize('admin'), async (req, res) => {
   }
 });
 
-// GET single setting
-router.get('/:key', async (req, res) => {
+// GET single setting (admin only - may contain sensitive config)
+router.get('/:key', auth, authorize('admin'), async (req, res) => {
   try {
     const [settings] = await db.query('SELECT * FROM settings WHERE setting_key = ?', [req.params.key]);
     if (settings.length === 0) {

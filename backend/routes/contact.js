@@ -10,6 +10,17 @@ const sendContactEmail = async (to, subject, html) => {
   return transporter.sendMail({ from, to, subject, html });
 };
 
+// Escape HTML to prevent injection in email templates
+const escapeHtml = (str) => {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+};
+
 // POST /api/contact - Submit a contact message (public)
 router.post('/', async (req, res) => {
   try {
@@ -60,14 +71,14 @@ router.post('/', async (req, res) => {
               <h2 style="color: #fff; margin: 0;">Nouveau message de contact</h2>
             </div>
             <div style="padding: 25px; background: #f8f9fa; border: 1px solid #e9ecef;">
-              <p><strong>Nom :</strong> ${name}</p>
-              <p><strong>Email :</strong> <a href="mailto:${email}">${email}</a></p>
-              ${phone ? `<p><strong>Téléphone :</strong> ${phone}</p>` : ''}
-              <p><strong>Sujet :</strong> ${subject}</p>
+              <p><strong>Nom :</strong> ${escapeHtml(name)}</p>
+              <p><strong>Email :</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
+              ${phone ? `<p><strong>Téléphone :</strong> ${escapeHtml(phone)}</p>` : ''}
+              <p><strong>Sujet :</strong> ${escapeHtml(subject)}</p>
               <hr style="border: 1px solid #dee2e6;">
               <p><strong>Message :</strong></p>
               <div style="background: #fff; padding: 15px; border-radius: 5px; border: 1px solid #e9ecef;">
-                ${message.replace(/\n/g, '<br>')}
+                ${escapeHtml(message).replace(/\n/g, '<br>')}
               </div>
             </div>
             <div style="padding: 15px; background: #e9ecef; border-radius: 0 0 8px 8px; text-align: center; color: #6c757d; font-size: 12px;">
@@ -89,12 +100,12 @@ router.post('/', async (req, res) => {
               <h2 style="color: #fff; margin: 0;">AfricaVET</h2>
             </div>
             <div style="padding: 25px; background: #fff; border: 1px solid #e9ecef;">
-              <p>Bonjour <strong>${name}</strong>,</p>
+              <p>Bonjour <strong>${escapeHtml(name)}</strong>,</p>
               <p>Nous avons bien reçu votre message et nous vous remercions de nous avoir contactés.</p>
               <p>Notre équipe examinera votre demande et vous répondra dans les meilleurs délais.</p>
               <hr style="border: 1px solid #dee2e6;">
               <p style="color: #6c757d; font-size: 13px;"><strong>Votre message :</strong></p>
-              <p style="color: #6c757d; font-size: 13px;">${message.replace(/\n/g, '<br>')}</p>
+              <p style="color: #6c757d; font-size: 13px;">${escapeHtml(message).replace(/\n/g, '<br>')}</p>
             </div>
             <div style="padding: 15px; background: #f8f9fa; border-radius: 0 0 8px 8px; text-align: center; color: #6c757d; font-size: 12px;">
               AfricaVET - La plateforme vétérinaire panafricaine
