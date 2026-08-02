@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import AfricanCountrySelect from '../../components/AfricanCountrySelect';
+import { api, getToken } from '../../../services/api';
 
 // Import TinyMCE self-hosted
 import 'tinymce/tinymce';
@@ -63,11 +64,15 @@ const ORGANIZATION_TYPES = [
     { value: 'distributor', label: 'Distributeur' },
     { value: 'school', label: 'École / Université' },
     { value: 'institution', label: 'Institution gouvernementale' },
+    { value: 'intergovernmental', label: 'Organisation intergouvernementale / Institution régionale ou continentale' },
     { value: 'ngo', label: 'ONG / Projet' },
     { value: 'association', label: 'Association professionnelle' },
     { value: 'research', label: 'Centre de recherche' },
     { value: 'other', label: 'Autre' },
 ];
+
+// Types providing direct clinical/animal care
+const CLINICAL_TYPES = ['clinic', 'hospital', 'pharmacy'];
 
 const EXPERT_CATEGORIES = [
     { value: 'veterinarian', label: 'Vétérinaire' },
@@ -219,14 +224,35 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
         longitude: initialData.longitude || '',
         founded_year: initialData.founded_year || '',
         years_experience: initialData.years_experience || '',
+        parent_organization_id: initialData.parent_organization_id || '',
     });
 
     const [photoFile, setPhotoFile] = useState(null);
+    const [allOrganizations, setAllOrganizations] = useState([]);
+    const [parentSearch, setParentSearch] = useState(initialData._parentName || '');
     const [photoPreview, setPhotoPreview] = useState(null);
     const [errors, setErrors] = useState({});
     const [draftRestored, setDraftRestored] = useState(false);
 
     const DRAFT_KEY = 'africavet_admin_annuaire_draft';
+
+    // Fetch organizations list for parent org selector
+    useEffect(() => {
+        const fetchOrgs = async () => {
+            try {
+                const token = getToken();
+                const res = await api.get('/mapping/organizations?limit=500', token);
+                const orgs = res.data || res.organizations || [];
+                setAllOrganizations(orgs);
+                // Set initial parent search text if editing
+                if (initialData.parent_organization_id) {
+                    const parent = orgs.find(o => o.id === initialData.parent_organization_id);
+                    if (parent) setParentSearch(parent.name + (parent.acronym ? ` (${parent.acronym})` : ''));
+                }
+            } catch (e) { /* ignore */ }
+        };
+        fetchOrgs();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Restore draft on mount (only for new entries)
     useEffect(() => {
@@ -342,6 +368,7 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
                 latitude: form.latitude,
                 longitude: form.longitude,
                 founded_year: form.founded_year ? parseInt(form.founded_year) : null,
+                parent_organization_id: form.parent_organization_id || null,
             });
         } else {
             Object.assign(data, {
@@ -502,6 +529,55 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
                                         />
                                     </div>
                                 )}
+                                <div className="col-12">
+                                    <label className="form-label fw-semibold">Institution mère ou organisme de rattachement</label>
+                                    <div className="position-relative">
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={parentSearch}
+                                            onChange={(e) => {
+                                                setParentSearch(e.target.value);
+                                                if (!e.target.value) handleChange('parent_organization_id', '');
+                                            }}
+                                            placeholder="Rechercher une organisation parente..."
+                                        />
+                                        {parentSearch && !form.parent_organization_id && allOrganizations.filter(o =>
+                                            o.id !== initialData.id &&
+                                            (o.name?.toLowerCase().includes(parentSearch.toLowerCase()) ||
+                                             o.acronym?.toLowerCase().includes(parentSearch.toLowerCase()))
+                                        ).length > 0 && (
+                                            <div className="position-absolute w-100 bg-white border rounded shadow-sm mt-1" style={{ zIndex: 10, maxHeight: 200, overflowY: 'auto' }}>
+                                                {allOrganizations.filter(o =>
+                                                    o.id !== initialData.id &&
+                                                    (o.name?.toLowerCase().includes(parentSearch.toLowerCase()) ||
+                                                     o.acronym?.toLowerCase().includes(parentSearch.toLowerCase()))
+                                                ).slice(0, 8).map(o => (
+                                                    <div key={o.id} className="px-3 py-2" style={{ cursor: 'pointer' }}
+                                                         onMouseDown={() => {
+                                                             handleChange('parent_organization_id', o.id);
+                                                             setParentSearch(o.name + (o.acronym ? ` (${o.acronym})` : ''));
+                                                         }}>
+                                                        <strong>{o.name}</strong>
+                                                        {o.acronym && <span className="text-muted ms-1">({o.acronym})</span>}
+                                                        {o.country && <small className="text-muted ms-2">— {o.country}</small>}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {form.parent_organization_id && (
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm btn-outline-danger position-absolute"
+                                                style={{ top: 6, right: 6 }}
+                                                onClick={() => { handleChange('parent_organization_id', ''); setParentSearch(''); }}
+                                            >
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        )}
+                                    </div>
+                                    <small className="text-muted">Ex: AU-IBAR rattachée à la Commission de l'Union africaine</small>
+                                </div>
                             </div>
                         ) : (
                             <div className="row g-3">
@@ -650,12 +726,14 @@ const AnnuaireForm = ({ initialData = {}, onSubmit, saving = false, isEditing = 
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="form-label fw-semibold">Espèces traitées</label>
+                                    <label className="form-label fw-semibold">
+                                        {CLINICAL_TYPES.includes(form.type) ? 'Espèces traitées' : 'Espèces ou filières couvertes'}
+                                    </label>
                                     <TagInput
                                         value={form.species_treated}
                                         onChange={(val) => handleChange('species_treated', val)}
                                         options={SPECIES_OPTIONS}
-                                        placeholder="Ajouter une espèce..."
+                                        placeholder={CLINICAL_TYPES.includes(form.type) ? 'Ajouter une espèce...' : 'Ajouter une espèce ou filière...'}
                                     />
                                 </div>
                                 <div className="mb-3">

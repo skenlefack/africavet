@@ -32,8 +32,12 @@ const ORGANIZATION_TYPES = [
   'Industrie pharmaceutique',
   'Fournisseur',
   'Institution gouvernementale',
+  'Organisation intergouvernementale / Institution regionale ou continentale',
   'Autre',
 ];
+
+// Types providing direct clinical/animal care
+const CLINICAL_ORG_TYPES = ['Clinique veterinaire'];
 
 
 const AnnuaireSubmitPage = () => {
@@ -56,9 +60,11 @@ const AnnuaireSubmitPage = () => {
     organization_type: '',
     description: '',
     services: '',
+    species_treated: '',
     website: '',
     founded_year: '',
     mission: '',
+    parent_organization_name: '',
     // Common fields
     country: '',
     city: '',
@@ -170,9 +176,16 @@ const AnnuaireSubmitPage = () => {
           .split(',')
           .map((s) => s.trim())
           .filter(Boolean);
+        submitData.species_treated = formData.species_treated
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
         submitData.website = formData.website.trim();
         submitData.founded_year = formData.founded_year ? parseInt(formData.founded_year) : null;
         submitData.mission = formData.mission.trim();
+        if (formData.parent_organization_name.trim()) {
+          submitData.parent_organization_name = formData.parent_organization_name.trim();
+        }
       }
 
       const response = await annuaireApi.submit(submitData, token);
@@ -624,6 +637,44 @@ const AnnuaireSubmitPage = () => {
                           disabled={loading}
                           style={{ borderRadius: '8px', padding: '10px 14px' }}
                         />
+                      </div>
+
+                      <div className="mb-3">
+                        <label className="form-label" style={{ fontWeight: '600', fontSize: '14px' }}>
+                          {CLINICAL_ORG_TYPES.includes(formData.organization_type)
+                            ? 'Especes traitees'
+                            : 'Especes ou filieres couvertes'}{' '}
+                          <small style={{ color: '#888', fontWeight: '400' }}>(separees par des virgules)</small>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="species_treated"
+                          value={formData.species_treated}
+                          onChange={handleChange}
+                          placeholder="Ex: Bovins, Volailles, Aquaculture, Ovins-Caprins"
+                          disabled={loading}
+                          style={{ borderRadius: '8px', padding: '10px 14px' }}
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label className="form-label" style={{ fontWeight: '600', fontSize: '14px' }}>
+                          Institution mere ou organisme de rattachement
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="parent_organization_name"
+                          value={formData.parent_organization_name}
+                          onChange={handleChange}
+                          placeholder="Ex: Commission de l'Union africaine"
+                          disabled={loading}
+                          style={{ borderRadius: '8px', padding: '10px 14px' }}
+                        />
+                        <small style={{ color: '#888', fontSize: '12px' }}>
+                          Si votre organisation est rattachee a une institution, indiquez-la ici.
+                        </small>
                       </div>
 
                       <div className="mb-3">

@@ -3355,7 +3355,8 @@ router.post('/', auth, async (req, res) => {
     } else {
       // organization
       const {
-        name, organization_type, description, services, website, founded_year, mission,
+        name, organization_type, description, services, species_treated, website, founded_year, mission,
+        parent_organization_name,
         country, city, address, email, phone,
         show_email, show_phone
       } = req.body;
@@ -3364,12 +3365,22 @@ router.post('/', auth, async (req, res) => {
         return res.status(400).json({ success: false, message: 'Le nom est obligatoire' });
       }
 
+      // Try to resolve parent organization by name
+      let parentOrgId = null;
+      if (parent_organization_name) {
+        const [parentOrgs] = await db.query(
+          'SELECT id FROM organizations WHERE name LIKE ? OR acronym LIKE ? LIMIT 1',
+          [`%${parent_organization_name}%`, `%${parent_organization_name}%`]
+        );
+        if (parentOrgs.length > 0) parentOrgId = parentOrgs[0].id;
+      }
+
       const [result] = await db.query(`
         INSERT INTO organizations
         (name, type, description, contact_email, contact_phone, website, city, country,
-         address, founded_year, mission, services,
+         address, founded_year, mission, services, species_treated, parent_organization_id,
          show_email, show_phone, submitted_by, submission_status, submitted_at, is_active)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), 0)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), 0)
       `, [
         name.trim(),
         organization_type || 'other',
@@ -3383,6 +3394,8 @@ router.post('/', auth, async (req, res) => {
         founded_year ? parseInt(founded_year) : null,
         mission || null,
         services && Array.isArray(services) ? JSON.stringify(services) : null,
+        species_treated && Array.isArray(species_treated) ? JSON.stringify(species_treated) : null,
+        parentOrgId,
         show_email !== false ? 1 : 0,
         show_phone !== false ? 1 : 0,
         userId,
@@ -3417,6 +3430,33 @@ router.post('/', auth, async (req, res) => {
     });
   } catch (error) {
     console.error('Submit entry error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Report an annuaire entry
+router.post('/entries/:id/report', auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason, description } = req.body;
+
+    if (!reason || !description || description.length < 20) {
+      return res.status(400).json({ success: false, message: 'Reason and description (min 20 chars) are required.' });
+    }
+
+    const validReasons = ['incorrect_info', 'inappropriate', 'duplicate', 'spam', 'other'];
+    if (!validReasons.includes(reason)) {
+      return res.status(400).json({ success: false, message: 'Invalid reason.' });
+    }
+
+    await db.query(
+      'INSERT INTO annuaire_reports (entry_id, reporter_id, reason, description) VALUES (?, ?, ?, ?)',
+      [id, req.user.id, reason, description]
+    );
+
+    res.status(201).json({ success: true, message: 'Report submitted successfully.' });
+  } catch (error) {
+    console.error('Report entry error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
