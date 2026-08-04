@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import PillarsSection from "../component/PillarsSection";
 import PostGallery from "../component/PostGallery";
 import FeatureNews from "../component/FeatureNews";
@@ -17,6 +18,7 @@ import { Link } from "react-router-dom";
 import SEO from "../component/SEO";
 
 function HomePage() {
+  const { t } = useTranslation();
   return (
     <>
       <SEO
@@ -55,8 +57,8 @@ function HomePage() {
             <TrendingNews />
           </div>
           <div className="col-md-12 col-lg-4" style={{ display: 'flex', flexDirection: 'column' }}>
-            <FollowUs title="Suivez-nous" />
-            <MostView title="Les Plus Vus" />
+            <FollowUs title={t('footer.followUs')} />
+            <MostView title={t('home.mostViewed')} />
             {/* Encadré publicitaire Sidebar */}
             {/* Position: sidebar-mostview - Géré dans le gestionnaire de publicités */}
             <div className="space-20" />
@@ -225,7 +227,7 @@ function HomePage() {
             />
           </div>
           <div className="col-lg-4">
-            <InterviewsWidget limit={5} categorySlug="news" title="Dernières Interviews" />
+            <InterviewsWidget limit={5} categorySlug="news" title={t('home.latestInterviews')} />
             {/* Encadré publicitaire après Dernières Interviews - 300x250px */}
             {/* Position: sidebar-interviews - Géré dans le gestionnaire de publicités */}
             <div className="space-20" />

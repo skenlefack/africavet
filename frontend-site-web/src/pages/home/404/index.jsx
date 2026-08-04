@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 function Error() {
+  const { t } = useTranslation();
   return (
     <div style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #f0fdf4 0%, #e8f4fd 50%, #f5f3ff 100%)' }}>
       <div className="container">
@@ -36,11 +38,10 @@ function Error() {
 
             {/* Message */}
             <h2 style={{ color: '#354e84', fontWeight: 700, fontSize: '1.6rem', marginBottom: '0.75rem' }}>
-              Page introuvable
+              {t('errors.notFound')}
             </h2>
             <p style={{ color: '#6b7280', fontSize: '1.05rem', maxWidth: '480px', margin: '0 auto 2rem', lineHeight: 1.6 }}>
-              Désolé, la page que vous recherchez n'existe pas ou a été déplacée.
-              Vérifiez l'adresse ou retournez à l'accueil.
+              {t('errors.notFoundDesc')}
             </p>
 
             {/* Action Buttons */}
@@ -58,7 +59,7 @@ function Error() {
                 }}
               >
                 <i className="fas fa-home me-2"></i>
-                Retour à l'accueil
+                {t('errors.backHome')}
               </Link>
               <Link
                 to="/contact"
@@ -66,7 +67,7 @@ function Error() {
                 style={{ borderRadius: '10px', fontWeight: 600 }}
               >
                 <i className="fas fa-envelope me-2"></i>
-                Nous contacter
+                {t('nav.contact')}
               </Link>
             </div>
 
@@ -81,23 +82,23 @@ function Error() {
             }}>
               <p style={{ color: '#374151', fontWeight: 600, marginBottom: '1rem', fontSize: '0.95rem' }}>
                 <i className="fas fa-compass me-2" style={{ color: '#7ac142' }}></i>
-                Liens utiles
+                {t('footer.quickLinks')}
               </p>
               <div className="d-flex flex-wrap justify-content-center gap-3">
                 <Link to="/categorie/news" style={{ color: '#354e84', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
-                  <i className="fas fa-newspaper me-1"></i> Actualités
+                  <i className="fas fa-newspaper me-1"></i> {t('nav.news')}
                 </Link>
                 <Link to="/opportunites" style={{ color: '#354e84', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
-                  <i className="fas fa-briefcase me-1"></i> Opportunités
+                  <i className="fas fa-briefcase me-1"></i> {t('opportunities.title')}
                 </Link>
                 <Link to="/formations" style={{ color: '#354e84', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
-                  <i className="fas fa-graduation-cap me-1"></i> Formations
+                  <i className="fas fa-graduation-cap me-1"></i> {t('elearning.courses')}
                 </Link>
                 <Link to="/annuaire" style={{ color: '#354e84', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
-                  <i className="fas fa-address-book me-1"></i> Annuaire
+                  <i className="fas fa-address-book me-1"></i> {t('nav.directory')}
                 </Link>
                 <Link to="/about" style={{ color: '#354e84', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
-                  <i className="fas fa-info-circle me-1"></i> À propos
+                  <i className="fas fa-info-circle me-1"></i> {t('nav.about')}
                 </Link>
               </div>
             </div>

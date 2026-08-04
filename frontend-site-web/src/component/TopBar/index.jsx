@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import ProtoTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import FontAwesome from "../uiStyle/FontAwesome";
 import Slider from "../Slider";
 import SearchModal from "../SearchModal";
 import { useAuth } from "../../context/AuthContext";
 import NotificationBell from "../shared/NotificationBell";
 import UserMenu from "../auth/UserMenu";
+import LanguageSwitcher from "../LanguageSwitcher";
 
 const TopBar = ({ className, dark }) => {
   const [searchShow, setSearchShow] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -22,7 +25,7 @@ const TopBar = ({ className, dark }) => {
                 className={`trancarousel_area ${dark ? "white" : ""}`}
                 style={{ display: "flex" }}
               >
-                <p className="trand">Tendances</p>
+                <p className="trand">{t('home.trendingNow')}</p>
                 <div className="nav_style1" style={{ width: "80%" }}>
                   <Slider
                     navigation={{
@@ -40,21 +43,21 @@ const TopBar = ({ className, dark }) => {
                     <div className="trancarousel_item">
                       <p>
                         <Link to="/">
-                          Actualités vétérinaires et santé animale en Afrique
+                          {t('home.carousel1')}
                         </Link>
                       </p>
                     </div>
                     <div className="trancarousel_item">
                       <p>
                         <Link to="/">
-                          One Health : L'approche intégrée de la santé
+                          {t('home.carousel2')}
                         </Link>
                       </p>
                     </div>
                     <div className="trancarousel_item">
                       <p>
                         <Link to="/">
-                          Formation continue pour les professionnels vétérinaires
+                          {t('home.carousel3')}
                         </Link>
                       </p>
                     </div>
@@ -91,27 +94,15 @@ const TopBar = ({ className, dark }) => {
                     </li>
                   </ul>
                 </div>
-                {/* Séparateur */}
                 <div className="topbar_separator d-none d-lg-block"></div>
-                {/* Recherche */}
                 <div className={`topbar_search d-none d-lg-block ${dark ? "white" : ""}`}>
-                  <button onClick={() => setSearchShow(!searchShow)} aria-label="Rechercher">
+                  <button onClick={() => setSearchShow(!searchShow)} aria-label={t('common.search')}>
                     <FontAwesome name="search" />
                   </button>
                 </div>
-                {/* Langue */}
-                <div className={`topbar_lang d-none d-lg-block ${dark ? "white" : ""}`}>
-                  <div className="lang_dropdown">
-                    <button className="lang_btn">
-                      FR <FontAwesome name="angle-down" />
-                    </button>
-                    <ul className="lang_menu">
-                      <li><Link to="/">Français</Link></li>
-                      <li><Link to="/">English</Link></li>
-                    </ul>
-                  </div>
+                <div className={`topbar_lang d-none d-lg-block ${dark ? "white" : ""}`} style={{ marginLeft: 8 }}>
+                  <LanguageSwitcher />
                 </div>
-                {/* Auth */}
                 <div className="topbar_separator d-none d-lg-block"></div>
                 <div className="d-none d-lg-flex align-items-center topbar_auth">
                   {isAuthenticated ? (
@@ -121,10 +112,10 @@ const TopBar = ({ className, dark }) => {
                     </>
                   ) : (
                     <>
-                      <Link to="/connexion" className="topbar_auth_btn" aria-label="Connexion" data-tooltip="Connexion">
+                      <Link to="/connexion" className="topbar_auth_btn" aria-label={t('nav.login')} data-tooltip={t('nav.login')}>
                         <i className="fa fa-sign-in" />
                       </Link>
-                      <Link to="/inscription" className="topbar_auth_btn topbar_auth_btn--primary" aria-label="Inscription" data-tooltip="Inscription">
+                      <Link to="/inscription" className="topbar_auth_btn topbar_auth_btn--primary" aria-label={t('nav.register')} data-tooltip={t('nav.register')}>
                         <i className="fa fa-user-plus" />
                       </Link>
                     </>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import { postsApi, getImageUrl as resolveImageUrl, resolveContentUrls } from "../services/api";
 import { useApp } from "../context/AppContext";
 import Sidebar from "../component/Sidebar";
@@ -8,6 +9,7 @@ import SEO from "../component/SEO";
 import "./ArticlePage.scss";
 
 const ArticlePage = () => {
+  const { t, i18n } = useTranslation();
   const { slug } = useParams();
   const { getCategoryColor } = useApp();
 
@@ -43,7 +45,7 @@ const ArticlePage = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('fr-FR', {
+    return new Date(dateString).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'fr-FR', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
@@ -117,10 +119,10 @@ const ArticlePage = () => {
               <div className="not-found-icon">
                 <FontAwesome name="exclamation-triangle" />
               </div>
-              <h2>Article non trouvé</h2>
-              <p>L'article que vous recherchez n'existe pas ou a été supprimé.</p>
+              <h2>{t('errors.articleNotFound')}</h2>
+              <p>{t('errors.articleNotFoundDesc')}</p>
               <Link to="/" className="btn-back">
-                <FontAwesome name="arrow-left" /> Retour à l'accueil
+                <FontAwesome name="arrow-left" /> {t('errors.backHome')}
               </Link>
             </div>
           </div>
@@ -190,7 +192,7 @@ const ArticlePage = () => {
           <div className="banner-top-row">
             <nav className="banner-breadcrumb">
               <Link to="/">
-                <FontAwesome name="home" /> Accueil
+                <FontAwesome name="home" /> {t('nav.home')}
               </Link>
               <span className="separator"><FontAwesome name="angle-right" /></span>
               {post.category_name && (
@@ -235,7 +237,7 @@ const ArticlePage = () => {
               </div>
               <div className="meta-item">
                 <FontAwesome name="eye" />
-                <span>{post.view_count || 0} vues</span>
+                <span>{post.view_count || 0} {t('common.views')}</span>
               </div>
             </div>
           </div>
@@ -291,7 +293,7 @@ const ArticlePage = () => {
                 {/* Share Section */}
                 <div className="article-share">
                   <span className="share-label">
-                    <FontAwesome name="share-alt" /> Partager cet article:
+                    <FontAwesome name="share-alt" /> {t('common.shareArticle')}:
                   </span>
                   <div className="share-buttons">
                     <a
@@ -330,7 +332,7 @@ const ArticlePage = () => {
                       className="share-btn copy"
                       onClick={() => {
                         navigator.clipboard.writeText(shareUrl);
-                        alert('Lien copié !');
+                        alert(t('common.linkCopied'));
                       }}
                     >
                       <FontAwesome name="link" />
@@ -342,7 +344,7 @@ const ArticlePage = () => {
                 {relatedPosts.length > 0 && (
                   <div className="related-articles">
                     <h3 className="related-title">
-                      <FontAwesome name="newspaper-o" /> Articles Similaires
+                      <FontAwesome name="newspaper-o" /> {t('home.relatedArticles')}
                     </h3>
                     <div className="related-grid">
                       {relatedPosts.map(relPost => (

@@ -1,24 +1,26 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import BreadCrumb from "../../../component/BreadCrumb";
 import FontAwesome from "../../../component/uiStyle/FontAwesome";
 import { contactApi } from "../../../services/api";
 import "./contact.scss";
 
-const SUBJECTS = [
-  "Question générale",
-  "Partenariat",
-  "Support technique",
-  "E-learning / Formations",
-  "Annuaire vétérinaire",
-  "Opportunités professionnelles",
-  "RecallVet",
-  "Publicité / Sponsoring",
-  "Signaler un problème",
-  "Autre",
-];
-
 const Contact = () => {
+  const { t } = useTranslation();
+
+  const SUBJECTS = [
+    t('contact.subjectGeneral'),
+    t('contact.subjectPartnership'),
+    t('contact.subjectSupport'),
+    "E-learning",
+    t('nav.directory'),
+    t('opportunities.title'),
+    "RecallVet",
+    t('contact.subjectAdvertising'),
+    t('contact.subjectReport'),
+    t('contact.subjectOther'),
+  ];
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -41,17 +43,17 @@ const Contact = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Le nom est requis";
+    if (!formData.name.trim()) newErrors.name = t('contact.nameRequired');
     if (!formData.email.trim()) {
-      newErrors.email = "L'e-mail est requis";
+      newErrors.email = t('contact.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Adresse e-mail invalide";
+      newErrors.email = t('contact.emailInvalid');
     }
-    if (!formData.subject) newErrors.subject = "Veuillez choisir un sujet";
+    if (!formData.subject) newErrors.subject = t('contact.subjectRequired');
     if (!formData.message.trim()) {
-      newErrors.message = "Le message est requis";
+      newErrors.message = t('contact.messageRequired');
     } else if (formData.message.trim().length < 20) {
-      newErrors.message = "Le message doit contenir au moins 20 caractères";
+      newErrors.message = t('contact.messageTooShort');
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -70,10 +72,10 @@ const Contact = () => {
         setSuccess(true);
         setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
       } else {
-        setServerError(result.message || "Une erreur est survenue.");
+        setServerError(result.message || t('contact.error'));
       }
     } catch (err) {
-      setServerError("Erreur de connexion. Veuillez réessayer.");
+      setServerError(t('contact.connectionError'));
     } finally {
       setLoading(false);
     }
@@ -81,7 +83,7 @@ const Contact = () => {
 
   return (
     <>
-      <BreadCrumb className="shadow5" title="Contact" />
+      <BreadCrumb className="shadow5" title={t('nav.contact')} />
 
       <div className="contact-page">
         <div className="container">
@@ -89,11 +91,8 @@ const Contact = () => {
             {/* Left: Info Panel */}
             <div className="contact-info-panel">
               <div className="info-header">
-                <h1>Contactez-nous</h1>
-                <p>
-                  Vous avez une question, une suggestion ou souhaitez collaborer
-                  avec AfricaVET ? Notre équipe est à votre écoute.
-                </p>
+                <h1>{t('contact.title')}</h1>
+                <p>{t('contact.subtitle')}</p>
               </div>
 
               <div className="info-cards">
@@ -102,7 +101,7 @@ const Contact = () => {
                     <FontAwesome name="envelope" />
                   </div>
                   <div className="info-card-content">
-                    <h3>E-mail</h3>
+                    <h3>{t('auth.email')}</h3>
                     <p>contact@africavet.com</p>
                   </div>
                 </div>
@@ -112,7 +111,7 @@ const Contact = () => {
                     <FontAwesome name="globe-africa" />
                   </div>
                   <div className="info-card-content">
-                    <h3>Site web</h3>
+                    <h3>{t('contact.website')}</h3>
                     <p>www.africavet.com</p>
                   </div>
                 </div>
@@ -122,14 +121,14 @@ const Contact = () => {
                     <FontAwesome name="clock" />
                   </div>
                   <div className="info-card-content">
-                    <h3>Disponibilité</h3>
-                    <p>Lun - Ven : 8h00 - 18h00 (GMT+1)</p>
+                    <h3>{t('contact.availability')}</h3>
+                    <p>{t('contact.availabilityHours')}</p>
                   </div>
                 </div>
               </div>
 
               <div className="info-services">
-                <h3>Nos services</h3>
+                <h3>{t('footer.services')}</h3>
                 <div className="services-grid">
                   <Link to="/formations" className="service-tag">
                     <FontAwesome name="graduation-cap" />
@@ -137,25 +136,25 @@ const Contact = () => {
                   </Link>
                   <Link to="/annuaire" className="service-tag">
                     <FontAwesome name="address-book" />
-                    <span>Annuaire</span>
+                    <span>{t('nav.directory')}</span>
                   </Link>
                   <Link to="/opportunites" className="service-tag">
                     <FontAwesome name="briefcase" />
-                    <span>Opportunités</span>
+                    <span>{t('opportunities.title')}</span>
                   </Link>
                   <Link to="/bibliotheque" className="service-tag">
                     <FontAwesome name="book" />
-                    <span>Bibliothèque</span>
+                    <span>{t('documents.library')}</span>
                   </Link>
                   <Link to="/alertes-veterinaires" className="service-tag">
                     <FontAwesome name="exclamation-triangle" />
-                    <span>Alertes</span>
+                    <span>{t('alerts.title')}</span>
                   </Link>
                 </div>
               </div>
 
               <div className="info-social">
-                <h3>Suivez-nous</h3>
+                <h3>{t('footer.followUs')}</h3>
                 <div className="social-links">
                   <a href="https://facebook.com/africavet" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                     <FontAwesome name="facebook-f" />
@@ -180,30 +179,22 @@ const Contact = () => {
                   <div className="success-icon">
                     <FontAwesome name="check-circle" />
                   </div>
-                  <h2>Message envoyé !</h2>
-                  <p>
-                    Merci de nous avoir contactés. Notre équipe vous répondra
-                    dans les meilleurs délais.
-                  </p>
-                  <p className="success-hint">
-                    Un e-mail de confirmation a été envoyé à votre adresse.
-                  </p>
+                  <h2>{t('contact.messageSent')}</h2>
+                  <p>{t('contact.success')}</p>
+                  <p className="success-hint">{t('contact.confirmationSent')}</p>
                   <button
                     className="btn-new-message"
                     onClick={() => setSuccess(false)}
                   >
                     <FontAwesome name="paper-plane" />
-                    Envoyer un autre message
+                    {t('contact.sendAnother')}
                   </button>
                 </div>
               ) : (
                 <div className="form-card">
                   <div className="form-header">
-                    <h2>Envoyez-nous un message</h2>
-                    <p>
-                      Remplissez le formulaire ci-dessous et nous vous répondrons
-                      rapidement.
-                    </p>
+                    <h2>{t('contact.sendMessage')}</h2>
+                    <p>{t('contact.formSubtitle')}</p>
                   </div>
 
                   {serverError && (
@@ -217,7 +208,7 @@ const Contact = () => {
                     <div className="form-row">
                       <div className={`form-group ${errors.name ? "has-error" : ""}`}>
                         <label htmlFor="name">
-                          Nom complet <span className="required">*</span>
+                          {t('contact.name')} <span className="required">*</span>
                         </label>
                         <input
                           type="text"
@@ -233,7 +224,7 @@ const Contact = () => {
 
                       <div className={`form-group ${errors.email ? "has-error" : ""}`}>
                         <label htmlFor="email">
-                          Adresse e-mail <span className="required">*</span>
+                          {t('contact.email')} <span className="required">*</span>
                         </label>
                         <input
                           type="email"
@@ -250,7 +241,7 @@ const Contact = () => {
 
                     <div className="form-row">
                       <div className="form-group">
-                        <label htmlFor="phone">Téléphone</label>
+                        <label htmlFor="phone">{t('contact.phone')}</label>
                         <input
                           type="tel"
                           id="phone"
@@ -264,7 +255,7 @@ const Contact = () => {
 
                       <div className={`form-group ${errors.subject ? "has-error" : ""}`}>
                         <label htmlFor="subject">
-                          Sujet <span className="required">*</span>
+                          {t('contact.subject')} <span className="required">*</span>
                         </label>
                         <select
                           id="subject"
@@ -273,7 +264,7 @@ const Contact = () => {
                           onChange={handleChange}
                           disabled={loading}
                         >
-                          <option value="">-- Choisir un sujet --</option>
+                          <option value="">-- {t('contact.chooseSubject')} --</option>
                           {SUBJECTS.map((s) => (
                             <option key={s} value={s}>
                               {s}
@@ -286,7 +277,7 @@ const Contact = () => {
 
                     <div className={`form-group ${errors.message ? "has-error" : ""}`}>
                       <label htmlFor="message">
-                        Message <span className="required">*</span>
+                        {t('contact.message')} <span className="required">*</span>
                       </label>
                       <textarea
                         id="message"
@@ -311,12 +302,12 @@ const Contact = () => {
                       {loading ? (
                         <>
                           <span className="spinner-border spinner-border-sm me-2"></span>
-                          Envoi en cours...
+                          {t('contact.sending')}
                         </>
                       ) : (
                         <>
                           <FontAwesome name="paper-plane" />
-                          Envoyer le message
+                          {t('contact.sendMessage')}
                         </>
                       )}
                     </button>

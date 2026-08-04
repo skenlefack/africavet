@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ProtoTypes from "prop-types";
 import FontAwesome from "../uiStyle/FontAwesome";
 import { Link, NavLink } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import SidebarMenu from "../SidebarMenu";
 import { useApp } from "../../context/AppContext";
 import { menusApi } from "../../services/api";
@@ -10,41 +11,41 @@ const MainMenu = ({ className, dark }) => {
   const [sideShow, setSideShow] = useState(false);
   const [menus, setMenus] = useState([]);
   const { categories } = useApp();
+  const { t, i18n } = useTranslation();
 
-  // Menu par défaut en cas d'échec de l'API
   const mainCategories = categories.filter(c => c.post_count > 0).slice(0, 8);
   const defaultMenus = [
-    { id: 1, linkText: "Accueil", link: "/" },
+    { id: 1, linkText: t('nav.home'), link: "/" },
     {
       id: 2,
-      linkText: "Rubriques",
+      linkText: t('nav.categories'),
       child: true,
       icon: "angle-down",
       submenu: mainCategories.map((cat, index) => ({
         id: 20 + index,
         link: `/categorie/${cat.slug}`,
-        linkText: cat.name_fr || cat.name,
+        linkText: i18n.language === 'en' ? (cat.name_en || cat.name_fr || cat.name) : (cat.name_fr || cat.name),
       })),
     },
-    { id: 3, linkText: "Actualités", link: "/categorie/news" },
+    { id: 3, linkText: t('nav.news'), link: "/categorie/news" },
     { id: 4, linkText: "One Health", link: "/categorie/one-health" },
     {
       id: 5,
-      linkText: "Formations",
+      linkText: t('elearning.courses'),
       child: true,
       icon: "angle-down",
       submenu: [
-        { id: 51, linkText: "Catalogue", link: "/formations" },
-        { id: 52, linkText: "Parcours", link: "/parcours" },
-        { id: 53, linkText: "Mon apprentissage", link: "/mon-apprentissage" },
+        { id: 51, linkText: t('elearning.catalog'), link: "/formations" },
+        { id: 52, linkText: t('elearning.learningPaths'), link: "/parcours" },
+        { id: 53, linkText: t('elearning.myCourses'), link: "/mon-apprentissage" },
       ],
     },
-    { id: 6, linkText: "Opportunités", link: "/opportunites" },
-    { id: 7, linkText: "Alertes", link: "/alertes-veterinaires" },
-    { id: 8, linkText: "Annuaire", link: "/annuaire" },
-    { id: 10, linkText: "Bibliothèque", link: "/bibliotheque" },
-    { id: 11, linkText: "À propos", link: "/about" },
-    { id: 9, linkText: "Contact", link: "/contact" },
+    { id: 6, linkText: t('opportunities.title'), link: "/opportunites" },
+    { id: 7, linkText: t('nav.alerts'), link: "/alertes-veterinaires" },
+    { id: 8, linkText: t('nav.directory'), link: "/annuaire" },
+    { id: 10, linkText: t('documents.library'), link: "/bibliotheque" },
+    { id: 11, linkText: t('nav.about'), link: "/about" },
+    { id: 9, linkText: t('nav.contact'), link: "/contact" },
   ];
 
   useEffect(() => {
@@ -56,52 +57,35 @@ const MainMenu = ({ className, dark }) => {
       const response = await menusApi.getByLocation('header');
       if (response.success && response.data && response.data.items) {
         const transformedMenus = transformMenuItems(response.data.items);
-        setMenus(transformedMenus.length > 0 ? transformedMenus : defaultMenus);
+        setMenus(transformedMenus.length > 0 ? transformedMenus : []);
       } else {
-        setMenus(defaultMenus);
+        setMenus([]);
       }
     } catch (error) {
       console.error('Error loading menu:', error);
-      setMenus(defaultMenus);
+      setMenus([]);
     }
   };
 
-  // Convertir les anciennes URLs vers les nouvelles routes
   const transformUrl = (url) => {
     if (!url || url === '#') return url;
-
-    // E-Learning
     if (url === '/vet-elearning/courses' || url === '/vet-elearning') return '/formations';
     if (url === '/vet-elearning/paths') return '/parcours';
     if (url === '/dashboard/certificates') return '/mon-apprentissage';
-
-    // Opportunités
     if (url.startsWith('/opportunities')) return '/opportunites';
-
-    // Alertes vétérinaires
     if (url === '/vet-alert/submit') return '/soumettre-alerte';
     if (url === '/vet-alert') return '/alertes-veterinaires';
-
-    // Annuaire (vet-link)
     if (url.startsWith('/vet-link')) return '/annuaire';
-
-    // Bibliothèque documentaire
     if (url === '/documents' || url === '/library') return '/bibliotheque';
-
-    // Catégories d'articles
     if (url.startsWith('/news?category=')) {
       return `/categorie/${url.replace('/news?category=', '')}`;
     }
     if (url.startsWith('/news?type=')) return '/categorie/news';
     if (url === '/news') return '/categorie/news';
-
-    // Zoonoses
     if (url === '/zoonoses') return '/categorie/zoonoses';
-
     return url;
   };
 
-  // Transformer les items de l'API au format du composant
   const transformMenuItems = (items) => {
     return items.map(item => {
       const menuItem = {
@@ -111,7 +95,6 @@ const MainMenu = ({ className, dark }) => {
         target: item.target,
       };
 
-      // Si l'item a des enfants
       if (item.children && item.children.length > 0) {
         menuItem.child = true;
         menuItem.icon = "angle-down";
@@ -120,7 +103,6 @@ const MainMenu = ({ className, dark }) => {
           linkText: child.title || child.label_fr || child.label || 'Sous-menu',
           link: transformUrl(child.url),
           target: child.target,
-          // Support pour les sous-sous-menus
           child: child.children && child.children.length > 0,
           third_menu: child.children && child.children.length > 0
             ? child.children.map(third => ({
@@ -136,7 +118,6 @@ const MainMenu = ({ className, dark }) => {
     });
   };
 
-  // Utiliser le menu chargé ou le menu par défaut
   const activeMenus = menus.length > 0 ? menus : defaultMenus;
 
   return (

@@ -1,20 +1,22 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import FontAwesome from "../component/uiStyle/FontAwesome";
 import CountrySelect from "../component/CountrySelect";
 import ProfessionSelect from "../component/ProfessionSelect";
 import { useAuth } from "../context/AuthContext";
 import "./inscription.scss";
 
-const features = [
-  { icon: "envelope", title: "Newsletter personnalisée", description: "Recevez les actualités qui vous intéressent directement dans votre boîte mail" },
-  { icon: "bell", title: "Alertes emploi en temps réel", description: "Soyez notifié dès qu'une opportunité correspond à votre profil" },
-  { icon: "video-camera", title: "Accès aux webinaires", description: "Participez à nos formations en ligne et conférences exclusives" },
-  { icon: "address-book", title: "Annuaire Vétérinaire Panafricain", description: "Trouvez des vétérinaires et experts de la santé animale à travers l'Afrique" }
-];
-
 const InscriptionPage = () => {
   const { register, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
+
+  const features = [
+    { icon: "envelope", title: t('auth.featureNewsletter'), description: t('auth.featureNewsletterDesc') },
+    { icon: "bell", title: t('auth.featureJobAlerts'), description: t('auth.featureJobAlertsDesc') },
+    { icon: "video-camera", title: t('auth.featureWebinars'), description: t('auth.featureWebinarsDesc') },
+    { icon: "address-book", title: t('auth.featureDirectory'), description: t('auth.featureDirectoryDesc') }
+  ];
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -41,10 +43,10 @@ const InscriptionPage = () => {
     setError(null);
 
     if (formData.password !== formData.confirmPassword) {
-      return setError("Les mots de passe ne correspondent pas");
+      return setError(t('auth.passwordMismatch'));
     }
     if (formData.password.length < 6) {
-      return setError("Le mot de passe doit contenir au moins 6 caractères");
+      return setError(t('auth.passwordTooShort'));
     }
 
     setLoading(true);
@@ -61,10 +63,10 @@ const InscriptionPage = () => {
       if (response.success) {
         setSuccess(true);
       } else {
-        setError(response.message || "Erreur lors de l'inscription");
+        setError(response.message || t('auth.registerError'));
       }
     } catch {
-      setError("Une erreur est survenue. Veuillez réessayer.");
+      setError(t('auth.genericError'));
     } finally {
       setLoading(false);
     }
@@ -76,13 +78,12 @@ const InscriptionPage = () => {
         <div className="container">
           <div style={{ maxWidth: '600px', margin: '60px auto', textAlign: 'center', padding: '40px' }}>
             <div style={{ fontSize: '60px', color: '#7ac142', marginBottom: '20px' }}><FontAwesome name="check-circle" /></div>
-            <h2>Inscription réussie !</h2>
+            <h2>{t('auth.registrationSuccess')}</h2>
             <p style={{ color: '#666', fontSize: '16px', margin: '20px 0' }}>
-              Un email de vérification a été envoyé à <strong>{formData.email}</strong>.
-              Veuillez vérifier votre boîte de réception et cliquer sur le lien pour activer votre compte.
+              {t('auth.verificationEmailSent', { email: formData.email })}
             </p>
             <Link to="/connexion" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)', border: 'none', padding: '12px 30px' }}>
-              Aller à la connexion
+              {t('auth.goToLogin')}
             </Link>
           </div>
         </div>
@@ -96,8 +97,8 @@ const InscriptionPage = () => {
         <div className="inscription-wrapper">
           <div className="inscription-features">
             <div className="features-header">
-              <h1>Rejoignez <span>AfricaVET</span></h1>
-              <p>La plateforme de référence pour les professionnels de la santé animale en Afrique</p>
+              <h1>{t('auth.joinTitle')} <span>AfricaVET</span></h1>
+              <p>{t('auth.joinSubtitle')}</p>
             </div>
             <div className="features-list">
               {features.map((feature, index) => (
@@ -108,36 +109,36 @@ const InscriptionPage = () => {
               ))}
             </div>
             <div className="features-stats">
-              <div className="stat"><span className="stat-number">5000+</span><span className="stat-label">Membres</span></div>
-              <div className="stat"><span className="stat-number">50+</span><span className="stat-label">Pays</span></div>
-              <div className="stat"><span className="stat-number">1000+</span><span className="stat-label">Articles</span></div>
+              <div className="stat"><span className="stat-number">5000+</span><span className="stat-label">{t('auth.members')}</span></div>
+              <div className="stat"><span className="stat-number">50+</span><span className="stat-label">{t('auth.countries')}</span></div>
+              <div className="stat"><span className="stat-number">1000+</span><span className="stat-label">{t('nav.articles')}</span></div>
             </div>
           </div>
 
           <div className="inscription-form-container">
             <div className="form-card">
               <div className="form-header">
-                <h2>Créer un compte</h2>
-                <p>Remplissez le formulaire pour rejoindre la communauté</p>
+                <h2>{t('auth.createAccount')}</h2>
+                <p>{t('auth.fillForm')}</p>
               </div>
               {error && <div className="alert alert-danger" style={{ borderRadius: '8px', marginBottom: '16px' }}>{error}</div>}
               <form onSubmit={handleSubmit} className="inscription-form">
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="prenom">Prénom</label>
+                    <label htmlFor="prenom">{t('auth.firstName')}</label>
                     <input type="text" id="prenom" name="prenom" value={formData.prenom} onChange={handleChange} placeholder="Votre prénom" required disabled={loading} />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="nom">Nom</label>
+                    <label htmlFor="nom">{t('auth.lastName')}</label>
                     <input type="text" id="nom" name="nom" value={formData.nom} onChange={handleChange} placeholder="Votre nom" required disabled={loading} />
                   </div>
                 </div>
                 <div className="form-group">
-                  <label htmlFor="email">Email</label>
+                  <label htmlFor="email">{t('auth.email')}</label>
                   <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} placeholder="votre@email.com" required disabled={loading} />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="profession">Profession</label>
+                  <label htmlFor="profession">{t('auth.profession')}</label>
                   <ProfessionSelect
                     value={formData.profession}
                     onChange={handleChange}
@@ -147,7 +148,7 @@ const InscriptionPage = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="pays">Pays</label>
+                  <label htmlFor="pays">{t('annuaire.country')}</label>
                   <CountrySelect
                     value={formData.pays}
                     onChange={handleChange}
@@ -158,11 +159,11 @@ const InscriptionPage = () => {
                 </div>
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="password">Mot de passe</label>
+                    <label htmlFor="password">{t('auth.password')}</label>
                     <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} placeholder="Minimum 6 caractères" required disabled={loading} />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="confirmPassword">Confirmer le mot de passe</label>
+                    <label htmlFor="confirmPassword">{t('auth.confirmPassword')}</label>
                     <input type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Confirmez votre mot de passe" required disabled={loading} />
                   </div>
                 </div>
@@ -170,15 +171,15 @@ const InscriptionPage = () => {
                   <label className="checkbox-label">
                     <input type="checkbox" name="acceptTerms" checked={formData.acceptTerms} onChange={handleChange} required />
                     <span className="checkmark"></span>
-                    J'accepte les <Link to="/conditions">conditions d'utilisation</Link> et la <Link to="/confidentialite">politique de confidentialité</Link>
+                    {t('auth.acceptTermsPrefix')} <Link to="/conditions">{t('footer.terms')}</Link> {t('auth.acceptTermsAnd')} <Link to="/confidentialite">{t('footer.privacy')}</Link>
                   </label>
                 </div>
                 <button type="submit" className="btn-submit" disabled={loading}>
-                  {loading ? <><span className="spinner-border spinner-border-sm me-2"></span>Inscription...</> : <><FontAwesome name="user-plus" /> Créer mon compte</>}
+                  {loading ? <><span className="spinner-border spinner-border-sm me-2"></span>{t('auth.registering')}</> : <><FontAwesome name="user-plus" /> {t('auth.createAccount')}</>}
                 </button>
               </form>
               <div className="form-footer">
-                <p>Déjà membre ? <Link to="/connexion">Se connecter</Link></p>
+                <p>{t('auth.hasAccount')} <Link to="/connexion">{t('auth.loginButton')}</Link></p>
               </div>
             </div>
           </div>

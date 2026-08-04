@@ -1,6 +1,7 @@
 import React from "react";
 import ProtoTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import FontAwesome from "../uiStyle/FontAwesome";
 
 import africavetLogo from "../../assets/img/africavet-logo.png";
@@ -8,20 +9,19 @@ import "./footer.scss";
 
 const FooterArea = ({ className }) => {
   const currentYear = new Date().getFullYear();
+  const { t } = useTranslation();
 
   return (
     <footer className={`footer-modern ${className ? className : ""}`}>
-      {/* Footer Main */}
       <div className="footer-main">
         <div className="container">
           <div className="footer-grid">
-            {/* Brand Section */}
             <div className="footer-brand">
               <Link to="/" className="footer-logo">
                 <img src={africavetLogo} alt="AfricaVET" style={{ height: '50px', background: '#fff', padding: '6px 12px', borderRadius: '10px' }} />
               </Link>
               <p className="footer-tagline">
-                Le portail de référence de la médecine vétérinaire en Afrique
+                {t('footer.description')}
               </p>
               <div className="footer-social">
                 <a href="https://www.facebook.com/africavetwebportail/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
@@ -36,32 +36,29 @@ const FooterArea = ({ className }) => {
               </div>
             </div>
 
-            {/* Services */}
             <div className="footer-links">
-              <h4>Nos Services</h4>
+              <h4>{t('footer.services')}</h4>
               <ul>
-                <li><Link to="/categorie/news"><FontAwesome name="newspaper-o" /> S'informer</Link></li>
+                <li><Link to="/categorie/news"><FontAwesome name="newspaper-o" /> {t('footer.inform')}</Link></li>
                 <li><Link to="/categorie/one-health"><FontAwesome name="globe" /> One Health</Link></li>
-                <li><Link to="/formations"><FontAwesome name="graduation-cap" /> Se Former</Link></li>
-                <li><Link to="/opportunites"><FontAwesome name="briefcase" /> Opportunités</Link></li>
-                <li><Link to="/annuaire"><FontAwesome name="address-book" /> Annuaire Vétérinaire</Link></li>
+                <li><Link to="/formations"><FontAwesome name="graduation-cap" /> {t('footer.learn')}</Link></li>
+                <li><Link to="/opportunites"><FontAwesome name="briefcase" /> {t('opportunities.title')}</Link></li>
+                <li><Link to="/annuaire"><FontAwesome name="address-book" /> {t('annuaire.title')}</Link></li>
               </ul>
             </div>
 
-            {/* Navigation */}
             <div className="footer-links">
-              <h4>Navigation</h4>
+              <h4>{t('footer.quickLinks')}</h4>
               <ul>
-                <li><Link to="/"><FontAwesome name="home" /> Accueil</Link></li>
-                <li><Link to="/about"><FontAwesome name="info-circle" /> À propos</Link></li>
-                <li><Link to="/contact"><FontAwesome name="envelope" /> Contact</Link></li>
-                <li><Link to="/publicite"><FontAwesome name="bullhorn" /> Publicité</Link></li>
+                <li><Link to="/"><FontAwesome name="home" /> {t('nav.home')}</Link></li>
+                <li><Link to="/about"><FontAwesome name="info-circle" /> {t('nav.about')}</Link></li>
+                <li><Link to="/contact"><FontAwesome name="envelope" /> {t('nav.contact')}</Link></li>
+                <li><Link to="/publicite"><FontAwesome name="bullhorn" /> {t('footer.advertising')}</Link></li>
               </ul>
             </div>
 
-            {/* Contact */}
             <div className="footer-contact">
-              <h4>Contact</h4>
+              <h4>{t('nav.contact')}</h4>
               <div className="contact-item">
                 <FontAwesome name="envelope" />
                 <span>contact@africavet.com</span>
@@ -72,24 +69,23 @@ const FooterArea = ({ className }) => {
               </div>
               <Link to="/inscription" className="footer-cta">
                 <FontAwesome name="user-plus" />
-                Rejoindre la communauté
+                {t('footer.joinCommunity')}
               </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Footer Bottom */}
       <div className="footer-bottom">
         <div className="container">
           <div className="footer-bottom-content">
-            <p>© {currentYear} AfricaVET. Tous droits réservés.</p>
+            <p>&copy; {currentYear} AfricaVET. {t('footer.copyright')}</p>
             <div className="footer-legal">
-              <Link to="/mentions-legales">Mentions légales</Link>
-              <span>•</span>
-              <Link to="/confidentialite">Confidentialité</Link>
-              <span>•</span>
-              <Link to="/conditions">CGU</Link>
+              <Link to="/mentions-legales">{t('footer.legal')}</Link>
+              <span>&bull;</span>
+              <Link to="/confidentialite">{t('footer.privacy')}</Link>
+              <span>&bull;</span>
+              <Link to="/conditions">{t('footer.terms')}</Link>
             </div>
           </div>
         </div>
