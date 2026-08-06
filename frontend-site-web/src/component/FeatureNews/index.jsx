@@ -2,6 +2,7 @@ import React from "react";
 import ProtoTypes from "prop-types";
 import Heading from "../uiStyle/Heading";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import Slider from "../Slider";
 import FontAwesome from "../uiStyle/FontAwesome";
 import { useData } from "../../context/DataContext";
@@ -31,6 +32,7 @@ const defaultNews = [
 const FeatureNews = ({ className }) => {
   const { featurePosts, loading } = useData();
   const { getCategoryColor } = useApp();
+  const { t } = useTranslation();
 
   // Utiliser les données API ou fallback
   const news = featurePosts.length > 0 ? featurePosts : defaultNews;
@@ -40,7 +42,7 @@ const FeatureNews = ({ className }) => {
       <div className="container">
         <div className="row">
           <div className="col-12">
-            <Heading title="À la Une" />
+            <Heading title={t('home.featuredArticles')} />
           </div>
         </div>
         <div className="row">

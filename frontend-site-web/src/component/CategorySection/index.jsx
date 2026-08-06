@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import FontAwesome from "../uiStyle/FontAwesome";
 import Slider from "../Slider";
 import { postsApi, getImageUrl as resolveImageUrl } from "../../services/api";
 import { useApp } from "../../context/AppContext";
+import { useLocale } from "../../utils/i18nHelpers";
 import "./style.scss";
 
 // Image par défaut
@@ -31,6 +33,8 @@ const CategorySection = ({
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { getCategoryColor } = useApp();
+  const { t } = useTranslation();
+  const { lang, lf } = useLocale();
 
   // Style pour le gradient avec la couleur de catégorie (0.9 pour assombrir et améliorer lisibilité du texte blanc)
   const getGradientStyle = () => ({
@@ -58,7 +62,7 @@ const CategorySection = ({
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('fr-FR', {
+    return new Date(dateString).toLocaleDateString(lang === 'en' ? 'en-US' : 'fr-FR', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
@@ -87,7 +91,7 @@ const CategorySection = ({
           {showSeeAll && (
             <div className="col-6 text-right align-self-center">
               <Link to={`/categorie/${categorySlug}`} className="see_all mb20">
-                Voir tout
+                {t('common.viewAll')}
               </Link>
             </div>
           )}
@@ -97,7 +101,7 @@ const CategorySection = ({
             <div key={post.id} className="category-card">
               <div className="category-card-image">
                 <Link to={`/article/${post.slug}`}>
-                  <img src={getImageUrl(post.featured_image)} alt={post.title_fr || post.title} />
+                  <img src={getImageUrl(post.featured_image)} alt={lf(post, 'title')} />
                 </Link>
                 <Link to={`/categorie/${categorySlug}`} className="category-card-badge" style={{ backgroundColor: getCategoryColor(categorySlug) }}>
                   {categoryName}
@@ -106,7 +110,7 @@ const CategorySection = ({
               <div className="category-card-content">
                 <h4 className="category-card-title">
                   <Link to={`/article/${post.slug}`}>
-                    {truncate(post.title_fr || post.title, 70)}
+                    {truncate(lf(post, 'title'), 70)}
                   </Link>
                 </h4>
                 <span className="category-card-date">
@@ -137,7 +141,7 @@ const CategorySection = ({
             {showSeeAll && (
               <div className="col-6 text-right align-self-center">
                 <Link to={`/categorie/${categorySlug}`} className="see_all mb20">
-                  Voir tout
+                  {t('common.viewAll')}
                 </Link>
               </div>
             )}
@@ -149,7 +153,7 @@ const CategorySection = ({
                   <div className="post_img">
                     <div className="img_wrap">
                       <Link to={`/article/${mainPost.slug}`}>
-                        <img src={getImageUrl(mainPost.featured_image)} alt={mainPost.title_fr || mainPost.title} />
+                        <img src={getImageUrl(mainPost.featured_image)} alt={lf(mainPost, 'title')} />
                       </Link>
                     </div>
                     <Link to={`/categorie/${categorySlug}`} className="category_badge" style={{ backgroundColor: getCategoryColor(categorySlug) }}>
@@ -159,11 +163,11 @@ const CategorySection = ({
                   <div className="single_post_text">
                     <h4>
                       <Link to={`/article/${mainPost.slug}`}>
-                        {truncate(mainPost.title_fr || mainPost.title, 80)}
+                        {truncate(lf(mainPost, 'title'), 80)}
                       </Link>
                     </h4>
                     <p className="post-p">
-                      {truncate(mainPost.excerpt_fr || mainPost.excerpt || '', 120)}
+                      {truncate(lf(mainPost, 'excerpt'), 120)}
                     </p>
                     <span className="post_date">{formatDate(mainPost.created_at)}</span>
                   </div>
@@ -177,7 +181,7 @@ const CategorySection = ({
                     <div className="post_img">
                       <div className="img_wrap">
                         <Link to={`/article/${post.slug}`}>
-                          <img src={getImageUrl(post.featured_image)} alt={post.title_fr || post.title} />
+                          <img src={getImageUrl(post.featured_image)} alt={lf(post, 'title')} />
                         </Link>
                       </div>
                     </div>
@@ -191,7 +195,7 @@ const CategorySection = ({
                       </div>
                       <h4>
                         <Link to={`/article/${post.slug}`}>
-                          {truncate(post.title_fr || post.title, 60)}
+                          {truncate(lf(post, 'title'), 60)}
                         </Link>
                       </h4>
                     </div>
@@ -226,7 +230,7 @@ const CategorySection = ({
             {showSeeAll && (
               <div className="col-6 text-right align-self-center">
                 <Link to={`/categorie/${categorySlug}`} className="see_all mb20">
-                  Voir tout
+                  {t('common.viewAll')}
                 </Link>
               </div>
             )}
@@ -256,7 +260,7 @@ const CategorySection = ({
                     <div key={post.id} className="single_post post_type6 post_type7">
                       <div className="post_img gradient1" style={getGradientStyle()}>
                         <Link to={`/article/${post.slug}`}>
-                          <img src={getImageUrl(post.featured_image)} alt={post.title_fr || post.title} />
+                          <img src={getImageUrl(post.featured_image)} alt={lf(post, 'title')} />
                         </Link>
                         <Link to={`/categorie/${categorySlug}`} className="category_badge" style={{ backgroundColor: getCategoryColor(categorySlug) }}>
                           {categoryName}
@@ -265,7 +269,7 @@ const CategorySection = ({
                       <div className="single_post_text">
                         <h4>
                           <Link to={`/article/${post.slug}`}>
-                            {truncate(post.title_fr || post.title, 55)}
+                            {truncate(lf(post, 'title'), 55)}
                           </Link>
                         </h4>
                         <span className="post_date">{formatDate(post.created_at)}</span>
@@ -302,7 +306,7 @@ const CategorySection = ({
           {showSeeAll && (
             <div className="col-6 text-right align-self-center">
               <Link to={`/categorie/${categorySlug}`} className="see_all mb20">
-                Voir tout
+                {t('common.viewAll')}
               </Link>
             </div>
           )}
@@ -314,7 +318,7 @@ const CategorySection = ({
                 <div className="post_img">
                   <div className="img_wrap">
                     <Link to={`/article/${post.slug}`}>
-                      <img src={getImageUrl(post.featured_image)} alt={post.title_fr || post.title} />
+                      <img src={getImageUrl(post.featured_image)} alt={lf(post, 'title')} />
                     </Link>
                   </div>
                   <Link to={`/categorie/${categorySlug}`} className="category_badge" style={{ backgroundColor: getCategoryColor(categorySlug) }}>
@@ -324,11 +328,11 @@ const CategorySection = ({
                 <div className="single_post_text">
                   <h4>
                     <Link to={`/article/${post.slug}`}>
-                      {truncate(post.title_fr || post.title, 70)}
+                      {truncate(lf(post, 'title'), 70)}
                     </Link>
                   </h4>
                   <p className="post-p">
-                    {truncate(post.excerpt_fr || post.excerpt || '', 120)}
+                    {truncate(lf(post, 'excerpt'), 120)}
                   </p>
                   <span className="post_date">{formatDate(post.created_at)}</span>
                 </div>
@@ -347,7 +351,7 @@ const CategorySection = ({
       const date = new Date(dateString);
       return {
         day: date.getDate().toString().padStart(2, '0'),
-        month: date.toLocaleDateString('fr-FR', { month: 'short' }).toUpperCase()
+        month: date.toLocaleDateString(lang === 'en' ? 'en-US' : 'fr-FR', { month: 'short' }).toUpperCase()
       };
     };
 
@@ -359,7 +363,7 @@ const CategorySection = ({
           </h2>
           {showSeeAll && (
             <Link to={`/categorie/${categorySlug}`} className="events-see-all">
-              Voir tous les événements <FontAwesome name="arrow-right" />
+              {t('common.viewAll')} <FontAwesome name="arrow-right" />
             </Link>
           )}
         </div>
@@ -374,7 +378,7 @@ const CategorySection = ({
                 </div>
                 <div className="event-image">
                   <Link to={`/article/${post.slug}`}>
-                    <img src={getImageUrl(post.featured_image)} alt={post.title_fr || post.title} />
+                    <img src={getImageUrl(post.featured_image)} alt={lf(post, 'title')} />
                   </Link>
                   <div className="event-overlay">
                     <Link to={`/article/${post.slug}`} className="event-btn">
@@ -385,18 +389,18 @@ const CategorySection = ({
                 <div className="event-content">
                   <h4 className="event-title">
                     <Link to={`/article/${post.slug}`}>
-                      {truncate(post.title_fr || post.title, 65)}
+                      {truncate(lf(post, 'title'), 65)}
                     </Link>
                   </h4>
                   <p className="event-excerpt">
-                    {truncate(post.excerpt_fr || post.excerpt || '', 80)}
+                    {truncate(lf(post, 'excerpt'), 80)}
                   </p>
                   <div className="event-meta">
                     <span className="event-location">
-                      <FontAwesome name="map-marker" /> International
+                      <FontAwesome name="map-marker" /> {t('common.international')}
                     </span>
                     <Link to={`/article/${post.slug}`} className="event-link">
-                      En savoir plus <FontAwesome name="chevron-right" />
+                      {t('common.readMore')} <FontAwesome name="chevron-right" />
                     </Link>
                   </div>
                 </div>
@@ -431,7 +435,7 @@ const CategorySection = ({
             <div className="single_post post_type6 post_type7 mb30">
               <div className="post_img gradient1" style={getGradientStyle()}>
                 <Link to={`/article/${post.slug}`}>
-                  <img src={getImageUrl(post.featured_image)} alt={post.title_fr || post.title} />
+                  <img src={getImageUrl(post.featured_image)} alt={lf(post, 'title')} />
                 </Link>
                 <Link to={`/categorie/${categorySlug}`} className="category_badge" style={{ backgroundColor: getCategoryColor(categorySlug) }}>
                   {categoryName}
@@ -440,7 +444,7 @@ const CategorySection = ({
               <div className="single_post_text">
                 <h4>
                   <Link to={`/article/${post.slug}`}>
-                    {truncate(post.title_fr || post.title, 55)}
+                    {truncate(lf(post, 'title'), 55)}
                   </Link>
                 </h4>
                 <span className="post_date">{formatDate(post.created_at)}</span>

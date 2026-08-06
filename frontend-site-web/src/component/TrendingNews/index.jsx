@@ -3,6 +3,7 @@ import ProtoTypes from "prop-types";
 import Heading from "../uiStyle/Heading";
 import TrendingNewsSlider from "../TrendingNewsSlider";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import FontAwesome from "../uiStyle/FontAwesome";
 import { useData } from "../../context/DataContext";
 import { useApp } from "../../context/AppContext";
@@ -24,6 +25,7 @@ const defaultNews = [
 const TrendingNews = ({ dark }) => {
   const { trendingPosts, loading } = useData();
   const { getCategoryColor } = useApp();
+  const { t } = useTranslation();
 
   // Utiliser les données API ou fallback - s'assurer d'avoir au moins 6 articles
   const apiData = trendingPosts.length > 0 ? trendingPosts : [];
@@ -56,7 +58,7 @@ const TrendingNews = ({ dark }) => {
 
   return (
     <div className="trending-section">
-      <Heading title="Tendances" />
+      <Heading title={t('home.trendingNow')} />
       <TrendingNewsSlider />
       {dark ? (
         <div className="border_white" />

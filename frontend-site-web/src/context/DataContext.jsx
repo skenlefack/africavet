@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { postsApi, categoriesApi, getImageUrl as resolveImageUrl } from '../services/api';
 
 // Image par défaut
@@ -29,6 +30,8 @@ const BODY_LENGTH = {
 };
 
 export const DataProvider = ({ children }) => {
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.substring(0, 2) || 'fr';
   const [posts, setPosts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,17 +79,21 @@ export const DataProvider = ({ children }) => {
   // Helper pour formater la date
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('fr-FR', {
+    return new Date(dateString).toLocaleDateString(lang === 'en' ? 'en-US' : 'fr-FR', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
     });
   };
 
-  // Transformer les posts avec troncature harmonisée
+  // Transformer les posts avec troncature harmonisée (langue-aware)
   const transformPost = (post, titleLength = TITLE_LENGTH.MEDIUM, bodyLength = BODY_LENGTH.MEDIUM) => {
-    const fullTitle = post.title_fr || post.title || '';
-    const fullBody = post.excerpt_fr || post.excerpt || '';
+    const fullTitle = lang === 'en'
+      ? (post.title_en || post.title_fr || post.title || '')
+      : (post.title_fr || post.title || '');
+    const fullBody = lang === 'en'
+      ? (post.excerpt_en || post.excerpt_fr || post.excerpt || '')
+      : (post.excerpt_fr || post.excerpt || '');
 
     return {
       id: post.id,
