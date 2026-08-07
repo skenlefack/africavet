@@ -1,57 +1,59 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import FontAwesome from "../uiStyle/FontAwesome";
 import "./style.scss";
 
-const dashboardItems = [
-  {
-    id: 1,
-    icon: "address-book",
-    title: "Annuaire Vétérinaire",
-    subtitle: "Panafricain",
-    description: "Trouvez des professionnels de la santé animale",
-    stats: { value: "5000+", label: "Professionnels" },
-    link: "/annuaire",
-    color: "#EC4899",
-    gradient: "linear-gradient(135deg, #EC4899 0%, #F472B6 100%)"
-  },
-  {
-    id: 2,
-    icon: "graduation-cap",
-    title: "E-Learning",
-    subtitle: "Formation continue",
-    description: "Cours et certifications en ligne",
-    stats: { value: "150+", label: "Formations" },
-    link: "/formations",
-    color: "#FF6B35",
-    gradient: "linear-gradient(135deg, #FF6B35 0%, #FF8C5A 100%)"
-  },
-  {
-    id: 3,
-    icon: "briefcase",
-    title: "Opportunités",
-    subtitle: "& Emploi",
-    description: "Offres d'emploi et appels d'offres",
-    stats: { value: "200+", label: "Offres actives" },
-    link: "/opportunites",
-    color: "#8B5CF6",
-    gradient: "linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)"
-  },
-  {
-    id: 4,
-    icon: "bell",
-    title: "Alertes",
-    subtitle: "Sanitaires",
-    description: "Alertes épidémiologiques en temps réel",
-    stats: { value: "24/7", label: "Surveillance" },
-    link: "/alertes-veterinaires",
-    color: "#EF4444",
-    gradient: "linear-gradient(135deg, #EF4444 0%, #F87171 100%)"
-  }
-];
-
 const DashboardSection = () => {
+  const { t } = useTranslation();
   const [activeCard, setActiveCard] = useState(null);
+
+  const dashboardItems = [
+    {
+      id: 1,
+      icon: "address-book",
+      title: t('nav.directory'),
+      subtitle: t('home.panAfrican'),
+      description: t('home.directoryDesc'),
+      stats: { value: "5000+", label: "Professionals" },
+      link: "/annuaire",
+      color: "#EC4899",
+      gradient: "linear-gradient(135deg, #EC4899 0%, #F472B6 100%)"
+    },
+    {
+      id: 2,
+      icon: "graduation-cap",
+      title: "E-Learning",
+      subtitle: t('home.continuingEd'),
+      description: t('home.learnDesc'),
+      stats: { value: "150+", label: t('elearning.courses') },
+      link: "/formations",
+      color: "#FF6B35",
+      gradient: "linear-gradient(135deg, #FF6B35 0%, #FF8C5A 100%)"
+    },
+    {
+      id: 3,
+      icon: "briefcase",
+      title: t('opportunities.title'),
+      subtitle: "",
+      description: t('home.opportunitiesDesc'),
+      stats: { value: "200+", label: t('opportunities.jobs') },
+      link: "/opportunites",
+      color: "#8B5CF6",
+      gradient: "linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%)"
+    },
+    {
+      id: 4,
+      icon: "bell",
+      title: t('alerts.title'),
+      subtitle: "",
+      description: t('home.alertsDesc'),
+      stats: { value: "24/7", label: "Surveillance" },
+      link: "/alertes-veterinaires",
+      color: "#EF4444",
+      gradient: "linear-gradient(135deg, #EF4444 0%, #F87171 100%)"
+    }
+  ];
 
   return (
     <section className="dashboard-section">
@@ -59,10 +61,10 @@ const DashboardSection = () => {
         <div className="dashboard-header">
           <div className="header-content">
             <span className="header-badge">
-              <FontAwesome name="th-large" /> Services AfricaVET
+              <FontAwesome name="th-large" /> {t('footer.services')} AfricaVET
             </span>
-            <h2>Votre Écosystème <span>Professionnel</span></h2>
-            <p>Accédez à tous les outils et ressources pour les professionnels de la santé animale en Afrique</p>
+            <h2>{t('home.ecosystemTitle')} <span>{t('home.panAfrican')}</span></h2>
+            <p>{t('home.ecosystemDesc')}</p>
           </div>
         </div>
 
@@ -87,7 +89,7 @@ const DashboardSection = () => {
               <div className="card-content">
                 <h3>
                   {item.title}
-                  <span>{item.subtitle}</span>
+                  {item.subtitle && <span>{item.subtitle}</span>}
                 </h3>
                 <p>{item.description}</p>
               </div>
@@ -98,7 +100,7 @@ const DashboardSection = () => {
               </div>
 
               <div className="card-action">
-                <span>Accéder</span>
+                <span>{t('home.access')}</span>
                 <FontAwesome name="arrow-right" />
               </div>
             </Link>
@@ -109,13 +111,13 @@ const DashboardSection = () => {
           <div className="cta-content">
             <FontAwesome name="rocket" />
             <div className="cta-text">
-              <strong>Vous êtes professionnel ?</strong>
-              <span>Rejoignez la communauté et accédez à tous les services</span>
+              <strong>{t('home.areProfessional')}</strong>
+              <span>{t('home.joinDesc')}</span>
             </div>
           </div>
           <Link to="/inscription" className="cta-button">
             <FontAwesome name="user-plus" />
-            Créer un compte gratuit
+            {t('auth.createFreeAccount')}
           </Link>
         </div>
       </div>

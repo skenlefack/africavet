@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import { useApp } from "../../context/AppContext";
 import FontAwesome from "../uiStyle/FontAwesome";
 import "./style.scss";
@@ -31,6 +32,7 @@ const categoryDefaults = {
 
 const CategoriesWidget = () => {
   const { categories, loading } = useApp();
+  const { t } = useTranslation();
 
   // Top 10 catégories les plus populaires (par nombre d'articles)
   const activeCategories = [...categories]
@@ -53,12 +55,12 @@ const CategoriesWidget = () => {
       <div className="categories-widget">
         <div className="categories-widget-header">
           <h3 className="categories-widget-title">
-            <FontAwesome name="th-large" /> Catégories
+            <FontAwesome name="th-large" /> {t('nav.categories')}
           </h3>
         </div>
         <div className="categories-loading">
           <div className="spinner"></div>
-          <span>Chargement...</span>
+          <span>{t('common.loading')}</span>
         </div>
       </div>
     );
@@ -71,7 +73,7 @@ const CategoriesWidget = () => {
           <FontAwesome name="th-large" /> Catégories
         </h3>
         <Link to="/categories" className="categories-see-all">
-          Voir tout <FontAwesome name="angle-right" />
+          {t('common.viewAll')} <FontAwesome name="angle-right" />
         </Link>
       </div>
 
@@ -90,7 +92,7 @@ const CategoriesWidget = () => {
               </div>
               <div className="category-info">
                 <span className="category-name">{cat.name_fr || cat.name}</span>
-                <span className="category-count">{cat.post_count} article{cat.post_count > 1 ? 's' : ''}</span>
+                <span className="category-count">{cat.post_count} {cat.post_count > 1 ? t('common.articles') : t('common.article')}</span>
               </div>
               <div className="category-arrow">
                 <FontAwesome name="chevron-right" />

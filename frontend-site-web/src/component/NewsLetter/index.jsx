@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import ProtoTypes from "prop-types";
+import { useTranslation } from 'react-i18next';
 import FontAwesome from "../uiStyle/FontAwesome";
 import { newsletterApi } from "../../services/api";
 import "./newsletter.scss";
 
 const NewsLetter = ({ className, input_white, titleClass }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null); // 'success' | 'error' | 'exists'
@@ -14,7 +16,7 @@ const NewsLetter = ({ className, input_white, titleClass }) => {
     e.preventDefault();
     if (!email || !email.includes("@")) {
       setStatus("error");
-      setMessage("Veuillez entrer une adresse email valide.");
+      setMessage(t('home.invalidEmail'));
       return;
     }
 
@@ -24,20 +26,20 @@ const NewsLetter = ({ className, input_white, titleClass }) => {
       const res = await newsletterApi.subscribe(email);
       if (res.success) {
         setStatus("success");
-        setMessage(res.message || "Inscription réussie ! Vérifiez votre boîte mail.");
+        setMessage(res.message || t('home.subscribeSuccess'));
         setEmail("");
       } else {
         if (res.message && res.message.toLowerCase().includes("déjà")) {
           setStatus("exists");
-          setMessage("Vous êtes déjà inscrit(e) à notre newsletter.");
+          setMessage(t('home.alreadySubscribed'));
         } else {
           setStatus("error");
-          setMessage(res.message || "Une erreur est survenue.");
+          setMessage(res.message || t('auth.genericError'));
         }
       }
     } catch (err) {
       setStatus("error");
-      setMessage("Erreur de connexion. Réessayez plus tard.");
+      setMessage(t('contact.connectionError'));
     } finally {
       setLoading(false);
     }
@@ -50,9 +52,9 @@ const NewsLetter = ({ className, input_white, titleClass }) => {
           <FontAwesome name="envelope-open" />
           <div className="newsletter-pulse" />
         </div>
-        <h3 className={`newsletter-title ${titleClass || ""}`}>Newsletter AfricaVET</h3>
+        <h3 className={`newsletter-title ${titleClass || ""}`}>{t('home.newsletter')} AfricaVET</h3>
         <p className="newsletter-desc">
-          Recevez les dernières actualités vétérinaires et opportunités directement dans votre boîte mail.
+          {t('home.newsletterDesc')}
         </p>
 
         {status === "success" ? (
@@ -69,7 +71,7 @@ const NewsLetter = ({ className, input_white, titleClass }) => {
               <input
                 className={`newsletter-input ${input_white ? "white_bg" : ""}`}
                 type="email"
-                placeholder="votre@email.com"
+                placeholder={t('home.enterEmail')}
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -85,7 +87,7 @@ const NewsLetter = ({ className, input_white, titleClass }) => {
               ) : (
                 <>
                   <FontAwesome name="paper-plane" />
-                  <span>S'inscrire</span>
+                  <span>{t('home.subscribe')}</span>
                 </>
               )}
             </button>
@@ -102,7 +104,7 @@ const NewsLetter = ({ className, input_white, titleClass }) => {
             )}
 
             <p className="newsletter-privacy">
-              <FontAwesome name="lock" /> Vos données restent confidentielles
+              <FontAwesome name="lock" /> {t('home.dataPrivacy')}
             </p>
           </form>
         )}

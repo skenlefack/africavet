@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import { postsApi, getImageUrl as resolveImageUrl } from "../../services/api";
 import { useApp } from "../../context/AppContext";
+import { useLocale } from "../../utils/i18nHelpers";
 import FontAwesome from "../uiStyle/FontAwesome";
 import NewsLetter from "../NewsLetter";
 import AdBanner from "../AdBanner";
 import "./style.scss";
 
 const Sidebar = ({ categorySlug = null }) => {
+  const { t } = useTranslation();
+  const { lang, lf } = useLocale();
   const { categories, getCategoryColor, settings } = useApp();
   const [mostViewed, setMostViewed] = useState([]);
   const [interviews, setInterviews] = useState([]);
@@ -39,7 +43,7 @@ const Sidebar = ({ categorySlug = null }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('fr-FR', {
+    return new Date(dateString).toLocaleDateString(lang === 'en' ? 'en-US' : 'fr-FR', {
       day: 'numeric',
       month: 'short',
       year: 'numeric'
@@ -67,7 +71,7 @@ const Sidebar = ({ categorySlug = null }) => {
       <div className="sidebar-widget follow-widget">
         <div className="widget-header">
           <h3 className="widget-title">
-            <FontAwesome name="share-alt" /> Suivez-nous
+            <FontAwesome name="share-alt" /> {t('footer.followUs')}
           </h3>
         </div>
         <div className="social-grid">
@@ -92,7 +96,7 @@ const Sidebar = ({ categorySlug = null }) => {
       <div className="sidebar-widget most-viewed-widget">
         <div className="widget-header">
           <h3 className="widget-title">
-            <FontAwesome name="fire" /> Les Plus Vus
+            <FontAwesome name="fire" /> {t('home.mostViewed')}
           </h3>
         </div>
         <div className="posts-list">
@@ -111,13 +115,13 @@ const Sidebar = ({ categorySlug = null }) => {
                 <Link to={`/article/${post.slug}`} className="post-thumb">
                   <img
                     src={resolveImageUrl(post.featured_image, null)}
-                    alt={post.title_fr || post.title}
+                    alt={lf(post, 'title')}
                   />
                 </Link>
                 <div className="post-content">
                   <h4 className="post-title">
                     <Link to={`/article/${post.slug}`}>
-                      {truncate(post.title_fr || post.title, 60)}
+                      {truncate(lf(post, 'title'), 60)}
                     </Link>
                   </h4>
                   <div className="post-meta">
@@ -132,7 +136,7 @@ const Sidebar = ({ categorySlug = null }) => {
               </div>
             ))
           ) : (
-            <p className="no-posts">Aucun article populaire</p>
+            <p className="no-posts">{t('common.noResults')}</p>
           )}
         </div>
       </div>
@@ -143,8 +147,8 @@ const Sidebar = ({ categorySlug = null }) => {
           <div className="newsletter-icon">
             <FontAwesome name="envelope-open" />
           </div>
-          <h3>Newsletter</h3>
-          <p>Inscrivez-vous pour recevoir les dernières actualités directement dans votre boîte mail.</p>
+          <h3>{t('home.newsletter')}</h3>
+          <p>{t('home.subscribeNewsletter')}</p>
           <NewsLetter />
         </div>
       </div>
@@ -153,7 +157,7 @@ const Sidebar = ({ categorySlug = null }) => {
       <div className="sidebar-widget interviews-widget">
         <div className="widget-header">
           <h3 className="widget-title">
-            <FontAwesome name="microphone" /> Dernières Interviews
+            <FontAwesome name="microphone" /> {t('home.latestInterviews')}
           </h3>
         </div>
         <div className="interviews-list">
@@ -162,7 +166,7 @@ const Sidebar = ({ categorySlug = null }) => {
               <div key={post.id} className="interview-item">
                 <div className="interview-img">
                   <Link to={`/article/${post.slug}`}>
-                    <img src={resolveImageUrl(post.featured_image, null)} alt={post.title_fr || post.title} />
+                    <img src={resolveImageUrl(post.featured_image, null)} alt={lf(post, 'title')} />
                   </Link>
                   <span className="play-icon">
                     <FontAwesome name="play" />
@@ -171,7 +175,7 @@ const Sidebar = ({ categorySlug = null }) => {
                 <div className="interview-content">
                   <h4>
                     <Link to={`/article/${post.slug}`}>
-                      {truncate(post.title_fr || post.title, 50)}
+                      {truncate(lf(post, 'title'), 50)}
                     </Link>
                   </h4>
                   <span className="interview-date">{formatDate(post.created_at)}</span>
@@ -179,7 +183,7 @@ const Sidebar = ({ categorySlug = null }) => {
               </div>
             ))
           ) : (
-            <p className="no-posts">Aucune interview disponible</p>
+            <p className="no-posts">{t('common.noResults')}</p>
           )}
         </div>
       </div>

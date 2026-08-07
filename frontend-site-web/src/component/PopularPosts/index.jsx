@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import FontAwesome from "../uiStyle/FontAwesome";
 import { postsApi, getImageUrl as resolveImageUrl } from "../../services/api";
+import { useLocale } from "../../utils/i18nHelpers";
 
 import "./style.scss";
 import Slider from "../Slider";
@@ -10,6 +12,8 @@ import Slider from "../Slider";
 import defaultImg from "../../assets/img/post-1.jpg";
 
 const PopularPosts = () => {
+  const { t } = useTranslation();
+  const { lf } = useLocale();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,7 +54,7 @@ const PopularPosts = () => {
 
   return (
     <div className="popular_carousel_area mb30 md-mt-30">
-      <h2 className="widget-title">Articles Populaires</h2>
+      <h2 className="widget-title">{t('home.popularArticles')}</h2>
       <div className="popular_carousel pt-15 multipleRowCarousel nav_style1">
         {/*CAROUSEL START*/}
         <Slider
@@ -69,7 +73,7 @@ const PopularPosts = () => {
               <div className="post_img">
                 <div className="img_wrap">
                   <Link to={`/article/${item.slug}`}>
-                    <img src={getImageUrl(item.featured_image)} alt={item.title_fr || item.title} />
+                    <img src={getImageUrl(item.featured_image)} alt={lf(item, 'title')} />
                   </Link>
                 </div>
                 <span className="tranding tranding_border">{item.rankId}</span>
@@ -84,7 +88,7 @@ const PopularPosts = () => {
                 </div>
                 <h4>
                   <Link to={`/article/${item.slug}`}>
-                    {truncate(item.title_fr || item.title, 50)}
+                    {truncate(lf(item, 'title'), 50)}
                   </Link>
                 </h4>
               </div>
