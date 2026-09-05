@@ -157,6 +157,21 @@ app.use('/api/documents', require('./routes/documents'));
 // Contact
 app.use('/api/contact', require('./routes/contact'));
 
+// RecallVET - Veterinary Management System (v1 API)
+app.use('/api/v1', require('./routes/v1'));
+
+// Authors Management
+app.use('/api/authors', require('./routes/authors'));
+
+// Language Audit
+app.use('/api/language-audit', require('./routes/language-audit'));
+
+// Post Workflow & Reviews
+app.use('/api/post-workflow', require('./routes/post-workflow'));
+
+// Editorial Analytics / KPI
+app.use('/api/editorial-analytics', require('./routes/editorial-analytics'));
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), version: '2.0.0' });

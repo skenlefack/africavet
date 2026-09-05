@@ -31,6 +31,29 @@ export const MenuList = [
                 title: 'Ajouter',
                 to: 'posts/new',
             },
+            {
+                title: 'Revues en attente',
+                to: 'posts/pending-reviews',
+            },
+            {
+                title: 'Audit langues',
+                to: 'language-audit',
+            },
+        ],
+    },
+    {
+        title: 'Auteurs',
+        classsChange: 'mm-collapse',
+        iconStyle: SVGICON.ContactSvg,
+        content: [
+            {
+                title: 'Tous les auteurs',
+                to: 'authors',
+            },
+            {
+                title: 'Ajouter',
+                to: 'authors/new',
+            },
         ],
     },
     {
@@ -290,6 +313,71 @@ export const MenuList = [
             },
         ],
     },
+    // RecallVET - Veterinary Management
+    {
+        title: 'RECALLVET',
+        classsChange: 'menu-title'
+    },
+    {
+        title: 'Vue d\'ensemble',
+        iconStyle: SVGICON.Home,
+        to: 'recallvet',
+    },
+    {
+        title: 'Clinique',
+        classsChange: 'mm-collapse',
+        iconStyle: SVGICON.ContactSvg,
+        content: [
+            { title: 'Clients', to: 'recallvet/clinic/parties' },
+            { title: 'Animaux', to: 'recallvet/clinic/animals' },
+            { title: 'Rendez-vous', to: 'recallvet/clinic/appointments' },
+            { title: 'Consultations', to: 'recallvet/clinic/encounters' },
+            { title: 'Vaccinations', to: 'recallvet/clinic/vaccinations' },
+            { title: 'Ordonnances', to: 'recallvet/clinic/prescriptions' },
+            { title: 'Factures', to: 'recallvet/clinic/invoices' },
+        ],
+    },
+    {
+        title: 'Élevage',
+        classsChange: 'mm-collapse',
+        iconStyle: SVGICON.Bootstrap,
+        content: [
+            { title: 'Exploitations', to: 'recallvet/farm/farms' },
+            { title: 'Troupeaux / Lots', to: 'recallvet/farm/herds' },
+            { title: 'Visites', to: 'recallvet/farm/visits' },
+            { title: 'Événements sanitaires', to: 'recallvet/farm/health-events' },
+        ],
+    },
+    {
+        title: 'Pharmacie',
+        classsChange: 'mm-collapse',
+        iconStyle: SVGICON.Forms,
+        content: [
+            { title: 'Produits', to: 'recallvet/pharmacy/products' },
+            { title: 'Fournisseurs', to: 'recallvet/pharmacy/suppliers' },
+            { title: 'Bons de commande', to: 'recallvet/pharmacy/purchase-orders' },
+            { title: 'Stock', to: 'recallvet/pharmacy/stock' },
+            { title: 'Délivrance', to: 'recallvet/pharmacy/dispensing' },
+            { title: 'Vente comptoir', to: 'recallvet/pharmacy/sales' },
+        ],
+    },
+
+    // Outils
+    {
+        title: 'OUTILS',
+        classsChange: 'menu-title'
+    },
+    {
+        title: 'KPI Éditorial',
+        iconStyle: SVGICON.Charts,
+        to: 'editorial-dashboard',
+    },
+    {
+        title: 'Générateur UTM',
+        iconStyle: SVGICON.Forms,
+        to: 'utm-generator',
+    },
+
     // Administration
     {
         title: 'ADMINISTRATION',

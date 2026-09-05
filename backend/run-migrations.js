@@ -74,7 +74,15 @@ const MIGRATIONS = [
   '048_rebrand_newsletter_africavet.sql',
   'create_homepage_sections.sql',
   'update_pillars_partners.sql',
-  'fix_encoding.sql'
+  'fix_encoding.sql',
+  // RecallVET - Veterinary Management System
+  '059_recallvet_foundation.sql',
+  '060_recallvet_party_animal.sql',
+  '061_recallvet_encounters.sql',
+  '062_recallvet_vaccination_prescription.sql',
+  '063_recallvet_pharmacy.sql',
+  '064_recallvet_farm.sql',
+  '065_recallvet_invoicing.sql'
 ];
 
 async function runMigrations() {
