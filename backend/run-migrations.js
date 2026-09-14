@@ -82,7 +82,9 @@ const MIGRATIONS = [
   '062_recallvet_vaccination_prescription.sql',
   '063_recallvet_pharmacy.sql',
   '064_recallvet_farm.sql',
-  '065_recallvet_invoicing.sql'
+  '065_recallvet_invoicing.sql',
+  // Google AdSense
+  '066_update_adsense_publisher_id.sql'
 ];
 
 async function runMigrations() {
