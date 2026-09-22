@@ -376,6 +376,32 @@ const OpportunityDetailPage = () => {
                       <p style={{ color: '#999', fontSize: '14px', marginBottom: '10px' }}>Cette opportunité n'est plus disponible.</p>
                       <Link to="/opportunites" className="btn btn-outline-primary btn-sm">Voir d'autres opportunités</Link>
                     </div>
+                  ) : opp.application_method === 'external' ? (
+                    (() => {
+                      const externalUrl = opp.application_url || opp.source_url;
+                      return externalUrl ? (
+                        <div>
+                          <a href={externalUrl} target="_blank" rel="noopener noreferrer" className="btn btn-lg w-100"
+                            style={{ background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', padding: '12px' }}>
+                            <FontAwesome name="external-link" /> Postuler sur le site officiel
+                          </a>
+                          <p style={{ color: '#999', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
+                            <FontAwesome name="info-circle" /> Vous serez redirigé vers le site de l'organisation
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p style={{ color: '#666', fontSize: '14px', marginBottom: '8px' }}>
+                            <FontAwesome name="info-circle" /> Candidature directement auprès de l'organisation.
+                          </p>
+                          {opp.contact_email && (
+                            <a href={`mailto:${opp.contact_email}`} className="btn btn-outline-primary w-100" style={{ borderRadius: '8px' }}>
+                              <FontAwesome name="envelope" /> Contacter l'organisation
+                            </a>
+                          )}
+                        </div>
+                      );
+                    })()
                   ) : isAuthenticated ? (
                     <Link to={`/opportunites/${id}/postuler`} className="btn btn-lg w-100"
                       style={{ background: 'linear-gradient(135deg, #7ac142 0%, #354e84 100%)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', padding: '12px' }}>

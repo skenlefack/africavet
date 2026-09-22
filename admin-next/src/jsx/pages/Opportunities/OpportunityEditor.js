@@ -171,7 +171,7 @@ const OpportunityEditor = () => {
     const [fieldErrors, setFieldErrors] = useState({});
 
     const STEPS = [
-        { id: 1, label: 'Identification', icon: 'fa-tag', fields: ['opportunity_type', 'title_fr', 'title_en', 'organization_name', 'tender_reference', 'source_url', 'application_url'] },
+        { id: 1, label: 'Identification', icon: 'fa-tag', fields: ['opportunity_type', 'title_fr', 'title_en', 'organization_name', 'tender_reference', 'source_url', 'application_url', 'application_method'] },
         { id: 2, label: 'Contenu', icon: 'fa-align-left', fields: ['description_fr', 'description_en'] },
         { id: 3, label: 'Métadonnées', icon: 'fa-sliders-h', fields: ['country', 'city', 'work_mode', 'contract_type', 'salary_min', 'deadline'] },
         { id: 4, label: 'Publication', icon: 'fa-paper-plane', fields: ['status', 'offer_status', 'is_featured'] },
@@ -189,6 +189,7 @@ const OpportunityEditor = () => {
         contact_phone: '',
         website_url: '',
         application_url: '',
+        application_method: 'internal',
         source_url: '',
         tender_reference: '',
         country: '',
@@ -255,6 +256,7 @@ const OpportunityEditor = () => {
                 contact_phone: d.contact_phone || '',
                 website_url: d.website_url || '',
                 application_url: d.application_url || '',
+                application_method: d.application_method || 'internal',
                 source_url: d.source_url || '',
                 tender_reference: d.tender_reference || '',
                 country: d.country || '',
@@ -327,6 +329,22 @@ const OpportunityEditor = () => {
         // Email validation
         if (form.contact_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.contact_email)) {
             errors.contact_email = 'Email invalide';
+        }
+        // Application method / URL consistency
+        if (form.application_method === 'external') {
+            if (!form.application_url || !form.application_url.trim()) {
+                errors.application_url = 'Le lien de candidature externe est obligatoire';
+            } else {
+                try {
+                    const { hostname } = new URL(form.application_url.trim());
+                    const ownDomains = ['africavet.com', 'www.africavet.com', 'manager.africavet.com'];
+                    if (ownDomains.includes(hostname)) {
+                        errors.application_url = `Ce lien pointe vers ${hostname} — fournissez l'URL du site de l'organisation`;
+                    }
+                } catch {
+                    errors.application_url = 'URL de candidature invalide';
+                }
+            }
         }
         return errors;
     };
@@ -482,7 +500,7 @@ const OpportunityEditor = () => {
             { ok: !!(editorRefFr.current ? editorRefFr.current.getContent() : form.description_fr), label: 'Description' },
             { ok: !!form.deadline || form.offer_status === 'continuous', label: 'Date limite' },
             { ok: !!form.contact_email, label: 'Email contact' },
-            { ok: !!form.application_url, label: 'Lien candidature' },
+            { ok: form.application_method === 'internal' || !!form.application_url, label: 'Lien candidature' },
             { ok: !!form.source_url, label: 'Source officielle' },
         ];
         const done = checks.filter(c => c.ok).length;
@@ -668,6 +686,7 @@ const OpportunityEditor = () => {
                                         id="desc-fr"
                                         key={`desc-fr-${loading}`}
                                         onInit={(evt, editor) => (editorRefFr.current = editor)}
+                                        onRemove={() => (editorRefFr.current = null)}
                                         initialValue={form.description_fr}
                                         init={TINYMCE_CONFIG}
                                         onEditorChange={(content) => setForm(prev => ({ ...prev, description_fr: content }))}
@@ -679,6 +698,7 @@ const OpportunityEditor = () => {
                                         id="desc-en"
                                         key={`desc-en-${loading}`}
                                         onInit={(evt, editor) => (editorRefEn.current = editor)}
+                                        onRemove={() => (editorRefEn.current = null)}
                                         initialValue={form.description_en}
                                         init={TINYMCE_CONFIG}
                                         onEditorChange={(content) => setForm(prev => ({ ...prev, description_en: content }))}
@@ -737,12 +757,54 @@ const OpportunityEditor = () => {
                                             placeholder="https://recrutement.org/offre-123" />
                                     </div>
                                     <div className="col-md-4">
-                                        <label className="form-label"><i className="fas fa-paper-plane me-1"></i>Lien direct de candidature</label>
-                                        <input type="url" className="form-control" value={form.application_url}
-                                            onChange={e => handleChange('application_url', e.target.value)}
-                                            placeholder="https://recrutement.org/postuler" />
+                                        <label className="form-label"><i className="fas fa-paper-plane me-1"></i>Mode de candidature</label>
+                                        <select className="form-select" value={form.application_method}
+                                            onChange={e => handleChange('application_method', e.target.value)}>
+                                            <option value="internal">Formulaire interne AfricaVET</option>
+                                            <option value="external">Lien externe (redirection)</option>
+                                        </select>
+                                        <small className="text-muted mt-1 d-block">
+                                            {form.application_method === 'internal'
+                                                ? 'Les candidats postuleront via le formulaire AfricaVET'
+                                                : 'Les candidats seront redirigés vers le lien externe'}
+                                        </small>
                                     </div>
                                 </div>
+                                {form.application_method === 'external' && (
+                                <div className="row g-3 mt-1">
+                                    <div className="col-md-12">
+                                        <label className="form-label"><i className="fas fa-link me-1"></i>Lien externe de candidature <span className="text-danger">*</span></label>
+                                        <input type="url" className={`form-control ${fieldErrors.application_url ? 'is-invalid' : ''}`}
+                                            value={form.application_url}
+                                            onChange={e => handleChange('application_url', e.target.value)}
+                                            placeholder="https://organisation.org/postuler" />
+                                        {fieldErrors.application_url
+                                            ? <div className="invalid-feedback">{fieldErrors.application_url}</div>
+                                            : (() => {
+                                                const ownDomains = ['africavet.com', 'www.africavet.com', 'manager.africavet.com'];
+                                                try {
+                                                    if (form.application_url) {
+                                                        const { hostname } = new URL(form.application_url);
+                                                        if (ownDomains.includes(hostname)) {
+                                                            return <div className="text-danger mt-1" style={{ fontSize: '0.85rem' }}>
+                                                                <i className="fas fa-exclamation-triangle me-1"></i>
+                                                                Ce lien pointe vers AfricaVET — entrez l'URL du site de l'organisation
+                                                            </div>;
+                                                        }
+                                                        if (form.application_url.startsWith('http')) {
+                                                            return <div className="text-success mt-1" style={{ fontSize: '0.85rem' }}>
+                                                                <i className="fas fa-check-circle me-1"></i>
+                                                                Redirection vers : {hostname}
+                                                            </div>;
+                                                        }
+                                                    }
+                                                } catch { /* URL invalide, ignorée silencieusement */ }
+                                                return null;
+                                            })()
+                                        }
+                                    </div>
+                                </div>
+                                )}
                             </div>
                         </div>
 

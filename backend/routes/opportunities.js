@@ -52,6 +52,32 @@ const upload = multer({
 });
 
 // =========================================
+// HELPERS
+// =========================================
+
+const OWN_DOMAINS = ['africavet.com', 'www.africavet.com', 'manager.africavet.com'];
+
+/**
+ * Vérifie que application_url est cohérent avec application_method.
+ * Retourne un message d'erreur ou null si OK.
+ */
+function validateApplicationMethod(application_method, application_url) {
+  if (application_method !== 'external') return null;
+  if (!application_url || !application_url.trim()) {
+    return "Le lien de candidature externe est obligatoire quand le mode est 'external'.";
+  }
+  try {
+    const { hostname } = new URL(application_url.trim());
+    if (OWN_DOMAINS.includes(hostname)) {
+      return `Le lien de candidature externe ne peut pas pointer vers ${hostname}. Fournissez l'URL du site de l'organisation.`;
+    }
+  } catch {
+    return "Le lien de candidature externe n'est pas une URL valide.";
+  }
+  return null;
+}
+
+// =========================================
 // PUBLIC ROUTES
 // =========================================
 
@@ -541,6 +567,7 @@ router.post('/', optionalAuth, upload.single('logo'), sanitizeFields('descriptio
       contact_phone,
       website_url,
       application_url,
+      application_method,
       source_url,
       country,
       region,
@@ -599,6 +626,11 @@ router.post('/', optionalAuth, upload.single('logo'), sanitizeFields('descriptio
       });
     }
 
+    const appMethodError = validateApplicationMethod(application_method, application_url);
+    if (appMethodError) {
+      return res.status(400).json({ success: false, message: appMethodError });
+    }
+
     const organization_logo = req.file ? `/uploads/opportunities/${req.file.filename}` : null;
 
     // Insert opportunity
@@ -606,7 +638,7 @@ router.post('/', optionalAuth, upload.single('logo'), sanitizeFields('descriptio
       INSERT INTO opportunities (
         opportunity_type, title_fr, title_en, description_fr, description_en,
         organization_name, organization_logo, contact_name, contact_email, contact_phone,
-        website_url, application_url, source_url,
+        website_url, application_url, application_method, source_url,
         country, region, city, address, is_remote, work_mode,
         job_type, contract_type, work_rhythm, contract_duration, contract_start_date, contract_end_date,
         experience_required, experience_min_years, experience_max_years,
@@ -623,7 +655,7 @@ router.post('/', optionalAuth, upload.single('logo'), sanitizeFields('descriptio
       ) VALUES (
         ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?,
-        ?, ?, ?,
+        ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?,
         ?, ?, ?,
@@ -641,7 +673,7 @@ router.post('/', optionalAuth, upload.single('logo'), sanitizeFields('descriptio
     `, [
       opportunity_type, title_fr, title_en || null, description_fr || null, description_en || null,
       organization_name || null, organization_logo, contact_name || null, contact_email || null, contact_phone || null,
-      website_url || null, application_url || null, source_url || null,
+      website_url || null, application_url || null, application_method || 'internal', source_url || null,
       country || null, region || null, city || null, address || null, is_remote ? 1 : 0, work_mode || 'on_site',
       job_type || null, contract_type || null, work_rhythm || null, contract_duration || null, contract_start_date || null, contract_end_date || null,
       experience_required || null, experience_min_years || null, experience_max_years || null,
@@ -856,7 +888,7 @@ router.put('/:id', authenticate, sanitizeFields('description_fr', 'description_e
 
     // Check ownership or admin
     const [opportunities] = await db.query(
-      'SELECT submitted_by FROM opportunities WHERE id = ?',
+      'SELECT submitted_by, application_method, application_url FROM opportunities WHERE id = ?',
       [id]
     );
 
@@ -868,10 +900,18 @@ router.put('/:id', authenticate, sanitizeFields('description_fr', 'description_e
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
+    // Validate application_method/url consistency (merge new values with existing DB values)
+    const updatedMethod = req.body.application_method ?? opportunities[0].application_method;
+    const updatedUrl = req.body.application_url ?? opportunities[0].application_url;
+    const appMethodError = validateApplicationMethod(updatedMethod, updatedUrl);
+    if (appMethodError) {
+      return res.status(400).json({ success: false, message: appMethodError });
+    }
+
     const allowedFields = [
       'title_fr', 'title_en', 'description_fr', 'description_en',
       'organization_name', 'contact_name', 'contact_email', 'contact_phone',
-      'website_url', 'application_url', 'source_url',
+      'website_url', 'application_url', 'application_method', 'source_url',
       'country', 'region', 'city', 'address', 'is_remote', 'work_mode',
       'job_type', 'contract_type', 'work_rhythm', 'contract_duration',
       'contract_start_date', 'contract_end_date',
@@ -891,7 +931,7 @@ router.put('/:id', authenticate, sanitizeFields('description_fr', 'description_e
     const values = [];
 
     const jsonFields = ['skills_required', 'benefits', 'languages_required', 'languages_desired', 'tags'];
-    const enumFields = ['job_type', 'contract_type', 'work_rhythm', 'work_mode', 'salary_type', 'salary_period', 'salary_currency', 'recruitment_scope', 'tender_type', 'offer_status', 'deadline_timezone'];
+    const enumFields = ['job_type', 'contract_type', 'work_rhythm', 'work_mode', 'salary_type', 'salary_period', 'salary_currency', 'recruitment_scope', 'tender_type', 'offer_status', 'deadline_timezone', 'application_method'];
     for (const field of allowedFields) {
       if (req.body[field] !== undefined) {
         updates.push(`${field} = ?`);
@@ -953,7 +993,7 @@ router.post('/:id/duplicate', authenticate, async (req, res) => {
       INSERT INTO opportunities (
         opportunity_type, title_fr, title_en, description_fr, description_en,
         organization_name, organization_logo, organization_id, contact_name, contact_email, contact_phone,
-        website_url, application_url, source_url,
+        website_url, application_url, application_method, source_url,
         country, region, city, address, is_remote, work_mode,
         job_type, contract_type, work_rhythm, contract_duration, contract_start_date, contract_end_date,
         experience_required, experience_min_years, experience_max_years,
@@ -967,7 +1007,7 @@ router.post('/:id/duplicate', authenticate, async (req, res) => {
       ) SELECT
         opportunity_type, CONCAT('[COPIE] ', title_fr), title_en, description_fr, description_en,
         organization_name, organization_logo, organization_id, contact_name, contact_email, contact_phone,
-        website_url, application_url, source_url,
+        website_url, application_url, application_method, source_url,
         country, region, city, address, is_remote, work_mode,
         job_type, contract_type, work_rhythm, contract_duration, contract_start_date, contract_end_date,
         experience_required, experience_min_years, experience_max_years,

@@ -42,6 +42,18 @@ const OpportunityApplyPage = () => {
     setLoading(true);
     const res = await opportunitiesApi.getById(id);
     if (res.success && res.data) {
+      if (res.data.application_method === 'external') {
+        const externalUrl = res.data.application_url || res.data.source_url;
+        if (externalUrl) {
+          window.location.href = externalUrl;
+          return;
+        }
+        // External but no URL — show error instead of internal form
+        setError("La candidature se fait directement auprès de l'organisation. Aucun lien externe n'est disponible pour le moment.");
+        setOpportunity(res.data);
+        setLoading(false);
+        return;
+      }
       if (res.data.deadline && new Date(res.data.deadline) < new Date()) {
         setError('La date limite de candidature pour cette opportunité est dépassée.');
       }
