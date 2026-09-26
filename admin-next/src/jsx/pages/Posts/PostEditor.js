@@ -81,7 +81,9 @@ const PostEditor = () => {
         reviewer_organization: '',
         health_disclaimer: false,
         image_credit: '',
-        image_source: ''
+        image_source: '',
+        content_language: 'fr',
+        editorial_format: 'actualite'
     });
 
     useEffect(() => {
@@ -143,7 +145,9 @@ const PostEditor = () => {
                 reviewer_organization: res.data.reviewer_organization || '',
                 health_disclaimer: !!res.data.health_disclaimer,
                 image_credit: res.data.image_credit || '',
-                image_source: res.data.image_source || ''
+                image_source: res.data.image_source || '',
+                content_language: res.data.content_language || 'fr',
+                editorial_format: res.data.editorial_format || 'actualite'
             });
         }
         setLoading(false);
@@ -191,12 +195,86 @@ const PostEditor = () => {
         }));
     };
 
+
+    // Completeness score calculation (10 criteria, 10 points each)
+    const getCompletenessScore = () => {
+        let score = 0;
+        const checks = [];
+
+        // 1. Title FR present
+        const hasTitleFr = !!(formData.title_fr && formData.title_fr.trim());
+        checks.push({ label: 'Titre FR', ok: hasTitleFr });
+        if (hasTitleFr) score += 10;
+
+        // 2. Content present
+        const hasContent = !!(formData.content_fr && formData.content_fr.trim());
+        checks.push({ label: 'Contenu', ok: hasContent });
+        if (hasContent) score += 10;
+
+        // 3. Country/region set
+        const hasGeo = !!(formData.country && formData.country.trim()) || !!(formData.region && formData.region.trim());
+        checks.push({ label: 'Pays/Region', ok: hasGeo });
+        if (hasGeo) score += 10;
+
+        // 4. Language set
+        const hasLang = !!formData.content_language;
+        checks.push({ label: 'Langue', ok: hasLang });
+        if (hasLang) score += 10;
+
+        // 5. Meta title 50-60 chars
+        const mtLen = (formData.meta_title_fr || '').length;
+        const hasMetaTitle = mtLen >= 50 && mtLen <= 60;
+        checks.push({ label: 'Meta title 50-60 car.', ok: hasMetaTitle });
+        if (hasMetaTitle) score += 10;
+
+        // 6. Meta description 140-160 chars
+        const mdLen = (formData.meta_description_fr || '').length;
+        const hasMetaDesc = mdLen >= 140 && mdLen <= 160;
+        checks.push({ label: 'Meta desc. 140-160 car.', ok: hasMetaDesc });
+        if (hasMetaDesc) score += 10;
+
+        // 7. Sources present
+        const hasSources = !!(formData.sources && formData.sources.trim());
+        checks.push({ label: 'Sources', ok: hasSources });
+        if (hasSources) score += 10;
+
+        // 8. Image credit (if image exists)
+        const hasImgCredit = !formData.featured_image || !!(formData.image_credit && formData.image_credit.trim());
+        checks.push({ label: 'Credit image', ok: hasImgCredit });
+        if (hasImgCredit) score += 10;
+
+        // 9. Category assigned
+        const hasCat = formData.category_ids && formData.category_ids.length > 0;
+        checks.push({ label: 'Categorie', ok: hasCat });
+        if (hasCat) score += 10;
+
+        // 10. Content >= 500 words
+        const plainText = (formData.content_fr || '').replace(/<[^>]*>/g, ' ').replace(/s+/g, ' ').trim();
+        const wordCount = plainText ? plainText.split(/s+/).length : 0;
+        const hasWords = wordCount >= 500;
+        checks.push({ label: '500+ mots (' + wordCount + ')', ok: hasWords });
+        if (hasWords) score += 10;
+
+        return { score, checks };
+    };
+
+    const { score: completenessScore, checks: completenessChecks } = getCompletenessScore();
+    const completenessColor = completenessScore < 40 ? '#dc3545' : completenessScore < 70 ? '#fd7e14' : '#28a745';
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!formData.title_fr && !formData.title_en) {
             setToast({ message: 'Veuillez saisir un titre', type: 'error' });
             return;
+        }
+
+        // Warn when publishing with low completeness score
+        if (formData.status === 'published' && completenessScore < 50) {
+            const missing = completenessChecks.filter(ch => !ch.ok).map(ch => ch.label).join(', ');
+            if (!window.confirm('Score de completude: ' + completenessScore + '%\nElements manquants: ' + missing + '\n\nPublier quand meme ?')) {
+                return;
+            }
         }
 
         setSaving(true);
@@ -401,6 +479,41 @@ const PostEditor = () => {
                 </div>
             </div>
 
+
+            {/* Completeness Score Bar */}
+            <div className="card border-0 mb-2" style={{ borderRadius: '10px' }}>
+                <div className="card-body p-2">
+                    <div className="d-flex align-items-center gap-2">
+                        <span className="small fw-bold" style={{ minWidth: '120px', color: completenessColor }}>
+                            <i className="fas fa-chart-line me-1"></i>Completude: {completenessScore}%
+                        </span>
+                        <div className="progress flex-grow-1" style={{ height: '8px', borderRadius: '4px' }}>
+                            <div
+                                className="progress-bar"
+                                role="progressbar"
+                                style={{ width: completenessScore + '%', backgroundColor: completenessColor, borderRadius: '4px', transition: 'width 0.3s ease' }}
+                                aria-valuenow={completenessScore}
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                            ></div>
+                        </div>
+                        <div className="dropdown">
+                            <button className="btn btn-sm btn-light border-0" type="button" data-bs-toggle="dropdown" style={{ fontSize: '0.7rem', padding: '2px 6px' }}>
+                                <i className="fas fa-info-circle"></i>
+                            </button>
+                            <div className="dropdown-menu dropdown-menu-end p-2" style={{ minWidth: '220px', fontSize: '0.75rem' }}>
+                                {completenessChecks.map((ch, i) => (
+                                    <div key={i} className="d-flex align-items-center py-1">
+                                        <i className={'fas fa-' + (ch.ok ? 'check-circle text-success' : 'times-circle text-danger') + ' me-2'} style={{ fontSize: '0.7rem' }}></i>
+                                        <span className={ch.ok ? '' : 'text-muted'}>{ch.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Title + Slug + Status - Always visible */}
             <div className="card border-0 mb-2" style={{ borderRadius: '10px' }}>
                 <div className="card-body p-2">
@@ -566,6 +679,41 @@ const PostEditor = () => {
                                 <option value="Afrique de l'Est">Afr. Est</option>
                                 <option value="Afrique australe">Afr. Australe</option>
                                 <option value="Afrique du Nord">Afr. Nord</option>
+                            </select>
+                        </div>
+                        <div className="col-md-2">
+                            <label className="form-label small text-muted mb-1" style={{ fontSize: '0.65rem' }}>Format editorial</label>
+                            <select
+                                className="form-select form-select-sm border-0 bg-light"
+                                name="editorial_format"
+                                value={formData.editorial_format}
+                                onChange={handleChange}
+                                style={{ borderRadius: '6px', fontSize: '0.7rem' }}
+                            >
+                                <option value="actualite">Actualite / Breve</option>
+                                <option value="analyse">Analyse / Decryptage</option>
+                                <option value="reportage">Reportage terrain</option>
+                                <option value="entretien">Entretien / Q&A</option>
+                                <option value="guide_pratique">Guide pratique</option>
+                                <option value="data_story">Data story</option>
+                                <option value="dossier">Dossier thematique</option>
+                                <option value="opportunite">Opportunites / Appels</option>
+                                <option value="tribune">Tribune / Opinion</option>
+                                <option value="synthese">Synthese / Revue</option>
+                            </select>
+                        </div>
+                        <div className="col-md-1">
+                            <label className="form-label small text-muted mb-1" style={{ fontSize: '0.65rem' }}>Langue</label>
+                            <select
+                                className="form-select form-select-sm border-0 bg-light"
+                                name="content_language"
+                                value={formData.content_language}
+                                onChange={handleChange}
+                                style={{ borderRadius: '6px', fontSize: '0.7rem' }}
+                            >
+                                <option value="fr">FR</option>
+                                <option value="en">EN</option>
+                                <option value="bilingual">Bilingue</option>
                             </select>
                         </div>
                         <div className="col-md-1">
@@ -856,7 +1004,7 @@ const PostEditor = () => {
                                         placeholder="Titre pour Google (60 caracteres max)"
                                         style={{ borderRadius: '6px' }}
                                     />
-                                    <small className="text-muted">{(formData[`meta_title_${activeLang}`] || '').length}/60</small>
+                                    <small style={{ color: (() => { const l = (formData[`meta_title_${activeLang}`] || '').length; return l >= 50 && l <= 60 ? '#28a745' : l > 60 ? '#dc3545' : '#6c757d'; })() }}>{(formData[`meta_title_${activeLang}`] || '').length}/60 {(formData[`meta_title_${activeLang}`] || '').length >= 50 && (formData[`meta_title_${activeLang}`] || '').length <= 60 ? ' ✓' : ' (cible: 50-60)'}</small>
                                 </div>
                                 <div className="col-md-6">
                                     <label className="form-label small text-muted mb-1">
@@ -885,7 +1033,7 @@ const PostEditor = () => {
                                         placeholder="Description pour les moteurs de recherche (160 caracteres max)"
                                         style={{ borderRadius: '6px' }}
                                     />
-                                    <small className="text-muted">{(formData[`meta_description_${activeLang}`] || '').length}/160</small>
+                                    <small style={{ color: (() => { const l = (formData[`meta_description_${activeLang}`] || '').length; return l >= 140 && l <= 160 ? '#28a745' : l > 160 ? '#dc3545' : '#6c757d'; })() }}>{(formData[`meta_description_${activeLang}`] || '').length}/160 {(formData[`meta_description_${activeLang}`] || '').length >= 140 && (formData[`meta_description_${activeLang}`] || '').length <= 160 ? ' ✓' : ' (cible: 140-160)'}</small>
                                 </div>
 
                                 {/* Preview Google */}

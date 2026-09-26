@@ -55,7 +55,7 @@ router.get('/articles.xml', async (req, res) => {
     const items = posts.map(p => {
       const title = escapeXml(p.title_fr || p.title_en || '');
       const description = escapeXml(p.excerpt_fr || p.excerpt_en || '');
-      const link = `${SITE_URL}/fr/news/${p.slug}`;
+      const link = `${SITE_URL}/article/${p.slug}`;
       const author = [p.author_first, p.author_last].filter(Boolean).join(' ');
       const pubDate = p.published_at ? toRfc822(p.published_at) : '';
       const image = p.featured_image ? `${SITE_URL}${p.featured_image}` : '';
@@ -125,7 +125,7 @@ router.get('/opportunities.xml', async (req, res) => {
     const items = opps.map(o => {
       const title = escapeXml(o.title_fr || o.title_en || '');
       const typeLabel = o.opportunity_type === 'job' ? 'Emploi' : o.opportunity_type === 'tender' ? 'Appel d\'offres' : 'Marché';
-      const link = `${SITE_URL}/fr/opportunities/${o.id}`;
+      const link = `${SITE_URL}/opportunites/${o.slug || o.id}`;
       const desc = escapeXml(
         `[${typeLabel}] ${o.organization_name || ''} — ${o.country || ''}${o.deadline ? ` | Date limite: ${new Date(o.deadline).toLocaleDateString('fr-FR')}` : ''}`
       );

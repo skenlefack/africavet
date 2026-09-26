@@ -27,7 +27,7 @@ const SEO = ({
       <title>{fullTitle}</title>
       <meta name="description" content={metaDescription} />
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
 
       {/* Open Graph */}
       <meta property="og:site_name" content={SITE_NAME} />

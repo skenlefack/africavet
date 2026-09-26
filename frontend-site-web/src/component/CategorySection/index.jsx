@@ -20,6 +20,43 @@ const hexToRgba = (hex, alpha = 0.7) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
+
+// Editorial format labels and colors
+const EDITORIAL_FORMATS = {
+  actualite: { label: 'Actualite', color: '#6c757d' },
+  analyse: { label: 'Analyse', color: '#0d6efd' },
+  reportage: { label: 'Reportage', color: '#198754' },
+  entretien: { label: 'Entretien', color: '#6f42c1' },
+  guide_pratique: { label: 'Guide', color: '#fd7e14' },
+  data_story: { label: 'Data', color: '#20c997' },
+  dossier: { label: 'Dossier', color: '#dc3545' },
+  opportunite: { label: 'Opportunite', color: '#ffc107' },
+  tribune: { label: 'Tribune', color: '#0dcaf0' },
+  synthese: { label: 'Synthese', color: '#6610f2' },
+};
+
+const FormatBadge = ({ format }) => {
+  if (!format || format === 'actualite') return null;
+  const fmt = EDITORIAL_FORMATS[format];
+  if (!fmt) return null;
+  return (
+    <span style={{
+      display: 'inline-block',
+      padding: '2px 6px',
+      fontSize: '0.6rem',
+      fontWeight: 600,
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px',
+      borderRadius: '3px',
+      color: '#fff',
+      backgroundColor: fmt.color,
+      marginRight: '4px',
+    }}>
+      {fmt.label}
+    </span>
+  );
+};
+
 const CategorySection = ({
   categorySlug,
   categoryName,
@@ -113,9 +150,12 @@ const CategorySection = ({
                     {truncate(lf(post, 'title'), 70)}
                   </Link>
                 </h4>
-                <span className="category-card-date">
-                  <FontAwesome name="clock-o" /> {formatDate(post.created_at)}
-                </span>
+                <div className="d-flex align-items-center gap-1">
+                    <FormatBadge format={post.editorial_format} />
+                    <span className="category-card-date">
+                      <FontAwesome name="clock-o" /> {formatDate(post.created_at)}
+                    </span>
+                  </div>
               </div>
             </div>
           ))}
@@ -169,7 +209,10 @@ const CategorySection = ({
                     <p className="post-p">
                       {truncate(lf(mainPost, 'excerpt'), 120)}
                     </p>
-                    <span className="post_date">{formatDate(mainPost.created_at)}</span>
+                    <div className="d-flex align-items-center gap-1">
+                        <FormatBadge format={mainPost.editorial_format} />
+                        <span className="post_date">{formatDate(mainPost.created_at)}</span>
+                      </div>
                   </div>
                 </div>
               ))}

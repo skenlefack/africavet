@@ -6,6 +6,8 @@ import MainMenu from "../../component/MainMenu";
 import FooterArea from "../../component/FooterArea";
 import { Outlet, useLocation } from "react-router-dom";
 import ScrollTopButton from "../ScrollTopButton";
+import CookieConsent from "../CookieConsent/CookieConsent";
+import GoogleAnalytics from "../Analytics/GoogleAnalytics";
 
 const API_URL = import.meta.env.VITE_API_URL || "/api";
 
@@ -100,6 +102,8 @@ const LayoutTheme1 = ({ children }) => {
       <Outlet />
       {children}
       <FooterArea />
+      <CookieConsent />
+      <GoogleAnalytics />
     </div>
   );
 };

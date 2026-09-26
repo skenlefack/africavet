@@ -62,7 +62,7 @@ router.get('/sitemap-articles.xml', async (req, res) => {
 
     for (const post of posts) {
       const lastmod = (post.updated_at || post.published_at || new Date()).toISOString();
-      xml += `  <url>\n    <loc>${SITE_URL}/article/${post.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n`;
+      xml += `  <url>\n    <loc>${SITE_URL}/article/${post.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n`;
       if (post.featured_image) {
         const imgUrl = post.featured_image.startsWith('http') ? post.featured_image : `${SITE_URL}${post.featured_image}`;
         xml += `    <image:image>\n      <image:loc>${imgUrl}</image:loc>\n    </image:image>\n`;
@@ -115,7 +115,7 @@ router.get('/sitemap-opportunities.xml', async (req, res) => {
     for (const opp of opps) {
       const lastmod = (opp.updated_at || opp.created_at || new Date()).toISOString();
       const url = opp.slug ? `/opportunites/${opp.slug}` : `/opportunites/${opp.id}`;
-      xml += `  <url>\n    <loc>${SITE_URL}${url}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
+      xml += `  <url>\n    <loc>${SITE_URL}${url}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
     }
     xml += '</urlset>';
 
@@ -139,5 +139,9 @@ Sitemap: ${SITE_URL}/sitemap.xml
   res.set('Content-Type', 'text/plain');
   res.send(robots);
 });
+
+// RSS redirect aliases
+router.get('/rss.xml', (req, res) => res.redirect(301, '/api/feed/articles.xml'));
+router.get('/feed', (req, res) => res.redirect(301, '/api/feed/articles.xml'));
 
 module.exports = router;

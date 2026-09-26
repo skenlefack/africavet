@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, getToken } from '../../../../services/api';
 
 const AppointmentForm = () => {
     const { id } = useParams();
-    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const token = getToken();
     const isEdit = !!id;

@@ -291,7 +291,8 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), sanitizePostConte
       country, region,
       sources, reviewer_name, reviewer_title, reviewer_organization,
       health_disclaimer, image_credit, image_source,
-      translation_status_fr, translation_status_en, original_language
+      translation_status_fr, translation_status_en, original_language,
+      content_language, reviewer_id, review_notes, editorial_format
     } = req.body;
 
     // Validation: au moins un titre requis (FR ou EN ou legacy)
@@ -333,9 +334,10 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), sanitizePostConte
        meta_title, meta_title_fr, meta_title_en, meta_description, meta_description_fr, meta_description_en,
        meta_keywords, published_at, scheduled_at, country, region,
        sources, reviewer_name, reviewer_title, reviewer_organization, health_disclaimer, image_credit, image_source,
-       translation_status_fr, translation_status_en, original_language)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       translation_status_fr, translation_status_en, original_language,
+       content_language, reviewer_id, review_notes, editorial_format)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+               ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [finalTitle, finalTitleFr, finalTitleEn, slug, finalContentFr, finalContentFr, finalContentEn,
        finalExcerptFr, finalExcerptFr, finalExcerptEn, featured_image, image_caption || null, req.user.id, finalCategoryId,
        type, status, visibility, password, featured, allow_comments,
@@ -346,7 +348,8 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), sanitizePostConte
        country || null, region || null,
        sources ? JSON.stringify(sources) : null, reviewer_name || null, reviewer_title || null, reviewer_organization || null,
        health_disclaimer ? 1 : 0, image_credit || null, image_source || null,
-       translation_status_fr || 'original', translation_status_en || 'not_started', original_language || 'fr']
+       translation_status_fr || 'original', translation_status_en || 'not_started', original_language || 'fr',
+       content_language || 'fr', reviewer_id || null, review_notes || null, editorial_format || 'actualite']
     );
 
     // Add tags
@@ -373,7 +376,18 @@ router.post('/', auth, authorize('admin', 'editor', 'author'), sanitizePostConte
     // Log activity
     await auditFromReq(req, 'create', 'post', result.insertId, { details: { title: finalTitleFr } });
 
-    res.status(201).json({ success: true, message: 'Post created', data: newPost[0] });
+    // Build metadata warnings for published posts
+    const warnings = [];
+    const p = newPost[0];
+    if (status === 'published') {
+      if (!p.meta_title_fr && !p.meta_title) warnings.push('Meta title manquant');
+      if (!p.meta_description_fr && !p.meta_description) warnings.push('Meta description manquante');
+      if (!p.sources) warnings.push('Sources non renseignees');
+      if (p.featured_image && !p.image_credit) warnings.push('Credit image manquant');
+      if (!p.country && !p.region) warnings.push('Pays/Region non renseigne');
+    }
+
+    res.status(201).json({ success: true, message: 'Post created', data: newPost[0], warnings });
   } catch (error) {
     console.error('Create post error:', error.message, error.sql || '');
     res.status(500).json({ success: false, message: 'Server error', error: error.message });
@@ -408,7 +422,8 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), sanitizePostCon
       country, region,
       sources, reviewer_name, reviewer_title, reviewer_organization,
       health_disclaimer, image_credit, image_source,
-      translation_status_fr, translation_status_en, original_language
+      translation_status_fr, translation_status_en, original_language,
+      content_language, reviewer_id, review_notes, editorial_format
     } = req.body;
 
     // Use multilingual fields with fallback
@@ -481,7 +496,11 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), sanitizePostCon
        image_source = COALESCE(?, image_source),
        translation_status_fr = COALESCE(?, translation_status_fr),
        translation_status_en = COALESCE(?, translation_status_en),
-       original_language = COALESCE(?, original_language)
+       original_language = COALESCE(?, original_language),
+       content_language = COALESCE(?, content_language),
+       reviewer_id = COALESCE(?, reviewer_id),
+       review_notes = COALESCE(?, review_notes),
+       editorial_format = COALESCE(?, editorial_format)
        WHERE id = ?`,
       [finalTitle, finalTitleFr, finalTitleEn, slug,
        finalContentFr, finalContentFr, finalContentEn,
@@ -493,7 +512,8 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), sanitizePostCon
        country || null, region || null,
        sources ? JSON.stringify(sources) : null, reviewer_name || null, reviewer_title || null, reviewer_organization || null,
        health_disclaimer !== undefined ? (health_disclaimer ? 1 : 0) : null, image_credit || null, image_source || null,
-       translation_status_fr || null, translation_status_en || null, original_language || null, id]
+       translation_status_fr || null, translation_status_en || null, original_language || null,
+       content_language || null, reviewer_id || null, review_notes || null, editorial_format || null, id]
     );
 
     // Update tags
@@ -520,7 +540,18 @@ router.put('/:id', auth, authorize('admin', 'editor', 'author'), sanitizePostCon
     // Log activity
     await auditFromReq(req, 'update', 'post', parseInt(id), { details: { title: updated[0].title } });
 
-    res.json({ success: true, message: 'Post updated', data: updated[0] });
+    // Build metadata warnings for published posts
+    const warnings = [];
+    const pub = updated[0];
+    if (pub.status === 'published') {
+      if (!pub.meta_title_fr && !pub.meta_title) warnings.push('Meta title manquant');
+      if (!pub.meta_description_fr && !pub.meta_description) warnings.push('Meta description manquante');
+      if (!pub.sources) warnings.push('Sources non renseignees');
+      if (pub.featured_image && !pub.image_credit) warnings.push('Credit image manquant');
+      if (!pub.country && !pub.region) warnings.push('Pays/Region non renseigne');
+    }
+
+    res.json({ success: true, message: 'Post updated', data: updated[0], warnings });
   } catch (error) {
     console.error('Update post error:', error);
     res.status(500).json({ success: false, message: 'Server error' });

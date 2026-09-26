@@ -29,6 +29,36 @@ const defaultNews = [
   { id: 4, image: fnewsImg2, category: "Actualités", date: "", title: "Chargement...", slug: "#", categorySlug: "news" },
 ];
 
+
+// Editorial format badge
+const EDITORIAL_FORMATS = {
+  actualite: { label: 'Actualite', color: '#6c757d' },
+  analyse: { label: 'Analyse', color: '#0d6efd' },
+  reportage: { label: 'Reportage', color: '#198754' },
+  entretien: { label: 'Entretien', color: '#6f42c1' },
+  guide_pratique: { label: 'Guide', color: '#fd7e14' },
+  data_story: { label: 'Data', color: '#20c997' },
+  dossier: { label: 'Dossier', color: '#dc3545' },
+  opportunite: { label: 'Opportunite', color: '#ffc107' },
+  tribune: { label: 'Tribune', color: '#0dcaf0' },
+  synthese: { label: 'Synthese', color: '#6610f2' },
+};
+
+const FormatBadge = ({ format }) => {
+  if (!format || format === 'actualite') return null;
+  const fmt = EDITORIAL_FORMATS[format];
+  if (!fmt) return null;
+  return (
+    <span style={{
+      display: 'inline-block', padding: '2px 6px', fontSize: '0.6rem',
+      fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+      borderRadius: '3px', color: '#fff', backgroundColor: fmt.color, marginRight: '4px',
+    }}>
+      {fmt.label}
+    </span>
+  );
+};
+
 const FeatureNews = ({ className }) => {
   const { featurePosts, loading } = useData();
   const { getCategoryColor } = useApp();
@@ -94,7 +124,10 @@ const FeatureNews = ({ className }) => {
                       <h4>
                         <Link to={`/article/${item.slug}`}>{item.title}</Link>
                       </h4>
-                      <span className="post_date">{item.date}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <FormatBadge format={item.editorial_format} />
+                                        <span className="post_date">{item.date}</span>
+                                      </div>
                     </div>
                   </div>
                 ))}

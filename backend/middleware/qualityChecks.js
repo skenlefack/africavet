@@ -111,4 +111,70 @@ function getOpportunityCompleteness(opp) {
   return { score, missing };
 }
 
-module.exports = { validateOpportunityPublish, validatePostPublish, getOpportunityCompleteness };
+/**
+ * Calculate completeness score for a post (0-100)
+ * 10 criteria, 10 points each
+ */
+function getPostCompleteness(post) {
+  let score = 0;
+  const details = [];
+
+  // 1. Title FR present
+  const titleFr = post.title_fr || post.title || '';
+  if (titleFr.trim()) { score += 10; details.push({ label: 'Titre FR', ok: true }); }
+  else { details.push({ label: 'Titre FR', ok: false }); }
+
+  // 2. Description/content present
+  const contentFr = post.content_fr || post.content || '';
+  if (contentFr.trim()) { score += 10; details.push({ label: 'Contenu', ok: true }); }
+  else { details.push({ label: 'Contenu', ok: false }); }
+
+  // 3. Country or region set
+  if ((post.country && post.country.trim()) || (post.region && post.region.trim())) {
+    score += 10; details.push({ label: 'Pays/Region', ok: true });
+  } else { details.push({ label: 'Pays/Region', ok: false }); }
+
+  // 4. Content language set
+  if (post.content_language) { score += 10; details.push({ label: 'Langue', ok: true }); }
+  else { details.push({ label: 'Langue', ok: false }); }
+
+  // 5. Meta title 50-60 chars
+  const metaTitle = post.meta_title_fr || post.meta_title || '';
+  if (metaTitle.length >= 50 && metaTitle.length <= 60) {
+    score += 10; details.push({ label: 'Meta title 50-60 car.', ok: true });
+  } else { details.push({ label: 'Meta title 50-60 car.', ok: false }); }
+
+  // 6. Meta description 140-160 chars
+  const metaDesc = post.meta_description_fr || post.meta_description || '';
+  if (metaDesc.length >= 140 && metaDesc.length <= 160) {
+    score += 10; details.push({ label: 'Meta description 140-160 car.', ok: true });
+  } else { details.push({ label: 'Meta description 140-160 car.', ok: false }); }
+
+  // 7. Sources present
+  const sources = post.sources;
+  const hasSources = sources && ((typeof sources === 'string' && sources.trim()) || (Array.isArray(sources) && sources.length > 0));
+  if (hasSources) { score += 10; details.push({ label: 'Sources', ok: true }); }
+  else { details.push({ label: 'Sources', ok: false }); }
+
+  // 8. Image credit (if image exists)
+  if (!post.featured_image || !post.featured_image.trim()) {
+    score += 10; details.push({ label: 'Credit image (sans image)', ok: true });
+  } else if (post.image_credit && post.image_credit.trim()) {
+    score += 10; details.push({ label: 'Credit image', ok: true });
+  } else { details.push({ label: 'Credit image', ok: false }); }
+
+  // 9. Category assigned
+  const hasCat = (post.category_ids && post.category_ids.length > 0) || post.category_id;
+  if (hasCat) { score += 10; details.push({ label: 'Categorie', ok: true }); }
+  else { details.push({ label: 'Categorie', ok: false }); }
+
+  // 10. Content >= 500 words
+  const plainText = (contentFr || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const wordCount = plainText ? plainText.split(/\s+/).length : 0;
+  if (wordCount >= 500) { score += 10; details.push({ label: '500+ mots', ok: true }); }
+  else { details.push({ label: '500+ mots (' + wordCount + ')', ok: false }); }
+
+  return { score, details, wordCount };
+}
+
+module.exports = { validateOpportunityPublish, validatePostPublish, getOpportunityCompleteness, getPostCompleteness };

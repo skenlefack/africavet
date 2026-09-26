@@ -22,6 +22,36 @@ const defaultNews = [
   { id: 6, image: transm3, category: "Opportunités", categorySlug: "opportunites", date: "8 février 2026", title: "Offres d'emploi : recrutement massif dans le secteur vétérinaire", slug: "#" },
 ];
 
+
+// Editorial format badge
+const EDITORIAL_FORMATS = {
+  actualite: { label: 'Actualite', color: '#6c757d' },
+  analyse: { label: 'Analyse', color: '#0d6efd' },
+  reportage: { label: 'Reportage', color: '#198754' },
+  entretien: { label: 'Entretien', color: '#6f42c1' },
+  guide_pratique: { label: 'Guide', color: '#fd7e14' },
+  data_story: { label: 'Data', color: '#20c997' },
+  dossier: { label: 'Dossier', color: '#dc3545' },
+  opportunite: { label: 'Opportunite', color: '#ffc107' },
+  tribune: { label: 'Tribune', color: '#0dcaf0' },
+  synthese: { label: 'Synthese', color: '#6610f2' },
+};
+
+const FormatBadge = ({ format }) => {
+  if (!format || format === 'actualite') return null;
+  const fmt = EDITORIAL_FORMATS[format];
+  if (!fmt) return null;
+  return (
+    <span style={{
+      display: 'inline-block', padding: '2px 6px', fontSize: '0.6rem',
+      fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+      borderRadius: '3px', color: '#fff', backgroundColor: fmt.color, marginRight: '4px',
+    }}>
+      {fmt.label}
+    </span>
+  );
+};
+
 const TrendingNews = ({ dark }) => {
   const { trendingPosts, loading } = useData();
   const { getCategoryColor } = useApp();
